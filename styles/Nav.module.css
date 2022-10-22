@@ -1,0 +1,20 @@
+.nav {
+	display: flex;
+	width: 100%;
+	height: 3rem;
+	margin: auto 0;
+	font-size: 1.5rem;
+	align-items: center;
+	font-weight: bold;
+}
+.nav .welcome {
+	display: flex;
+	align-items: center;
+}
+.nav .name {
+	height: 100%;
+	display: flex;
+	color: #af1c05;
+	align-items: center;
+	margin-left: 8px;
+}
