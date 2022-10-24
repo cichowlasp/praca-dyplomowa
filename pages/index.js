@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import Nav from '../components/Navbar';
+import Nav from '../componenets/Navbar';
 import Image from 'next/image';
 import styles from '../styles/Home.module.css';
 import { useSession } from 'next-auth/react';
