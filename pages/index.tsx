@@ -1,11 +1,9 @@
 import Head from 'next/head';
-import Nav from '../componenets/Navbar';
-
 import styles from '../styles/Home.module.css';
 import { useSession } from 'next-auth/react';
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import Auth from '../componenets/Auth';
+import Auth from '../components/Auth';
 
 const Home = () => {
 	const router = useRouter();
@@ -13,7 +11,6 @@ const Home = () => {
 	console.log(status);
 	return (
 		<>
-			<Nav />
 			<div className={styles.container}>
 				<Head>
 					<title>Create Next App</title>

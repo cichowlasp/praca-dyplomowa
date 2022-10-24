@@ -8,12 +8,17 @@ const Navbar = () => {
 	const { data: session, status } = useSession();
 	return (
 		<nav className={styles.nav}>
-			<div className={styles.welcome}>
-				<span>Welcome</span>
-				<span className={styles.name}>
-					{`${session?.user?.name} ${session?.user?.surname}`}
-				</span>
-			</div>
+			{status === 'unauthenticated' ? (
+				<div className={styles.welcome}>Login Page</div>
+			) : (
+				<div className={styles.welcome}>
+					<span>Welcome</span>
+					<span className={styles.name}>
+						{`${session?.user?.name} ${session?.user?.surname}`}
+					</span>
+				</div>
+			)}
+
 			{status === 'loading' || status === 'unauthenticated' ? (
 				<Button variant='contained' onClick={() => signIn()}>
 					SignIn

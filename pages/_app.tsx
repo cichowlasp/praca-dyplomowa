@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import '../styles/globals.css';
 import { SessionProvider } from 'next-auth/react';
 import { AppProps } from 'next/app';
@@ -8,6 +8,7 @@ import { CacheProvider, EmotionCache } from '@emotion/react';
 import lightThemeOptions from '../styles/Themes/lightThemeOptions';
 import createEmotionCache from '../utility/createEmotionCache';
 import Head from 'next/head';
+import Nav from '../components/Navbar';
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
@@ -38,6 +39,7 @@ const MyApp: React.FC<MyAppProps> = ({
 			<ThemeProvider theme={lightTheme}>
 				<CssBaseline />
 				<SessionProvider session={session}>
+					<Nav />
 					<Component {...pageProps} />
 				</SessionProvider>
 			</ThemeProvider>
