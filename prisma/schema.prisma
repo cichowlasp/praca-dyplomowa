@@ -15,13 +15,14 @@ model Order {
   edited      Boolean @default(false)
   reviewed    Boolean @default(false)
   authorId    String?
-  User        User?   @relation(fields: [authorId], references: [id])
+  user        User?   @relation(fields: [authorId], references: [id])
 }
 
 model User {
   id                 String    @id @default(cuid())
-  name               String
-  surname            String
+  name               String?
+  surname            String?
+  company            String?
   email              String    @unique
   pin                String?
   password           String?
@@ -29,5 +30,39 @@ model User {
   accessToken        String?
   accessTokenExpires DateTime?
   refreshToken       String?
-  Order              Order[]
+  orders             Order[]
+}
+
+model Form {
+  id      String   @id @default("main")
+  active  Boolean  @default(false)
+  inputs  Input[]
+  selects Select[]
+}
+
+model Input {
+  id          String  @id @default(cuid())
+  placeholder String?
+  type        String
+  required    Boolean
+  maxLength   Int?
+  minLength   Int?
+  formId      String?
+  Form        Form?   @relation(fields: [formId], references: [id])
+}
+
+model Select {
+  id          String   @id @default(cuid())
+  placeholder String?
+  required    Boolean
+  options     Option[]
+  Form        Form?    @relation(fields: [formId], references: [id])
+  formId      String?
+}
+
+model Option {
+  id       String  @id @default(cuid())
+  value    String
+  Select   Select? @relation(fields: [selectId], references: [id])
+  selectId String?
 }
