@@ -16,7 +16,7 @@ const handler = async (req, res) => {
 			formId: id,
 		},
 	});
-	console.log(id, inputs);
+
 	res.status(200).json({ inputs });
 };
 

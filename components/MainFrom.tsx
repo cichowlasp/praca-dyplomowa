@@ -1,16 +1,31 @@
 import React, { useEffect, useState } from 'react';
-import { GetServerSideProps } from 'next';
-import prisma from '../lib/prisma';
+import { TextField } from '@mui/material';
 
 const MainFrom = () => {
-	const [first, setfirst] = useState(null);
+	const [first, setfirst] = useState(undefined);
 	useEffect(() => {
 		fetch('api/getform')
 			.then((response) => response.json())
 			.then((data) => setfirst(data));
-		console.log(first);
 	}, []);
-	return <div>MainFrom {first ? first.inputs[0].id : ''}</div>;
+	return (
+		<div>
+			<h1>Fill up to take order</h1>
+			{first ? (
+				first.inputs.map((el) => (
+					<div>
+						<TextField
+							key={el.id}
+							placeholder={el.placeholder}
+							type={el.type}
+						/>
+					</div>
+				))
+			) : (
+				<></>
+			)}
+		</div>
+	);
 };
 
 export default MainFrom;

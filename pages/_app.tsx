@@ -40,7 +40,7 @@ const MyApp: React.FC<MyAppProps> = ({
 			</Head>
 			<ThemeProvider theme={lightTheme}>
 				<CssBaseline />
-				<SessionProvider session={session}>
+				<SessionProvider Session={session}>
 					<Nav />
 					<Component {...pageProps} />
 				</SessionProvider>

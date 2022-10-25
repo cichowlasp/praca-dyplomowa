@@ -27,7 +27,9 @@ const Navbar = () => {
 					SignIn
 				</Button>
 			) : (
-				<Button variant='outlined' onClick={() => signOut()}>
+				<Button
+					variant='outlined'
+					onClick={() => signOut({ callbackUrl: '/' })}>
 					SignOut
 				</Button>
 			)}
