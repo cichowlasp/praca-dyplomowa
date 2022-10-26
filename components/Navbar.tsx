@@ -14,7 +14,7 @@ const Navbar = () => {
 	return (
 		<nav className={styles.nav}>
 			{status === 'unauthenticated' ? (
-				<div className={styles.welcome}>Login Page</div>
+				<div className={styles.welcome}>Admin Page</div>
 			) : (
 				<div className={styles.welcome}>
 					<span>Welcome</span>
