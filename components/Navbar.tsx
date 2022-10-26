@@ -4,10 +4,12 @@ import styles from '../styles/Nav.module.css';
 import { signIn, signOut } from 'next-auth/react';
 import { Button } from '@mui/material';
 import { useRouter } from 'next/router';
+import Loading from './Loading';
 
 const Navbar = () => {
 	const { data: session, status } = useSession();
 	const router = useRouter();
+	if (status === 'loading') return <Loading />;
 	if (router.pathname !== '/admin') return <></>;
 	return (
 		<nav className={styles.nav}>
@@ -22,8 +24,10 @@ const Navbar = () => {
 				</div>
 			)}
 
-			{status === 'loading' || status === 'unauthenticated' ? (
-				<Button variant='contained' onClick={() => signIn()}>
+			{status === 'unauthenticated' ? (
+				<Button
+					variant='contained'
+					onClick={() => router.push('/admin/signin')}>
 					SignIn
 				</Button>
 			) : (

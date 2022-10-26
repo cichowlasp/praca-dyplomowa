@@ -22,14 +22,14 @@ model User {
   id                 String    @id @default(cuid())
   name               String?
   surname            String?
-  company            String?
   email              String    @unique
   pin                String?
   password           String?
-  admin              Boolean   @default(false)
   accessToken        String?
   accessTokenExpires DateTime?
   refreshToken       String?
+  admin              Boolean   @default(false)
+  company            String?
   orders             Order[]
 }
 
@@ -55,14 +55,14 @@ model Select {
   id          String   @id @default(cuid())
   placeholder String?
   required    Boolean
-  options     Option[]
-  Form        Form?    @relation(fields: [formId], references: [id])
   formId      String?
+  Form        Form?    @relation(fields: [formId], references: [id])
+  options     Option[]
 }
 
 model Option {
   id       String  @id @default(cuid())
   value    String
-  Select   Select? @relation(fields: [selectId], references: [id])
   selectId String?
+  Select   Select? @relation(fields: [selectId], references: [id])
 }

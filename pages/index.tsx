@@ -2,8 +2,9 @@ import styles from '../styles/Home.module.css';
 import { useSession } from 'next-auth/react';
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
-import { ButtonGroup, Button, Paper } from '@mui/material';
+import { ButtonGroup, Button } from '@mui/material';
 import MainForm from '../components/MainFrom';
+import Loading from '../components/Loading';
 
 enum PageOption {
 	newOrder = 'new-order',
@@ -32,8 +33,12 @@ const Home = () => {
 						</Button>
 					</ButtonGroup>
 				</main>
-				<div>
-					{pageOption === PageOption.newOrder ? <MainForm /> : <></>}
+				<div className={styles.wrapper}>
+					{pageOption === PageOption.newOrder ? (
+						<MainForm />
+					) : (
+						<Loading />
+					)}
 				</div>
 			</div>
 			<footer className={styles.footer}>Politechnika Wrocławska</footer>

@@ -3,11 +3,14 @@ import styles from '../../styles/HomeAdmin.module.css';
 import { useSession } from 'next-auth/react';
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
+import Loading from '../../components/Loading';
 
 const Home = () => {
 	const router = useRouter();
 	const { data: session, status } = useSession();
 	console.log(status);
+
+	if (status === 'loading') return <Loading />;
 
 	return (
 		<>

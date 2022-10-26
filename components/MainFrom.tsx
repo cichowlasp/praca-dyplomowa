@@ -13,9 +13,14 @@ const MainFrom = () => {
 			<h1>Fill up to take order</h1>
 			{first ? (
 				first.inputs.map((el) => (
-					<div>
+					<div
+						style={{
+							display: 'flex',
+							alignItems: 'center',
+							justifyContent: 'center',
+						}}
+						key={el.id}>
 						<TextField
-							key={el.id}
 							placeholder={el.placeholder}
 							type={el.type}
 						/>

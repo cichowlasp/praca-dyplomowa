@@ -4,7 +4,7 @@ import { Button, TextField } from '@mui/material';
 import { signIn as LogIn } from 'next-auth/react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
-import styles from '../styles/signin.module.css';
+import styles from '../../styles/signin.module.css';
 
 const signIn = () => {
 	const [credentials, setCredentials] = useState<{
