@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { TextField } from '@mui/material';
+import Loading from './Loading';
 
 const MainFrom = () => {
-	const [first, setfirst] = useState(undefined);
+	const [first, setfirst] = useState(null);
 	useEffect(() => {
 		fetch('api/getform')
 			.then((response) => response.json())
 			.then((data) => setfirst(data));
 	}, []);
+	if (first === null) return <Loading />;
 	return (
 		<div>
 			<h1>Fill up to take order</h1>

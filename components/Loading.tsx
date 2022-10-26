@@ -5,7 +5,6 @@ const Loading = () => {
 	return (
 		<div
 			style={{
-				position: 'absolute',
 				display: 'flex',
 				width: '100%',
 				height: '100%',
@@ -13,17 +12,17 @@ const Loading = () => {
 				alignItems: 'center',
 			}}>
 			<svg
-				width='50%'
-				height='50%'
+				width='30rem'
+				height='30%'
 				viewBox='0 0 45 45'
 				xmlns='http://www.w3.org/2000/svg'
 				stroke='#0070f3'>
 				<g
 					fill='none'
-					fill-rule='evenodd'
+					fillRule='evenodd'
 					transform='translate(1 1)'
-					stroke-width='2'>
-					<circle cx='22' cy='22' r='6' stroke-opacity='0'>
+					strokeWidth='2'>
+					<circle cx='22' cy='22' r='6' strokeOpacity='0'>
 						<animate
 							attributeName='r'
 							begin='1.5s'
@@ -49,7 +48,7 @@ const Loading = () => {
 							repeatCount='indefinite'
 						/>
 					</circle>
-					<circle cx='22' cy='22' r='6' stroke-opacity='0'>
+					<circle cx='22' cy='22' r='6' strokeOpacity='0'>
 						<animate
 							attributeName='r'
 							begin='3s'

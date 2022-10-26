@@ -18,7 +18,7 @@ const signIn = () => {
 		if (status === 'authenticated' && session.user.admin) {
 			router.push('/admin');
 		}
-	}, [status, router]);
+	}, [status, router, session]);
 
 	const handleSubmit = (event: React.FormEvent) => {
 		event.preventDefault();
