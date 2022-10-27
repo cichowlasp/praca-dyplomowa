@@ -29,6 +29,15 @@ export const authOptions = {
 				},
 			},
 			async authorize(credentials, req) {
+				if (credentials?.pin) {
+					const user = await prisma.user.findFirst({
+						where: {
+							pin: credentials.pin,
+						},
+					});
+					if (user) return user;
+					return null;
+				}
 				const user = await prisma.user.findFirst({
 					where: {
 						email: credentials.email,

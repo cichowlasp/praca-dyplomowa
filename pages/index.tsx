@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import { ButtonGroup, Button } from '@mui/material';
 import MainForm from '../components/MainFrom';
-import Loading from '../components/Loading';
+import MyOrders from '../components/MyOrders';
 
 enum PageOption {
 	newOrder = 'new-order',
@@ -53,7 +53,7 @@ const Home = () => {
 					{pageOption === PageOption.newOrder ? (
 						<MainForm />
 					) : (
-						<Loading />
+						<MyOrders />
 					)}
 				</div>
 			</div>
