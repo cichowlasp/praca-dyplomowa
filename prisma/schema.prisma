@@ -8,14 +8,21 @@ datasource db {
 }
 
 model Order {
-  id          String  @id @default(cuid())
-  title       String
-  description String
-  respond     String?
-  edited      Boolean @default(false)
-  reviewed    Boolean @default(false)
-  authorId    String?
-  user        User?   @relation(fields: [authorId], references: [id])
+  id           String  @id @default(cuid())
+  informations Info[]
+  respond      String?
+  edited       Boolean @default(false)
+  reviewed     Boolean @default(false)
+  authorId     String?
+  user         User?   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+}
+
+model Info {
+  id      String  @id @default(cuid())
+  name    String
+  fill    String
+  Order   Order?  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId String?
 }
 
 model User {
@@ -48,7 +55,7 @@ model Input {
   maxLength   Int?
   minLength   Int?
   formId      String?
-  Form        Form?   @relation(fields: [formId], references: [id])
+  Form        Form?   @relation(fields: [formId], references: [id], onDelete: Cascade)
 }
 
 model Select {
@@ -56,7 +63,7 @@ model Select {
   placeholder String?
   required    Boolean
   formId      String?
-  Form        Form?    @relation(fields: [formId], references: [id])
+  Form        Form?    @relation(fields: [formId], references: [id], onDelete: Cascade)
   options     Option[]
 }
 
@@ -64,5 +71,5 @@ model Option {
   id       String  @id @default(cuid())
   value    String
   selectId String?
-  Select   Select? @relation(fields: [selectId], references: [id])
+  Select   Select? @relation(fields: [selectId], references: [id], onDelete: Cascade)
 }

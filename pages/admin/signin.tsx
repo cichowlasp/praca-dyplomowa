@@ -15,7 +15,7 @@ const signIn = () => {
 	const router = useRouter();
 
 	useEffect(() => {
-		if (status === 'authenticated' && session.user.admin) {
+		if (status === 'authenticated' && session.user?.admin) {
 			router.push('/admin');
 		}
 	}, [status, router, session]);

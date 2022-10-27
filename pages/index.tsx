@@ -8,7 +8,7 @@ import Loading from '../components/Loading';
 
 enum PageOption {
 	newOrder = 'new-order',
-	myOrder = 'my-order',
+	myOrders = 'my-order',
 }
 
 const Home = () => {
@@ -24,11 +24,27 @@ const Home = () => {
 				<main className={styles.main}>
 					<ButtonGroup size='large' aria-label='large button group'>
 						<Button
+							style={
+								pageOption === PageOption.newOrder
+									? {
+											backgroundColor: '#1876D2',
+											color: 'white',
+									  }
+									: {}
+							}
 							onClick={() => setPageOption(PageOption.newOrder)}>
 							New Order
 						</Button>
 						<Button
-							onClick={() => setPageOption(PageOption.myOrder)}>
+							onClick={() => setPageOption(PageOption.myOrders)}
+							style={
+								pageOption === PageOption.myOrders
+									? {
+											backgroundColor: '#1876D2',
+											color: 'white',
+									  }
+									: {}
+							}>
 							My Orders
 						</Button>
 					</ButtonGroup>
