@@ -1,0 +1,9 @@
+.orders {
+	height: calc(100% - 10rem);
+	width: 100%;
+}
+
+.ordersContainer {
+	height: 100%;
+	width: 100%;
+}

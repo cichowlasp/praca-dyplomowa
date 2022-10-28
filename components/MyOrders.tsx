@@ -1,18 +1,28 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { signIn, signOut, useSession } from 'next-auth/react';
 import Loading from './Loading';
 import PinInput from 'react-pin-input';
+import { Button } from '@mui/material';
+import styles from '../styles/MyOrders.module.css';
 
 const MyOrders = () => {
-	const { data: sesstion, status } = useSession();
+	const { data: session, status } = useSession();
+	const [orders, setOrders] = useState<any[] | null>(null);
 
-	const handleComplete = (pin: string) => {
-		signOut({ redirect: false });
-		signIn('credentials', { redirect: false, pin });
+	const handleComplete = async (pin: string) => {
+		await signOut({ redirect: false });
+		await signIn('credentials', { redirect: false, pin });
 	};
+	useEffect(() => {
+		if (session?.user.pin) {
+			fetch('/api/user/getorders')
+				.then((response) => response.json())
+				.then((data) => setOrders(data));
+		}
+	}, [session]);
 
-	if (status === 'loading') return <Loading />;
-	if (status === 'unauthenticated' || !sesstion?.user?.pin)
+	if (status === 'loading' || !status) return <Loading />;
+	if (status === 'unauthenticated' || !session?.user.pin)
 		return (
 			<>
 				<h1>To see your orders you need to type in your access pin</h1>
@@ -38,7 +48,27 @@ const MyOrders = () => {
 				/>
 			</>
 		);
-	return <h1>MyOrders</h1>;
+	return (
+		<div className={styles.ordersContainer}>
+			<h1>MyOrders</h1>
+			{orders === null ? (
+				<Loading />
+			) : (
+				<>
+					<div className={styles.orders}>
+						{orders.map((order, index) => {
+							return <div key={index}>{order.id}</div>;
+						})}
+					</div>
+				</>
+			)}
+			<Button
+				variant='outlined'
+				onClick={() => signOut({ redirect: false })}>
+				SignOut
+			</Button>
+		</div>
+	);
 };
 
 export default MyOrders;

@@ -19,21 +19,35 @@ const Navbar = () => {
 				<div className={styles.welcome}>
 					<span>Welcome</span>
 					<span className={styles.name}>
-						{`${session?.user?.name} ${session?.user?.surname}`}
+						{session?.user?.admin
+							? `${session?.user?.name} ${session?.user?.surname}`
+							: ''}
+						{}
 					</span>
 				</div>
 			)}
 
-			{status === 'unauthenticated' ? (
+			{status === 'unauthenticated' || session?.user.pin ? (
 				<Button
 					variant='contained'
-					onClick={() => router.push('/admin/signin')}>
+					onClick={() => {
+						if (session?.user.pin) {
+							signOut({ redirect: false });
+						}
+						router.push('/admin/signin');
+					}}>
 					SignIn
 				</Button>
 			) : (
 				<Button
 					variant='outlined'
-					onClick={() => signOut({ callbackUrl: '/' })}>
+					onClick={async () => {
+						const data = await signOut({
+							redirect: false,
+							callbackUrl: '/',
+						});
+						router.push(data.url);
+					}}>
 					SignOut
 				</Button>
 			)}

@@ -1,13 +1,16 @@
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import prisma from '../../../lib/prisma';
 
 export const authOptions = {
 	// Configure one or more authentication providers
-	secret: process.env.SECRET,
+	adapter: PrismaAdapter(prisma),
+	secret: process.env.NEXTAUTH_SECRET,
 	session: {
 		strategy: 'jwt',
 	},
+	jwt: { maxAge: 60 * 60 * 24 * 30 },
 	providers: [
 		CredentialsProvider({
 			// The name to display on the sign in form (e.g. 'Sign in with...')
@@ -57,12 +60,10 @@ export const authOptions = {
 	callbacks: {
 		jwt: async ({ token, user }) => {
 			if (typeof user !== typeof undefined) token.user = user;
-
 			return token;
 		},
 		session: async ({ session, token }) => {
 			token?.user && (session.user = token.user);
-
 			return session;
 		},
 	},
@@ -71,4 +72,5 @@ export const authOptions = {
 	},
 };
 
-export default NextAuth(authOptions);
+const authHandler = (req, res) => NextAuth(req, res, authOptions);
+export default authHandler;

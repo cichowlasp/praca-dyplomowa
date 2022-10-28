@@ -1,3 +1,4 @@
+import { Calculate } from '@mui/icons-material';
 import { autocompleteClasses } from '@mui/material';
 import React from 'react';
 
@@ -7,13 +8,13 @@ const Loading = () => {
 			style={{
 				display: 'flex',
 				width: '100%',
-				height: '100%',
+				height: 'calc(100% - 10rem)',
 				justifyContent: 'center',
 				alignItems: 'center',
 			}}>
 			<svg
-				width='30rem'
-				height='30%'
+				width='50%'
+				height='50%'
 				viewBox='0 0 45 45'
 				xmlns='http://www.w3.org/2000/svg'
 				stroke='#0070f3'>
