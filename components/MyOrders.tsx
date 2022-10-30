@@ -2,14 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { signIn, signOut, useSession } from 'next-auth/react';
 import Loading from './Loading';
 import PinInput from 'react-pin-input';
-import { Button, Paper, useTheme } from '@mui/material';
+import { Button } from '@mui/material';
 import styles from '../styles/MyOrders.module.css';
-import { borderRadius, fontWeight } from '@mui/system';
+import OrderCards from './OrderCards';
 
 const MyOrders = () => {
 	const { data: session, status } = useSession();
 	const [orders, setOrders] = useState<any[] | null>(null);
-	const { palette } = useTheme();
 
 	const handleComplete = async (pin: string) => {
 		await signOut({ redirect: false });
@@ -58,46 +57,7 @@ const MyOrders = () => {
 			) : (
 				<>
 					<div className={styles.orders}>
-						{orders.map((order, index) => {
-							return (
-								<div
-									style={{
-										marginBottom: '1rem',
-										border: `2px solid ${palette.primary.main}`,
-										borderRadius: '10px',
-										padding: '5px',
-										boxShadow:
-											'rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px',
-									}}
-									key={index}>
-									<div
-										style={{
-											width: '20rem',
-										}}>
-										{order.id}
-										{order.informations.map((el, index) => {
-											return (
-												<div key={index}>
-													<span
-														style={{
-															fontWeight: 'bold',
-															textAlign: 'left',
-														}}>
-														{el.name}:
-													</span>
-													<span
-														style={{
-															paddingLeft: '3px',
-														}}>
-														{el.fill}
-													</span>
-												</div>
-											);
-										})}
-									</div>
-								</div>
-							);
-						})}
+						<OrderCards setOrders={setOrders} orders={orders} />
 					</div>
 				</>
 			)}

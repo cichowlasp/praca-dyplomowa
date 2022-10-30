@@ -3,6 +3,8 @@ import { Button, TextField, useTheme } from '@mui/material';
 import Loading from './Loading';
 import styles from '../styles/MainForm.module.css';
 import { useSession } from 'next-auth/react';
+import { validForm } from '../utils/validationSchema';
+import styled from '@emotion/styled';
 
 const MainFrom = () => {
 	const defaultState: any[] = [];
@@ -10,6 +12,7 @@ const MainFrom = () => {
 	const { palette } = useTheme();
 	const [formData, setFormData] = useState<any[]>(defaultState);
 	const [form, setForm] = useState<{ inputs: any[] } | null>(null);
+	const [error, setError] = useState<string>('');
 
 	const handleChange = (event: any, index: number, name: string) => {
 		setFormData((pre) => {
@@ -20,6 +23,10 @@ const MainFrom = () => {
 	};
 
 	const handleClick = async () => {
+		setError(validForm(formData));
+		if (error.length !== 0) {
+			return;
+		}
 		await fetch('/api/user/neworder', {
 			method: 'POST',
 			body: JSON.stringify(formData),
@@ -81,7 +88,9 @@ const MainFrom = () => {
 					/>
 				</div>
 			))}
-			<div>error</div>
+			<div style={{ color: palette.warning.main, fontWeight: '600' }}>
+				{error}
+			</div>
 			<Button variant='contained' onClick={handleClick}>
 				Submit Order
 			</Button>

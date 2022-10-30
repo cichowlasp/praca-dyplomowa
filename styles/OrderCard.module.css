@@ -1,0 +1,29 @@
+.card {
+	position: relative;
+	margin-bottom: 1rem;
+	border-radius: 10px;
+	padding: 5px;
+	box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
+		rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+	transition: all 0.2s ease-in-out;
+}
+
+.moreicon {
+	position: absolute;
+	height: 1.5rem;
+	width: 1.5rem;
+	right: 5px;
+	top: 5px;
+	border-radius: 50%;
+	background-color: gray;
+	display: flex;
+	justify-content: center;
+}
+.moreicon svg {
+	padding: 3px;
+	rotate: 90deg;
+}
+
+.moreicon:hover {
+	cursor: pointer;
+}

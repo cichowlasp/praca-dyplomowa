@@ -1,26 +1,18 @@
 import prisma from '../../../lib/prisma';
 import { authOptions } from 'pages/api/auth/[...nextauth]';
 import { unstable_getServerSession } from 'next-auth/next';
-import { validForm } from '../../../utils/validationSchema';
 
 const handler = async (req, res) => {
 	const { body } = req;
-	const data = JSON.parse(body);
-	if (validForm(data).length !== 0)
-		return res.status(401).json('Data is not valid');
 	const { user } = await unstable_getServerSession(req, res, authOptions);
+	console.log(body);
 	if (user.id && user.pin !== null) {
-		const response = await prisma.order.create({
-			data: {
-				authorId: user.id,
-				informations: {
-					createMany: {
-						data,
-					},
-				},
+		await prisma.order.delete({
+			where: {
+				id: body,
 			},
 		});
-		return res.status(200).json(response);
+		return res.status(200).json('success');
 	}
 	return res.status(401).json("You're not authorized");
 };
