@@ -4,9 +4,13 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	overflow-y: auto;
 }
 
 .ordersContainer {
 	height: 100%;
-	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	flex-direction: column;
 }

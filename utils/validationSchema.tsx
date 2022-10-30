@@ -5,7 +5,6 @@ export const validForm = (data: any[]) => {
 	}
 	data.forEach((element: { fill: string; name: string }) => {
 		for (const [_, value] of Object.entries(element)) {
-			console.log(value);
 			if (value.trim() === '') {
 				error = 'Make sure all data is filled';
 			}

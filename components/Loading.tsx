@@ -7,14 +7,14 @@ const Loading = () => {
 		<div
 			style={{
 				display: 'flex',
-				width: '100%',
+				width: 'fit-contnent',
 				height: 'calc(100% - 10rem)',
 				justifyContent: 'center',
 				alignItems: 'center',
 			}}>
 			<svg
-				width='50%'
-				height='50%'
+				width='100%'
+				height='100%'
 				viewBox='0 0 45 45'
 				xmlns='http://www.w3.org/2000/svg'
 				stroke='#0070f3'>

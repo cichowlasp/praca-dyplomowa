@@ -6,7 +6,7 @@ import { ButtonGroup, Button } from '@mui/material';
 import MainForm from '../components/MainFrom';
 import MyOrders from '../components/MyOrders';
 
-enum PageOption {
+export enum PageOption {
 	newOrder = 'new-order',
 	myOrders = 'my-order',
 }
@@ -51,7 +51,7 @@ const Home = () => {
 				</main>
 				<div className={styles.wrapper}>
 					{pageOption === PageOption.newOrder ? (
-						<MainForm />
+						<MainForm setPageOption={setPageOption} />
 					) : (
 						<MyOrders />
 					)}

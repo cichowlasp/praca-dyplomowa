@@ -1,18 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Button, TextField, useTheme } from '@mui/material';
 import Loading from './Loading';
 import styles from '../styles/MainForm.module.css';
 import { useSession } from 'next-auth/react';
 import { validForm } from '../utils/validationSchema';
-import styled from '@emotion/styled';
+import { PageOption } from '../pages/index';
 
-const MainFrom = () => {
-	const defaultState: any[] = [];
+const MainFrom = ({ setPageOption }: { setPageOption: void }) => {
+	const defaultState: { fill: string; name: string }[] = [];
 	const { data: session } = useSession();
 	const { palette } = useTheme();
 	const [formData, setFormData] = useState<any[]>(defaultState);
 	const [form, setForm] = useState<{ inputs: any[] } | null>(null);
 	const [error, setError] = useState<string>('');
+	const input = useRef();
 
 	const handleChange = (event: any, index: number, name: string) => {
 		setFormData((pre) => {
@@ -24,7 +25,7 @@ const MainFrom = () => {
 
 	const handleClick = async () => {
 		setError(validForm(formData));
-		if (error.length !== 0) {
+		if (validForm(formData).length !== 0) {
 			return;
 		}
 		await fetch('/api/user/neworder', {
@@ -35,6 +36,7 @@ const MainFrom = () => {
 				setFormData(defaultState);
 			}
 		});
+		setPageOption(PageOption.myOrders);
 	};
 
 	useEffect(() => {

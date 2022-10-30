@@ -4,7 +4,7 @@ import Loading from './Loading';
 import PinInput from 'react-pin-input';
 import { Button } from '@mui/material';
 import styles from '../styles/MyOrders.module.css';
-import OrderCards from './OrderCards';
+import OrderCard from './OrderCard';
 
 const MyOrders = () => {
 	const { data: session, status } = useSession();
@@ -55,12 +55,18 @@ const MyOrders = () => {
 			{orders === null ? (
 				<Loading />
 			) : (
-				<>
-					<div className={styles.orders}>
-						<OrderCards setOrders={setOrders} orders={orders} />
-					</div>
-				</>
+				<div className={styles.orders}>
+					{orders.map((order, index) => (
+						<OrderCard
+							key={index}
+							order={order}
+							setOrders={setOrders}
+							index={index}
+						/>
+					))}
+				</div>
 			)}
+
 			<Button
 				variant='outlined'
 				onClick={() => signOut({ redirect: false })}>
