@@ -10,17 +10,28 @@ import {
 } from '@mui/material';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import EditIcon from '@mui/icons-material/Edit';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import styles from '../styles/OrderCard.module.css';
 import Loading from './Loading';
+import Edit from './Edit';
 
 const OrderCard = ({ order, setOrders, index }) => {
 	const { palette } = useTheme();
 	const [loading, setLoading] = useState<boolean>(false);
-	const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+	const [editView, setEditView] = useState<boolean>(false);
+	const [reorderView, setReorderView] = useState<boolean>(false);
 	const open = Boolean(anchorEl);
 	const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
 		setAnchorEl(event.currentTarget);
 	};
+
+	const updateData = async () => {
+		await fetch('/api/user/getorders')
+			.then((response) => response.json())
+			.then((data) => setOrders(data));
+	};
+
 	const handleClose = async () => {
 		setAnchorEl(null);
 	};
@@ -31,9 +42,7 @@ const OrderCard = ({ order, setOrders, index }) => {
 			method: 'POST',
 			body: id,
 		});
-		await fetch('/api/user/getorders')
-			.then((response) => response.json())
-			.then((data) => setOrders(data));
+		await updateData();
 		setLoading(false);
 		handleClose();
 	};
@@ -80,6 +89,21 @@ const OrderCard = ({ order, setOrders, index }) => {
 						width: '20rem',
 					}}>
 					{order.id}
+					<div>
+						<span
+							style={{
+								fontWeight: 'bold',
+								textAlign: 'left',
+							}}>
+							Edited:
+						</span>
+						<span
+							style={{
+								paddingLeft: '3px',
+							}}>
+							{`${order.edited}`}
+						</span>
+					</div>
 					{order.informations.map((el, index) => {
 						return (
 							<div key={index}>
@@ -134,14 +158,38 @@ const OrderCard = ({ order, setOrders, index }) => {
 							</MenuItem>
 							<MenuItem
 								style={{ maxHeight: '2rem' }}
-								onClick={() => deleteOrder(order.id)}>
+								onClick={() => {
+									setReorderView(false);
+									setEditView(true);
+									handleClose();
+								}}>
 								<EditIcon fontSize='large' />
 								Edit
+							</MenuItem>
+							<MenuItem
+								style={{ maxHeight: '2rem' }}
+								onClick={() => {
+									setReorderView(true);
+									setEditView(true);
+									handleClose();
+								}}>
+								<RefreshIcon fontSize='large' />
+								Reorder
 							</MenuItem>
 						</div>
 					)}
 				</StyledMenu>
 			</div>
+			{editView ? (
+				<Edit
+					order={order}
+					setEditView={setEditView}
+					updateData={updateData}
+					reorder={reorderView}
+				/>
+			) : (
+				<></>
+			)}
 		</>
 	);
 };

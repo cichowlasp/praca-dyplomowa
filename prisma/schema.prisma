@@ -8,12 +8,12 @@ datasource db {
 }
 
 model Order {
-  id           String  @id @default(cuid())
+  id           String   @id @default(cuid())
   respond      String?
-  edited       Boolean @default(false)
-  reviewed     Boolean @default(false)
+  edited       Boolean  @default(false)
+  reviewed     Boolean?
   authorId     String
-  user         User    @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   informations Info[]
 }
 

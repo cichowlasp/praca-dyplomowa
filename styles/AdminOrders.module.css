@@ -1,0 +1,18 @@
+.orders {
+	height: calc(100% - 5rem);
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	overflow-y: auto;
+}
+
+.ordersContainer {
+	height: 100%;
+
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	flex-direction: column;
+	width: 100%;
+}

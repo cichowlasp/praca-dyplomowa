@@ -5,9 +5,10 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import Loading from '../../components/Loading';
 import { Button, ButtonGroup } from '@mui/material';
+import AdminOrders from '../../components/AdminOrders';
 
 export enum PageOption {
-	orders = 'order',
+	orders = 'orders',
 	form = 'form',
 	users = 'users',
 }
@@ -74,7 +75,11 @@ const Home = () => {
 								Users
 							</Button>
 						</ButtonGroup>
-						{}
+						{pageOption === PageOption.orders ? (
+							<AdminOrders />
+						) : (
+							<></>
+						)}
 					</main>
 
 					<footer className={styles.footer}>

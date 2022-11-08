@@ -4,10 +4,9 @@ import prisma from '../../../lib/prisma';
 
 const handler = async (req, res) => {
 	const { user } = await unstable_getServerSession(req, res, authOptions);
-	if (user.id && user.pin !== null) {
+	if (user.id && user.admin === true) {
 		const orders = await prisma.order.findMany({
 			orderBy: { id: 'asc' },
-			where: { authorId: user.id },
 			include: {
 				informations: {
 					orderBy: {
@@ -16,6 +15,7 @@ const handler = async (req, res) => {
 				},
 			},
 		});
+		console.log(orders);
 		return res.status(200).json(orders);
 	}
 	return res.status(401).json("You're not authorized");

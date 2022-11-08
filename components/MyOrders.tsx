@@ -52,6 +52,9 @@ const MyOrders = () => {
 	return (
 		<div className={styles.ordersContainer}>
 			<h1>MyOrders</h1>
+			<h2 style={{ marginTop: 0 }}>
+				Hi {session.user.company} your pin is: {session.user.pin}
+			</h2>
 			{orders === null ? (
 				<Loading />
 			) : (
