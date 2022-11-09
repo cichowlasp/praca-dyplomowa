@@ -18,21 +18,16 @@ const Home = () => {
 	const { data: session, status } = useSession();
 	const [pageOption, setPageOption] = useState<PageOption>(PageOption.orders);
 	const [usersData, setUsersData] = useState<any[] | null>(null);
-	const [orders, setOrders] = useState<any[] | null>(null);
 
 	useEffect(() => {
 		if (session?.user.admin) {
 			fetch('/api/admin/getalldata')
 				.then((response) => response.json())
-				.then((data) => setUsersData(data))
-				.finally(() => {
-					setOrders(usersData?.map((el) => el.orders).flat(1));
-				});
+				.then((data) => setUsersData(data));
 		}
-	}, [session, usersData]);
+	}, [session?.user.admin, setUsersData]);
 
 	if (status === 'loading') return <Loading />;
-
 	if (status === 'authenticated' && session.user?.admin) {
 		return (
 			<>
@@ -89,17 +84,9 @@ const Home = () => {
 								Users
 							</Button>
 						</ButtonGroup>
-						{pageOption === PageOption.orders && (
-							<AdminOrders
-								orders={orders}
-								setOrders={setOrders}
-							/>
-						)}
+						{pageOption === PageOption.orders && <AdminOrders />}
 						{pageOption === PageOption.users && (
-							<AdminUsers
-								data={usersData}
-								setOrders={setOrders}
-							/>
+							<AdminUsers data={usersData} />
 						)}
 					</main>
 

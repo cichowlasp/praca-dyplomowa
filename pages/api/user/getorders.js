@@ -14,6 +14,11 @@ const handler = async (req, res) => {
 						name: 'desc',
 					},
 				},
+				messages: {
+					orderBy: {
+						date: 'asc',
+					},
+				},
 			},
 		});
 		return res.status(200).json(orders);

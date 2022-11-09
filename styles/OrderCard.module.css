@@ -5,7 +5,8 @@
 	padding: 5px;
 	box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
 		rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
-	transition: all 0.2s ease-in-out;
+	/* transition: all 0.3s ease-in-out;
+	height: 8rem; */
 }
 
 .moreicon {
@@ -19,6 +20,24 @@
 	display: flex;
 	justify-content: center;
 }
+
+.expand {
+	position: absolute;
+	height: 1.5rem;
+	width: 1.5rem;
+	right: 5px;
+	bottom: 5px;
+	border-radius: 50%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	transition: all 0.3s ease-in-out;
+}
+
+.expand:hover {
+	cursor: pointer;
+}
+
 .moreicon svg {
 	padding: 3px;
 	rotate: 90deg;
@@ -26,4 +45,60 @@
 
 .moreicon:hover {
 	cursor: pointer;
+}
+
+.messages {
+	display: flex;
+	visibility: hidden;
+	flex-direction: column;
+	padding: 10px;
+	padding-bottom: 20px;
+	height: auto;
+}
+.messages form {
+	display: flex;
+}
+
+.messages form button {
+	display: flex;
+	width: 30px !important;
+	height: 30px !important;
+	border-radius: 50%;
+	justify-content: center;
+	align-items: center;
+}
+
+.chat {
+	background-color: white;
+	border-radius: 10px;
+	margin-bottom: 10px;
+	padding-top: 10px;
+	padding-right: 10px;
+	padding-left: 10px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	max-height: 300px;
+	overflow-y: auto;
+}
+
+.container {
+	display: block;
+	border-radius: 10px;
+	min-width: 150px;
+	max-width: 200px;
+	border: 3px solid black;
+	margin-bottom: 10px;
+	padding: 0 10px;
+}
+
+.name {
+	font-size: 15px;
+	font-weight: bold;
+}
+
+.text {
+	display: block;
+	word-wrap: break-word;
+	max-width: 100%;
 }

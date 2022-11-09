@@ -7,14 +7,29 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Reviewed {
+  APPROVED
+  DECLINE
+  NOTREVIEWED
+}
+
 model Order {
-  id           String  @id @default(cuid())
-  respond      String?
-  edited       Boolean @default(false)
-  reviewed     Boolean @default(false)
+  id           String    @id @default(cuid())
+  edited       Boolean   @default(false)
+  reviewed     Reviewed  @default(NOTREVIEWED)
   authorId     String
-  user         User    @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  user         User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   informations Info[]
+  messages     Message[]
+}
+
+model Message {
+  id      String   @id @default(cuid())
+  date    DateTime @default(now())
+  name    String
+  message String
+  Order   Order?   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId String?
 }
 
 model Info {

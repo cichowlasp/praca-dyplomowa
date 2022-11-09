@@ -19,6 +19,11 @@ const handler = async (req, res) => {
 								name: 'desc',
 							},
 						},
+						messages: {
+							orderBy: {
+								date: 'asc',
+							},
+						},
 					},
 				},
 			},
