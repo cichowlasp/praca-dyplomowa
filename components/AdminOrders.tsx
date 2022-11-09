@@ -6,21 +6,18 @@ import { Button } from '@mui/material';
 import styles from '../styles/AdminOrders.module.css';
 import OrderCard from './OrderCard';
 
-const AdminOrders = () => {
+const AdminOrders = ({
+	orders,
+	setOrders,
+}: {
+	orders: any[] | null;
+	setOrders: React.Dispatch<React.SetStateAction<any[] | null>>;
+}) => {
 	const { data: session, status } = useSession();
-	const [orders, setOrders] = useState<any[] | null>(null);
-
 	const handleComplete = async (pin: string) => {
 		await signOut({ redirect: false });
 		await signIn('credentials', { redirect: false, pin });
 	};
-	useEffect(() => {
-		if (session?.user.admin) {
-			fetch('/api/admin/getallorders')
-				.then((response) => response.json())
-				.then((data) => setOrders(data));
-		}
-	}, [session]);
 
 	if (status === 'loading' || !status) return <Loading />;
 	if (status === 'unauthenticated' || !session?.user.admin)
@@ -37,12 +34,13 @@ const AdminOrders = () => {
 			) : (
 				<div className={styles.ordersContainer}>
 					<div className={styles.orders}>
-						{orders.map((order, index) => (
+						{orders?.map((order, index) => (
 							<OrderCard
 								key={index}
 								order={order}
 								setOrders={setOrders}
 								index={index}
+								admin={session?.user.admin}
 							/>
 						))}
 					</div>

@@ -1,11 +1,12 @@
 import Head from 'next/head';
 import styles from '../../styles/HomeAdmin.module.css';
 import { useSession } from 'next-auth/react';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Loading from '../../components/Loading';
 import { Button, ButtonGroup } from '@mui/material';
 import AdminOrders from '../../components/AdminOrders';
+import AdminUsers from '../../components/AdminUsers';
 
 export enum PageOption {
 	orders = 'orders',
@@ -16,6 +17,19 @@ export enum PageOption {
 const Home = () => {
 	const { data: session, status } = useSession();
 	const [pageOption, setPageOption] = useState<PageOption>(PageOption.orders);
+	const [usersData, setUsersData] = useState<any[] | null>(null);
+	const [orders, setOrders] = useState<any[] | null>(null);
+
+	useEffect(() => {
+		if (session?.user.admin) {
+			fetch('/api/admin/getalldata')
+				.then((response) => response.json())
+				.then((data) => setUsersData(data))
+				.finally(() => {
+					setOrders(usersData?.map((el) => el.orders).flat(1));
+				});
+		}
+	}, [session, usersData]);
 
 	if (status === 'loading') return <Loading />;
 
@@ -75,10 +89,17 @@ const Home = () => {
 								Users
 							</Button>
 						</ButtonGroup>
-						{pageOption === PageOption.orders ? (
-							<AdminOrders />
-						) : (
-							<></>
+						{pageOption === PageOption.orders && (
+							<AdminOrders
+								orders={orders}
+								setOrders={setOrders}
+							/>
+						)}
+						{pageOption === PageOption.users && (
+							<AdminUsers
+								data={usersData}
+								setOrders={setOrders}
+							/>
 						)}
 					</main>
 

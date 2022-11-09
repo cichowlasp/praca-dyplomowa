@@ -8,12 +8,12 @@ datasource db {
 }
 
 model Order {
-  id           String   @id @default(cuid())
+  id           String  @id @default(cuid())
   respond      String?
-  edited       Boolean  @default(false)
-  reviewed     Boolean?
+  edited       Boolean @default(false)
+  reviewed     Boolean @default(false)
   authorId     String
-  user         User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  user         User    @relation(fields: [authorId], references: [id], onDelete: Cascade)
   informations Info[]
 }
 
@@ -26,18 +26,15 @@ model Info {
 }
 
 model User {
-  id                 String    @id @default(cuid())
-  name               String?
-  surname            String?
-  email              String    @unique
-  pin                String?
-  password           String?
-  accessToken        String?
-  accessTokenExpires DateTime?
-  refreshToken       String?
-  admin              Boolean   @default(false)
-  company            String?
-  orders             Order[]
+  id       String  @id @default(cuid())
+  name     String?
+  surname  String?
+  email    String  @unique
+  pin      String?
+  password String?
+  admin    Boolean @default(false)
+  company  String?
+  orders   Order[]
 }
 
 model Form {

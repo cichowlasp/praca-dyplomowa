@@ -65,6 +65,7 @@ const MyOrders = () => {
 							order={order}
 							setOrders={setOrders}
 							index={index}
+							admin={session.user.admin}
 						/>
 					))}
 				</div>

@@ -109,7 +109,7 @@ const Edit = ({ order, setEditView, updateData, reorder }: Props) => {
 						variant='contained'
 						style={{ width: 'fit-content', margin: '0 auto' }}>
 						{loading ? (
-							<CircularProgress />
+							<CircularProgress style={{ color: 'white' }} />
 						) : reorder ? (
 							'Place a new order'
 						) : (

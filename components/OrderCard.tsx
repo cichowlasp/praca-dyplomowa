@@ -15,7 +15,17 @@ import styles from '../styles/OrderCard.module.css';
 import Loading from './Loading';
 import Edit from './Edit';
 
-const OrderCard = ({ order, setOrders, index }) => {
+const OrderCard = ({
+	order,
+	setOrders,
+	index,
+	admin,
+}: {
+	order: any;
+	setOrders: React.Dispatch<React.SetStateAction<any[] | null>>;
+	index: number;
+	admin: boolean;
+}) => {
 	const { palette } = useTheme();
 	const [loading, setLoading] = useState<boolean>(false);
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -104,33 +114,38 @@ const OrderCard = ({ order, setOrders, index }) => {
 							{`${order.edited}`}
 						</span>
 					</div>
-					{order.informations.map((el, index) => {
-						return (
-							<div key={index}>
-								<span
-									style={{
-										fontWeight: 'bold',
-										textAlign: 'left',
-									}}>
-									{el.name}:
-								</span>
-								<span
-									style={{
-										paddingLeft: '3px',
-									}}>
-									{el.fill}
-								</span>
-							</div>
-						);
-					})}
+					{order.informations.map(
+						(el: { name: string; fill: string }, index: number) => {
+							return (
+								<div key={index}>
+									<span
+										style={{
+											fontWeight: 'bold',
+											textAlign: 'left',
+										}}>
+										{el.name}:
+									</span>
+									<span
+										style={{
+											paddingLeft: '3px',
+										}}>
+										{el.fill}
+									</span>
+								</div>
+							);
+						}
+					)}
 				</div>
-				<div onClick={handleClick} className={styles.moreicon}>
-					<svg
-						xmlns='http://www.w3.org/2000/svg'
-						viewBox='0 0 128 512'>
-						<path d='M64 360c30.9 0 56 25.1 56 56s-25.1 56-56 56s-56-25.1-56-56s25.1-56 56-56zm0-160c30.9 0 56 25.1 56 56s-25.1 56-56 56s-56-25.1-56-56s25.1-56 56-56zM120 96c0 30.9-25.1 56-56 56S8 126.9 8 96S33.1 40 64 40s56 25.1 56 56z' />
-					</svg>
-				</div>
+				{admin == false && (
+					<div onClick={handleClick} className={styles.moreicon}>
+						<svg
+							xmlns='http://www.w3.org/2000/svg'
+							viewBox='0 0 128 512'>
+							<path d='M64 360c30.9 0 56 25.1 56 56s-25.1 56-56 56s-56-25.1-56-56s25.1-56 56-56zm0-160c30.9 0 56 25.1 56 56s-25.1 56-56 56s-56-25.1-56-56s25.1-56 56-56zM120 96c0 30.9-25.1 56-56 56S8 126.9 8 96S33.1 40 64 40s56 25.1 56 56z' />
+						</svg>
+					</div>
+				)}
+
 				<StyledMenu
 					id='basic-menu'
 					anchorEl={anchorEl}
@@ -180,15 +195,13 @@ const OrderCard = ({ order, setOrders, index }) => {
 					)}
 				</StyledMenu>
 			</div>
-			{editView ? (
+			{editView && (
 				<Edit
 					order={order}
 					setEditView={setEditView}
 					updateData={updateData}
 					reorder={reorderView}
 				/>
-			) : (
-				<></>
 			)}
 		</>
 	);
