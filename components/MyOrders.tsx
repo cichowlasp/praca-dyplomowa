@@ -70,12 +70,6 @@ const MyOrders = () => {
 					))}
 				</div>
 			)}
-
-			<Button
-				variant='outlined'
-				onClick={() => signOut({ redirect: false })}>
-				SignOut
-			</Button>
 		</div>
 	);
 };

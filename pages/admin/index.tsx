@@ -104,7 +104,7 @@ const Home = () => {
 					<h1>This is admin page please SIGNIN to access</h1>
 				</main>
 				<footer className={styles.footer}>
-					Politechnika Wrocławska
+					<div>Politechnika Wrocławska</div>
 				</footer>
 			</div>
 		</>

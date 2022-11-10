@@ -24,6 +24,7 @@ import Loading from './Loading';
 import Edit from './Edit';
 import SendIcon from '@mui/icons-material/Send';
 import { now } from 'next-auth/client/_utils';
+import { userAgent } from 'next/server';
 
 export enum Reviewed {
 	approved = 'APPROVED',
@@ -53,9 +54,13 @@ const OrderCard = ({
 	const open = Boolean(anchorEl);
 	const router = useRouter();
 	const { data: session } = useSession();
+	const user = session?.user?.name
+		? session.user.name
+		: session?.user.company;
 
 	useEffect(() => {
 		setMessages(order.messages);
+		console.log(messages);
 	}, [order.messages, setMessages]);
 
 	const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -214,51 +219,71 @@ const OrderCard = ({
 						style={{
 							visibility: `${expanded ? 'visible' : 'hidden'}`,
 						}}>
-						<div className={styles.chat}>
+						<div
+							style={{
+								display:
+									messages.length === 0 ? 'none' : 'flex',
+							}}
+							className={styles.chat}>
 							{messages?.map((el, index) => (
-								<div
-									key={index}
-									style={{
-										marginLeft:
-											session?.user?.name === el.name ||
-											session?.user?.company === el.name
-												? 'auto'
-												: '',
-										marginRight:
-											session?.user?.name === el.name ||
-											session?.user?.company === el.name
-												? ''
-												: 'auto',
-									}}
-									className={styles.container}>
-									<div className={styles.date}>{el.date}</div>
+								<>
 									<div
+										key={index}
 										style={{
-											textAlign:
+											marginLeft:
 												session?.user?.name ===
 													el.name ||
 												session?.user?.company ===
 													el.name
-													? 'right'
-													: 'left',
-										}}
-										className={styles.name}>
-										{el.name}
-									</div>
-									<div
-										style={{
-											textAlign:
+													? 'auto'
+													: '',
+											marginRight:
 												session?.user?.name ===
 													el.name ||
 												session?.user?.company ===
 													el.name
-													? 'right'
-													: 'left',
+													? ''
+													: 'auto',
 										}}
-										className={styles.text}>
-										{el.message}
+										className={styles.container}>
+										<div className={styles.date}>
+											{new Date(el.date).toLocaleString(
+												'en-US',
+												{
+													dateStyle: 'short',
+													hour12: false,
+													timeStyle: 'short',
+												}
+											)}
+										</div>
+										<div
+											style={{
+												textAlign:
+													session?.user?.name ===
+														el.name ||
+													session?.user?.company ===
+														el.name
+														? 'right'
+														: 'left',
+											}}
+											className={styles.name}>
+											{el.name}
+										</div>
+										<div
+											style={{
+												textAlign:
+													session?.user?.name ===
+														el.name ||
+													session?.user?.company ===
+														el.name
+														? 'right'
+														: 'left',
+											}}
+											className={styles.text}>
+											{el.message}
+										</div>
 									</div>
-								</div>
+								</>
 							))}
 						</div>
 						<form onSubmit={(event) => handleSubmit(event, order)}>
@@ -290,6 +315,15 @@ const OrderCard = ({
 						</form>
 					</div>
 				</div>
+				{messages.length !== 0 ? (
+					messages.at(-1).name !== user ? (
+						<div className={styles.dot} />
+					) : (
+						<></>
+					)
+				) : (
+					<></>
+				)}
 
 				<div
 					className={styles.expand}

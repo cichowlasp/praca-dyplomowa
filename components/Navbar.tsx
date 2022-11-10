@@ -10,7 +10,17 @@ const Navbar = () => {
 	const { data: session, status } = useSession();
 	const router = useRouter();
 	if (status === 'loading') return <Loading />;
-	if (router.pathname !== '/admin') return <></>;
+	if (router.pathname !== '/admin')
+		return session ? (
+			<Button
+				variant='outlined'
+				style={{ position: 'absolute', right: '10px', top: '10px' }}
+				onClick={() => signOut({ redirect: false })}>
+				SignOut
+			</Button>
+		) : (
+			<></>
+		);
 	return (
 		<nav className={styles.nav}>
 			{status === 'unauthenticated' ? (
