@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
 	useTheme,
 	Menu,
@@ -57,7 +57,7 @@ const OrderCard = ({
 	const user = session?.user?.name
 		? session.user.name
 		: session?.user.company;
-
+	const messageField = useRef(null);
 	useEffect(() => {
 		setMessages(order.messages);
 		console.log(messages);
@@ -71,6 +71,7 @@ const OrderCard = ({
 		event: React.FormEvent<HTMLFormElement>,
 		{ id }: { id: string }
 	) => {
+		setLoading(true);
 		event.preventDefault();
 		await fetch('/api/user/sendmessage', {
 			method: 'POST',
@@ -94,6 +95,8 @@ const OrderCard = ({
 				]);
 			}
 		});
+		setMessage('');
+		setLoading(false);
 	};
 
 	const updateData = async () => {
@@ -288,6 +291,7 @@ const OrderCard = ({
 						</div>
 						<form onSubmit={(event) => handleSubmit(event, order)}>
 							<TextField
+								ref={messageField}
 								placeholder='Message'
 								size='small'
 								multiline={true}
@@ -295,13 +299,15 @@ const OrderCard = ({
 								style={{
 									backgroundColor: 'white',
 								}}
+								value={message}
 								onChange={(event) =>
-									setMessage(event.target.value.trim())
+									setMessage(event.target.value)
 								}
 							/>
 							<Button
 								variant='contained'
 								size='small'
+								disabled={loading}
 								style={{
 									maxWidth: '40px',
 									maxHeight: '40px',
@@ -422,12 +428,14 @@ const OrderCard = ({
 								<MenuItem
 									style={{ maxHeight: '2rem' }}
 									onClick={async () => {
+										setLoading(true);
 										await updateOrder({
 											data: {
 												reviewed: Reviewed.approved,
 											},
 											orderId: order.id,
 										});
+										setLoading(false);
 										router.reload();
 										handleClose();
 									}}>
@@ -437,12 +445,14 @@ const OrderCard = ({
 								<MenuItem
 									style={{ maxHeight: '2rem' }}
 									onClick={async () => {
+										setLoading(true);
 										await updateOrder({
 											data: {
 												reviewed: Reviewed.decline,
 											},
 											orderId: order.id,
 										});
+										setLoading(false);
 										router.reload();
 										handleClose();
 									}}>
