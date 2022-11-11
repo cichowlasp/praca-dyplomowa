@@ -1,5 +1,5 @@
 import styles from '../styles/Home.module.css';
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import { ButtonGroup, Button } from '@mui/material';
@@ -13,13 +13,45 @@ export enum PageOption {
 
 const Home = () => {
 	const router = useRouter();
-	const { status } = useSession();
+	const { data: session, status } = useSession();
 	const [pageOption, setPageOption] = useState<PageOption>(
 		PageOption.newOrder
 	);
 
 	return (
 		<>
+			{session?.user.pin ? (
+				<Button
+					variant='outlined'
+					onClick={async () =>
+						await signOut({
+							redirect: false,
+						})
+					}
+					style={{
+						position: 'absolute',
+						top: '10px',
+						right: '10px',
+					}}>
+					SignOut
+				</Button>
+			) : (
+				<div
+					style={{
+						position: 'absolute',
+						top: '10px',
+						right: '10px',
+						fontWeight: 'bold',
+					}}>
+					Have a pin?
+					<Button
+						style={{ marginLeft: '10px' }}
+						variant='contained'
+						onClick={() => setPageOption(PageOption.myOrders)}>
+						SignIn
+					</Button>
+				</div>
+			)}
 			<div className={styles.container}>
 				<main className={styles.main}>
 					<ButtonGroup size='large' aria-label='large button group'>

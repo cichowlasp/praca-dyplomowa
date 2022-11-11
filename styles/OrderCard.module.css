@@ -115,3 +115,10 @@
 
 	visibility: visible;
 }
+
+.orderTitle {
+	font-size: 0.8rem;
+	font-weight: bold;
+	text-transform: uppercase;
+	text-align: center;
+}

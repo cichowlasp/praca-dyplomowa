@@ -9,6 +9,13 @@ import OrderCard from './OrderCard';
 const MyOrders = () => {
 	const { data: session, status } = useSession();
 	const [orders, setOrders] = useState<any[] | null>(null);
+	const [filter, setFilter] = useState<{
+		search: (o: any) => boolean;
+		option: (o: any) => boolean;
+	}>({
+		search: () => true,
+		option: () => true,
+	});
 
 	const handleComplete = async (pin: string) => {
 		await signOut({ redirect: false });
@@ -18,7 +25,9 @@ const MyOrders = () => {
 		if (session?.user.pin) {
 			fetch('/api/user/getorders')
 				.then((response) => response.json())
-				.then((data) => setOrders(data));
+				.then((data) =>
+					setOrders(data.filter(filter.search).filter(filter.option))
+				);
 		}
 	}, [session]);
 
@@ -52,7 +61,7 @@ const MyOrders = () => {
 	return (
 		<div className={styles.ordersContainer}>
 			<h1>MyOrders</h1>
-			<h2 style={{ marginTop: 0 }}>
+			<h2 style={{ marginTop: 0, marginBottom: 0 }}>
 				Hi {session.user.company} your pin is: {session.user.pin}
 			</h2>
 			{orders === null ? (
@@ -65,7 +74,7 @@ const MyOrders = () => {
 							order={order}
 							setOrders={setOrders}
 							index={index}
-							admin={session.user.admin}
+							admin={session?.user.admin}
 						/>
 					))}
 				</div>

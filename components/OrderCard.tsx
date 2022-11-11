@@ -24,7 +24,7 @@ import Loading from './Loading';
 import Edit from './Edit';
 import SendIcon from '@mui/icons-material/Send';
 import { now } from 'next-auth/client/_utils';
-import { userAgent } from 'next/server';
+import moment, { Moment } from 'moment';
 
 export enum Reviewed {
 	approved = 'APPROVED',
@@ -47,10 +47,14 @@ const OrderCard = ({
 	const [loading, setLoading] = useState<boolean>(false);
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const [editView, setEditView] = useState<boolean>(false);
+	const [date, setDate] = useState<boolean>(false);
 	const [reorderView, setReorderView] = useState<boolean>(false);
 	const [expanded, setExpanded] = useState<boolean>(false);
 	const [message, setMessage] = useState<string>('');
 	const [messages, setMessages] = useState<any[]>([]);
+	const [realizationDate, setRealizationDate] = useState<Moment | null>(
+		moment()
+	);
 	const open = Boolean(anchorEl);
 	const router = useRouter();
 	const { data: session } = useSession();
@@ -106,7 +110,10 @@ const OrderCard = ({
 	};
 
 	const updateOrder = async (data: {
-		data: { reviewed: Reviewed };
+		data: {
+			reviewed: Reviewed;
+			realizationDate?: Moment | null;
+		};
 		orderId: string;
 	}) => {
 		await fetch('/api/admin/orderupdate', {
@@ -180,7 +187,24 @@ const OrderCard = ({
 					style={{
 						width: '20rem',
 					}}>
-					{order.id}
+					{order.reviewed === 'APPROVED' && (
+						<div className={styles.orderTitle}>
+							Approved, realization date:
+							<div>
+								{new Date(
+									order.realizationDate
+								).toLocaleDateString('en-GB')}
+							</div>
+						</div>
+					)}
+					{order.reviewed === 'NOTREVIEWED' && (
+						<div className={styles.orderTitle}>Awaiting review</div>
+					)}
+					{order.reviewed === 'DECLINE' && (
+						<div className={styles.orderTitle}>
+							Not approved {':('}"
+						</div>
+					)}
 					<div>
 						<span
 							style={{
@@ -429,15 +453,10 @@ const OrderCard = ({
 									style={{ maxHeight: '2rem' }}
 									onClick={async () => {
 										setLoading(true);
-										await updateOrder({
-											data: {
-												reviewed: Reviewed.approved,
-											},
-											orderId: order.id,
-										});
+										setDate(true);
 										setLoading(false);
-										router.reload();
 										handleClose();
+										setEditView(true);
 									}}>
 									<CheckIcon fontSize='large' />
 									Approve
@@ -479,6 +498,10 @@ const OrderCard = ({
 					setEditView={setEditView}
 					updateData={updateData}
 					reorder={reorderView}
+					setRealizationDate={setRealizationDate}
+					realizationDate={realizationDate}
+					date={date}
+					updateOrder={updateOrder}
 				/>
 			)}
 		</>

@@ -13,6 +13,8 @@ import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 
 const clientSideEmotionCache = createEmotionCache();
 const lightTheme = createTheme(lightThemeOptions);
@@ -38,13 +40,15 @@ const MyApp: React.FC<MyAppProps> = ({
 				/>
 				<link rel='icon' href='/favicon.ico' />
 			</Head>
-			<ThemeProvider theme={lightTheme}>
-				<CssBaseline />
-				<SessionProvider Session={session}>
-					<Nav />
-					<Component {...pageProps} />
-				</SessionProvider>
-			</ThemeProvider>
+			<LocalizationProvider dateAdapter={AdapterMoment}>
+				<ThemeProvider theme={lightTheme}>
+					<CssBaseline />
+					<SessionProvider session={session}>
+						<Nav />
+						<Component {...pageProps} />
+					</SessionProvider>
+				</ThemeProvider>
+			</LocalizationProvider>
 		</CacheProvider>
 	);
 };
