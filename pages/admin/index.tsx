@@ -40,7 +40,7 @@ const Home = () => {
 						/>
 						<link rel='icon' href='/favicon.ico' />
 					</Head>
-
+					<div style={{ height: '20px' }} />
 					<main className={styles.main}>
 						<ButtonGroup
 							size='large'

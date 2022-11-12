@@ -39,7 +39,7 @@ const OrderCard = ({
 	admin,
 }: {
 	order: any;
-	setOrders: React.Dispatch<React.SetStateAction<any[] | null>>;
+	setOrders: React.Dispatch<React.SetStateAction<any[]>>;
 	index: number;
 	admin: boolean;
 }) => {
@@ -64,7 +64,6 @@ const OrderCard = ({
 	const messageField = useRef(null);
 	useEffect(() => {
 		setMessages(order.messages);
-		console.log(messages);
 	}, [order.messages, setMessages]);
 
 	const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -169,7 +168,7 @@ const OrderCard = ({
 	}));
 
 	return (
-		<>
+		<div key={index}>
 			<div
 				className={styles.card}
 				style={{
@@ -202,7 +201,7 @@ const OrderCard = ({
 					)}
 					{order.reviewed === 'DECLINE' && (
 						<div className={styles.orderTitle}>
-							Not approved {':('}"
+							Not approved {':('}
 						</div>
 					)}
 					<div>
@@ -504,7 +503,7 @@ const OrderCard = ({
 					updateOrder={updateOrder}
 				/>
 			)}
-		</>
+		</div>
 	);
 };
 

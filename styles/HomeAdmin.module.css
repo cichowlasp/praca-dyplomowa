@@ -1,11 +1,12 @@
 .container {
 	height: calc(100% - 99px);
 	width: 100%;
+	box-sizing: border-box;
 }
 
 .main {
-	height: calc(100%);
-	padding-top: 20px;
+	box-sizing: border-box;
+	height: calc(100% - 20px);
 	display: flex;
 	flex-direction: column;
 	align-items: center;
