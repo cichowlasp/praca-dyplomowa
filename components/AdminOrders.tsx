@@ -118,7 +118,7 @@ const AdminOrders = ({}: {}) => {
 				</span>
 			</div>
 			<div className={styles.ordersContainer}>
-				{orders === null ? (
+				{orders.length === 0 ? (
 					<Loading />
 				) : (
 					<div className={styles.orders}>

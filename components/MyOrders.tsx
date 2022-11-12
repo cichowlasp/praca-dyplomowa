@@ -151,7 +151,7 @@ const MyOrders = () => {
 					</Select>
 				</span>
 			</div>
-			{orders === null ? (
+			{orders.length === 0 ? (
 				<Loading />
 			) : (
 				<div className={styles.orders}>
