@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import React, { useState } from 'react';
 import { Paper, TextField, Button, CircularProgress } from '@mui/material';
 import styles from '../styles/Edit.module.css';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -23,6 +22,7 @@ type Props = {
 		};
 		orderId: string;
 	}) => Promise<void>;
+	setOrders: any;
 };
 
 const Edit = ({
@@ -34,11 +34,11 @@ const Edit = ({
 	date,
 	realizationDate,
 	updateOrder,
+	setOrders,
 }: Props) => {
 	const [editedInfo, setEditedInfo] = useState(order.informations);
 	const [loading, setLoading] = useState<boolean>(false);
 	const [errorMessage, setError] = useState<string>('');
-	const router = useRouter();
 
 	const handleSubmit = async (event: React.SyntheticEvent) => {
 		event.preventDefault();
@@ -128,7 +128,13 @@ const Edit = ({
 								orderId: order.id,
 							});
 
-							router.reload();
+							fetch('/api/admin/getalldata')
+								.then((response) => response.json())
+								.then((data) =>
+									setOrders(
+										data.map((el: any) => el.orders).flat(1)
+									)
+								);
 						}}
 						variant='contained'>
 						Set date

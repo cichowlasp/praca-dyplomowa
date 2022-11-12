@@ -471,7 +471,18 @@ const OrderCard = ({
 											orderId: order.id,
 										});
 										setLoading(false);
-										router.reload();
+										fetch('/api/admin/getalldata')
+											.then((response) => response.json())
+											.then((data) =>
+												setOrders(
+													data
+														.map(
+															(el: any) =>
+																el.orders
+														)
+														.flat(1)
+												)
+											);
 										handleClose();
 									}}>
 									<CloseIcon fontSize='large' />
@@ -501,6 +512,7 @@ const OrderCard = ({
 					realizationDate={realizationDate}
 					date={date}
 					updateOrder={updateOrder}
+					setOrders={setOrders}
 				/>
 			)}
 		</div>
