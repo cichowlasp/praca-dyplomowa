@@ -3,9 +3,9 @@ import UserCard from './UserCard';
 import styles from '../styles/AdminUsers.module.css';
 import { TextField } from '@mui/material';
 
-type Props = { data: any[] | null };
+type Props = { data: any[] | null; setUsersData: any };
 
-const AdminUsers = ({ data }: Props) => {
+const AdminUsers = ({ data, setUsersData }: Props) => {
 	const [searchInputValue, setSearchInputValue] = useState('');
 	const defaultFilters = {
 		search: () => true,
@@ -22,7 +22,7 @@ const AdminUsers = ({ data }: Props) => {
 					gridTemplateColumns: '[first] 1fr',
 					gridGap: '5px',
 					marginTop: '10px',
-					marginBottom: '5px',
+					marginBottom: '20px',
 					width: '20rem',
 				}}>
 				<span>
@@ -57,7 +57,12 @@ const AdminUsers = ({ data }: Props) => {
 			</div>
 			<div className={styles.orders}>
 				{data?.filter(filters.search).map((el, index) => (
-					<UserCard key={index} user={el} index={index} />
+					<UserCard
+						setUsersData={setUsersData}
+						key={index}
+						user={el}
+						index={index}
+					/>
 				))}
 			</div>
 		</>

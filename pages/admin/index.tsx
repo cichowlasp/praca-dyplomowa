@@ -86,7 +86,10 @@ const Home = () => {
 						</ButtonGroup>
 						{pageOption === PageOption.orders && <AdminOrders />}
 						{pageOption === PageOption.users && (
-							<AdminUsers data={usersData} />
+							<AdminUsers
+								data={usersData}
+								setUsersData={setUsersData}
+							/>
 						)}
 					</main>
 
