@@ -54,16 +54,19 @@ model User {
 }
 
 model Form {
-  id      String   @id @default("main")
-  active  Boolean  @default(false)
-  inputs  Input[]
-  selects Select[]
+  id         String     @id @default("main")
+  active     Boolean    @default(false)
+  inputs     Input[]
+  selects    Select[]
+  checkboxes CheckBox[]
 }
 
 model Input {
   id          String  @id @default(cuid())
   placeholder String?
+  order       Int
   type        String
+  label       String
   required    Boolean
   maxLength   Int?
   minLength   Int?
@@ -73,11 +76,22 @@ model Input {
 
 model Select {
   id          String   @id @default(cuid())
+  order       Int
   placeholder String?
-  required    Boolean
+  label       String?
+  required    Boolean  @default(false)
   formId      String?
   Form        Form?    @relation(fields: [formId], references: [id], onDelete: Cascade)
   options     Option[]
+}
+
+model CheckBox {
+  id       String  @id @default(cuid())
+  order    Int
+  label    String
+  required Boolean
+  Form     Form?   @relation(fields: [formId], references: [id])
+  formId   String?
 }
 
 model Option {
