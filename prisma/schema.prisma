@@ -64,9 +64,9 @@ model Form {
 model Input {
   id          String  @id @default(cuid())
   placeholder String?
-  order       Int
+  order       Int     @default(0)
   type        String
-  label       String
+  label       String?
   required    Boolean
   maxLength   Int?
   minLength   Int?
@@ -76,7 +76,7 @@ model Input {
 
 model Select {
   id          String   @id @default(cuid())
-  order       Int
+  order       Int      @default(0)
   placeholder String?
   label       String?
   required    Boolean  @default(false)
@@ -87,8 +87,8 @@ model Select {
 
 model CheckBox {
   id       String  @id @default(cuid())
-  order    Int
-  label    String
+  order    Int     @default(0)
+  label    String?
   required Boolean
   Form     Form?   @relation(fields: [formId], references: [id])
   formId   String?

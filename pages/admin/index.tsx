@@ -7,6 +7,7 @@ import Loading from '../../components/Loading';
 import { Button, ButtonGroup } from '@mui/material';
 import AdminOrders from '../../components/AdminOrders';
 import AdminUsers from '../../components/AdminUsers';
+import AdminForms from '../../components/AdminForms';
 
 export enum PageOption {
 	orders = 'orders',
@@ -91,6 +92,7 @@ const Home = () => {
 								setUsersData={setUsersData}
 							/>
 						)}
+						{pageOption === PageOption.form && <AdminForms />}
 					</main>
 
 					<footer className={styles.footer}>

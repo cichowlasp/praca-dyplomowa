@@ -6,29 +6,21 @@ const handler = async (req, res) => {
 	const { user } = await unstable_getServerSession(req, res, authOptions);
 	if (user.id && user.admin === true) {
 		const forms = await prisma.form.findMany({
-			where: {
-				pin: { not: null },
-			},
 			orderBy: { id: 'asc' },
 			include: {
-				orders: {
-					orderBy: { id: 'asc' },
+				inputs: {
+					orderBy: { order: 'asc' },
+				},
+				selects: {
+					orderBy: { order: 'asc' },
 					include: {
-						informations: {
-							orderBy: {
-								name: 'desc',
-							},
-						},
-						messages: {
-							orderBy: {
-								date: 'asc',
-							},
-						},
+						options: true,
 					},
 				},
+				checkboxes: true,
 			},
 		});
-		return res.status(200).json(orders);
+		return res.status(200).json(forms);
 	}
 	return res.status(401).json("You're not authorized");
 };
