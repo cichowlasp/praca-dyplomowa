@@ -24,3 +24,10 @@
 .inputEdit:not(:last-child) {
 	margin-bottom: 15px;
 }
+
+.action {
+	display: flex;
+	flex-direction: row-reverse;
+
+	justify-content: space-between;
+}

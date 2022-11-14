@@ -16,22 +16,28 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import DeleteIcon from '@mui/icons-material/Delete';
 import styles from '../styles/AdminForms.module.css';
 import Loading from './Loading';
+import AddIcon from '@mui/icons-material/Add';
 
 const AdminForms = () => {
 	const { palette } = useTheme();
 	const { data: session, status } = useSession();
 	const [loading, setLoading] = useState(false);
 	const [forms, setForms] = useState<any[]>([]);
-	const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
-		null
-	);
+	const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+	const [addToFormPopUp, setAddToFormPopUp] =
+		useState<HTMLButtonElement | null>(null);
 
 	const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
 		setAnchorEl(event.currentTarget);
 	};
-
 	const handleClose = () => {
 		setAnchorEl(null);
+	};
+	const handleFormClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+		setAddToFormPopUp(event.currentTarget);
+	};
+	const handleFormClose = () => {
+		setAddToFormPopUp(null);
 	};
 
 	const updateForm = async (id: string, index: number) => {
@@ -45,10 +51,12 @@ const AdminForms = () => {
 
 	const open = Boolean(anchorEl);
 	const id = open ? 'simple-popover' : undefined;
+	const openForm = Boolean(addToFormPopUp);
+	const idForm = open ? 'popover-form' : undefined;
 
 	useEffect(() => {
+		setLoading(true);
 		if (session?.user.admin) {
-			setLoading(true);
 			fetch('/api/admin/getforms')
 				.then((response) => response.json())
 				.then((data) => setForms(data));
@@ -56,7 +64,12 @@ const AdminForms = () => {
 		}
 	}, [session?.user.admin, setLoading]);
 
-	if (loading) return <Loading />;
+	if (loading && !session?.user)
+		return (
+			<div>
+				<Loading />
+			</div>
+		);
 	return (
 		<div>
 			{forms.map((el, index) => {
@@ -491,9 +504,14 @@ const AdminForms = () => {
 																				<Button
 																					color='error'
 																					variant='contained'
+																					disabled={
+																						loading
+																					}
 																					onClick={async () => {
 																						let options;
-
+																						setLoading(
+																							true
+																						);
 																						await fetch(
 																							'/api/admin/removeoption',
 																							{
@@ -528,7 +546,9 @@ const AdminForms = () => {
 																											.options;
 																								}
 																							);
-
+																						setLoading(
+																							false
+																						);
 																						setForms(
 																							(
 																								prev
@@ -560,8 +580,14 @@ const AdminForms = () => {
 																	}
 																)}
 																<Button
+																	disabled={
+																		loading
+																	}
 																	variant='contained'
 																	onClick={async () => {
+																		setLoading(
+																			true
+																		);
 																		await fetch(
 																			'/api/admin/createoption',
 																			{
@@ -610,6 +636,9 @@ const AdminForms = () => {
 																					);
 																				}
 																			);
+																		setLoading(
+																			false
+																		);
 
 																		setForms(
 																			(
@@ -835,12 +864,36 @@ const AdminForms = () => {
 									);
 								}
 							)}
-							<Button
-								disabled={loading}
-								variant='contained'
-								onClick={() => updateForm(el.id, index)}>
-								Save Changes
-							</Button>
+							<div className={styles.action}>
+								<Button
+									disabled={loading}
+									variant='contained'
+									onClick={() => updateForm(el.id, index)}>
+									Save Changes
+								</Button>
+								<Button
+									style={{
+										borderRadius: '50%',
+										height: '64px',
+										width: '50px',
+									}}
+									disabled={loading}
+									variant='contained'
+									onClick={handleFormClick}>
+									<AddIcon fontSize='large' />
+								</Button>
+								<Popover
+									id={idForm}
+									open={openForm}
+									anchorEl={addToFormPopUp}
+									onClose={handleFormClose}
+									anchorOrigin={{
+										vertical: -90,
+										horizontal: 19,
+									}}>
+									<div style={{ height: '100px' }}>test</div>
+								</Popover>
+							</div>
 						</AccordionDetails>
 					</Accordion>
 				);

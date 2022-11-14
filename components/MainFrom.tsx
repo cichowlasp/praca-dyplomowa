@@ -54,7 +54,8 @@ const MainFrom = ({ setPageOption }: { setPageOption: any }) => {
 		console.log(formData);
 	};
 
-	const handleClick = async () => {
+	const handleClick = async (event: any) => {
+		event.preventDefault();
 		setError(validForm(formData));
 		if (validForm(formData).length !== 0) {
 			return;
@@ -106,137 +107,163 @@ const MainFrom = ({ setPageOption }: { setPageOption: any }) => {
 
 	if (form === null || loading) return <Loading />;
 	return (
-		<form className={styles.form}>
+		<>
 			<h1>Fill up to take order</h1>
-			{session?.user.pin ? (
-				<></>
-			) : (
-				<>
-					<div className={styles.input}>
-						<div style={{ fontWeight: 'bold', textAlign: 'left' }}>
-							Company
+			<form
+				className={styles.form}
+				onSubmit={(event) => handleClick(event)}>
+				{session?.user.pin ? (
+					<></>
+				) : (
+					<>
+						<div className={styles.input}>
+							<div
+								style={{
+									fontWeight: 'bold',
+									textAlign: 'left',
+								}}>
+								Company
+							</div>
+							<TextField
+								placeholder={'Company'}
+								type={'text'}
+								onChange={(event) => {
+									setUserData((prev) => {
+										return {
+											...prev,
+											company: event.target.value.trim(),
+										};
+									});
+								}}
+							/>
+						</div>
+						<div className={styles.input}>
+							<div
+								style={{
+									fontWeight: 'bold',
+									textAlign: 'left',
+								}}>
+								Email
+							</div>
+							<TextField
+								placeholder={'Email'}
+								type={'text'}
+								onChange={(event) => {
+									setUserData((prev) => {
+										return {
+											...prev,
+											email: event.target.value.trim(),
+										};
+									});
+								}}
+							/>
+						</div>
+					</>
+				)}
+				{form.inputs.map((el, index: number) => (
+					<div
+						className={styles.input}
+						style={{
+							display: 'flex',
+							alignItems: 'center',
+							justifyContent: 'center',
+						}}
+						key={el.id}>
+						<div
+							className={styles.label}
+							style={{ fontWeight: 'bold', textAlign: 'left' }}>
+							{el.label}
 						</div>
 						<TextField
-							placeholder={'Company'}
-							type={'text'}
-							onChange={(event) => {
-								setUserData((prev) => {
-									return {
-										...prev,
-										company: event.target.value.trim(),
-									};
-								});
-							}}
+							placeholder={el.placeholder}
+							fullWidth={true}
+							required={el.required}
+							type={el.type}
+							onChange={(event) =>
+								handleInputChange(event, index, el.placeholder)
+							}
 						/>
 					</div>
-					<div className={styles.input}>
-						<div style={{ fontWeight: 'bold', textAlign: 'left' }}>
-							Email
+				))}
+				{form.selects.map((el, index: number) => (
+					<div
+						className={styles.input}
+						style={{
+							display: 'flex',
+							alignItems: 'center',
+							justifyContent: 'center',
+						}}
+						key={el.id}>
+						<div
+							className={styles.label}
+							style={{ fontWeight: 'bold', textAlign: 'left' }}>
+							{el.label}
 						</div>
-						<TextField
-							placeholder={'Email'}
-							type={'text'}
+						<Select
+							placeholder={el.placeholder}
+							fullWidth={true}
+							required={el.required}
+							size={'small'}
+							type={el.type}
+							variant='outlined'
+							defaultValue={
+								!el.required ? '' : el.options[0].value
+							}
+							value={formData[form.inputs.length + index]?.fill}
 							onChange={(event) => {
-								setUserData((prev) => {
-									return {
-										...prev,
-										email: event.target.value.trim(),
-									};
-								});
-							}}
+								handleSelectChange(event, index, el.label);
+							}}>
+							{!el.required && (
+								<MenuItem value={''}>None</MenuItem>
+							)}
+							{el.options.map((option: any) => {
+								return (
+									<MenuItem
+										key={option.id}
+										value={option.value}>
+										{option.value}
+									</MenuItem>
+								);
+							})}
+						</Select>
+					</div>
+				))}
+				{form.checkboxes.map((el, index: number) => (
+					<div
+						className={styles.input}
+						style={{
+							display: 'flex',
+							alignItems: 'center',
+							justifyContent: 'center',
+						}}
+						key={el.id}>
+						<div
+							className={styles.label}
+							style={{ fontWeight: 'bold', textAlign: 'left' }}>
+							{el.label}
+						</div>
+						<Switch
+							checked={
+								formData[
+									form.inputs.length +
+										form.selects.length +
+										index
+								]?.fill
+							}
+							onChange={(event) =>
+								handleCheckboxChange(event, index, el.label)
+							}
 						/>
 					</div>
-				</>
-			)}
-			{form.inputs.map((el, index: number) => (
-				<div
-					className={styles.input}
-					style={{
-						display: 'flex',
-						alignItems: 'center',
-						justifyContent: 'center',
-					}}
-					key={el.id}>
-					<div style={{ fontWeight: 'bold', textAlign: 'left' }}>
-						{el.label}
-					</div>
-					<TextField
-						placeholder={el.placeholder}
-						fullWidth={true}
-						required={el.required}
-						type={el.type}
-						onChange={(event) =>
-							handleInputChange(event, index, el.placeholder)
-						}
-					/>
+				))}
+				<div style={{ color: palette.warning.main, fontWeight: '600' }}>
+					{error}
 				</div>
-			))}
-			{form.selects.map((el, index: number) => (
-				<div
-					className={styles.input}
-					style={{
-						display: 'flex',
-						alignItems: 'center',
-						justifyContent: 'center',
-					}}
-					key={el.id}>
-					<div style={{ fontWeight: 'bold', textAlign: 'left' }}>
-						{el.label}
-					</div>
-					<Select
-						placeholder={el.placeholder}
-						fullWidth={true}
-						required={el.required}
-						size={'small'}
-						type={el.type}
-						variant='outlined'
-						defaultValue={!el.required ? '' : el.options[0].value}
-						value={formData[form.inputs.length + index]?.fill}
-						onChange={(event) => {
-							handleSelectChange(event, index, el.label);
-						}}>
-						{!el.required && <MenuItem value={''}>None</MenuItem>}
-						{el.options.map((option: any) => {
-							return (
-								<MenuItem key={option.id} value={option.value}>
-									{option.value}
-								</MenuItem>
-							);
-						})}
-					</Select>
-				</div>
-			))}
-			{form.checkboxes.map((el, index: number) => (
-				<div
-					className={styles.input}
-					style={{
-						display: 'flex',
-						alignItems: 'center',
-						justifyContent: 'center',
-					}}
-					key={el.id}>
-					<div style={{ fontWeight: 'bold', textAlign: 'left' }}>
-						{el.label}
-					</div>
-					<Switch
-						checked={
-							formData[
-								form.inputs.length + form.selects.length + index
-							]?.fill
-						}
-						onChange={(event) =>
-							handleCheckboxChange(event, index, el.label)
-						}
-					/>
-				</div>
-			))}
-			<div style={{ color: palette.warning.main, fontWeight: '600' }}>
-				{error}
-			</div>
-			<Button type='submit' variant='contained' onClick={handleClick}>
-				Submit Order
-			</Button>
-		</form>
+				<Button type='submit' variant='contained'>
+					Submit Order
+				</Button>
+			</form>
+		</>
 	);
 };
 

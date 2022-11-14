@@ -6,6 +6,12 @@ import { validForm } from '../../../utils/validationSchema';
 const handler = async (req, res) => {
 	const { body } = req;
 	const data = JSON.parse(body);
+	const fixedData = data.map((el) => {
+		if (typeof el.fill === 'boolean')
+			return { ...el, fill: JSON.stringify(el.fill) };
+		return el;
+	});
+	console.log(fixedData);
 	if (validForm(data).length !== 0)
 		return res.status(401).json('Data is not valid');
 	const { user } = await unstable_getServerSession(req, res, authOptions);
@@ -15,7 +21,7 @@ const handler = async (req, res) => {
 				authorId: user.id,
 				informations: {
 					createMany: {
-						data,
+						data: fixedData,
 					},
 				},
 			},

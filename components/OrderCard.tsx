@@ -183,6 +183,8 @@ const OrderCard = ({
 				<div
 					style={{
 						width: '20rem',
+						height: '100%',
+						overflow: 'hidden',
 					}}>
 					{order.reviewed === 'APPROVED' && (
 						<div className={styles.orderTitle}>
@@ -202,42 +204,49 @@ const OrderCard = ({
 							Not approved {':('}
 						</div>
 					)}
-					<div>
-						<span
-							style={{
-								fontWeight: 'bold',
-								textAlign: 'left',
-							}}>
-							Edited:
-						</span>
-						<span
-							style={{
-								paddingLeft: '3px',
-							}}>
-							{`${order.edited}`}
-						</span>
+
+					<div style={{ maxHeight: '100%', overflow: 'hidden' }}>
+						<div>
+							<span
+								style={{
+									fontWeight: 'bold',
+									textAlign: 'left',
+								}}>
+								Edited:
+							</span>
+							<span
+								style={{
+									paddingLeft: '3px',
+								}}>
+								{`${order.edited}`}
+							</span>
+						</div>
+						{order.informations.map(
+							(
+								el: { name: string; fill: string },
+								index: number
+							) => {
+								return (
+									<div key={index}>
+										<span
+											style={{
+												fontWeight: 'bold',
+												textAlign: 'left',
+											}}>
+											{el.name}:
+										</span>
+										<span
+											style={{
+												paddingLeft: '3px',
+											}}>
+											{el.fill}
+										</span>
+									</div>
+								);
+							}
+						)}
 					</div>
-					{order.informations.map(
-						(el: { name: string; fill: string }, index: number) => {
-							return (
-								<div key={index}>
-									<span
-										style={{
-											fontWeight: 'bold',
-											textAlign: 'left',
-										}}>
-										{el.name}:
-									</span>
-									<span
-										style={{
-											paddingLeft: '3px',
-										}}>
-										{el.fill}
-									</span>
-								</div>
-							);
-						}
-					)}
+
 					<div
 						className={styles.messages}
 						style={{
