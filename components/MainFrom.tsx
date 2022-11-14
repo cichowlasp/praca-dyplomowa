@@ -1,5 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, TextField, useTheme } from '@mui/material';
+import {
+	Button,
+	MenuItem,
+	Select,
+	Switch,
+	TextField,
+	useTheme,
+} from '@mui/material';
 import Loading from './Loading';
 import styles from '../styles/MainForm.module.css';
 import { signIn, useSession } from 'next-auth/react';
@@ -15,16 +22,36 @@ const MainFrom = ({ setPageOption }: { setPageOption: any }) => {
 		company: string;
 		email: string;
 	}>({ company: '', email: '' });
-	const [form, setForm] = useState<{ inputs: any[] } | null>(null);
+	const [form, setForm] = useState<{
+		form: { inputs: any[]; selects: any[]; checkboxes: any[] };
+	} | null>(null);
 	const [error, setError] = useState<string>('');
 	const [loading, setLoading] = useState<boolean>(false);
 
-	const handleChange = (event: any, index: number, name: string) => {
+	const handleInputChange = (event: any, index: number, name: string) => {
 		setFormData((pre) => {
 			let modifyFormData: any[] = pre;
 			modifyFormData[index] = { name, fill: event.target.value };
 			return modifyFormData;
 		});
+	};
+	const handleSelectChange = (event: any, index: number, name: string) => {
+		setFormData((pre) => {
+			const indexAtArr = form.inputs.length + index;
+			let modifyFormData: any[] = pre;
+			modifyFormData[indexAtArr] = { name, fill: event.target.value };
+			return modifyFormData;
+		});
+	};
+
+	const handleCheckboxChange = (event: any, index: number, name: string) => {
+		setFormData((pre) => {
+			const indexAtArr = form.inputs.length + form.selects.length + index;
+			let modifyFormData: any[] = pre;
+			modifyFormData[indexAtArr] = { name, fill: event.target.checked };
+			return modifyFormData;
+		});
+		console.log(formData);
 	};
 
 	const handleClick = async () => {
@@ -74,17 +101,21 @@ const MainFrom = ({ setPageOption }: { setPageOption: any }) => {
 	useEffect(() => {
 		fetch('api/getform')
 			.then((response) => response.json())
-			.then((data) => setForm(data));
+			.then(({ form }) => setForm(form));
 	}, []);
+
 	if (form === null || loading) return <Loading />;
 	return (
-		<div className={styles.form}>
+		<form className={styles.form}>
 			<h1>Fill up to take order</h1>
 			{session?.user.pin ? (
 				<></>
 			) : (
 				<>
 					<div className={styles.input}>
+						<div style={{ fontWeight: 'bold', textAlign: 'left' }}>
+							Company
+						</div>
 						<TextField
 							placeholder={'Company'}
 							type={'text'}
@@ -99,6 +130,9 @@ const MainFrom = ({ setPageOption }: { setPageOption: any }) => {
 						/>
 					</div>
 					<div className={styles.input}>
+						<div style={{ fontWeight: 'bold', textAlign: 'left' }}>
+							Email
+						</div>
 						<TextField
 							placeholder={'Email'}
 							type={'text'}
@@ -123,11 +157,75 @@ const MainFrom = ({ setPageOption }: { setPageOption: any }) => {
 						justifyContent: 'center',
 					}}
 					key={el.id}>
+					<div style={{ fontWeight: 'bold', textAlign: 'left' }}>
+						{el.label}
+					</div>
 					<TextField
 						placeholder={el.placeholder}
+						fullWidth={true}
+						required={el.required}
 						type={el.type}
 						onChange={(event) =>
-							handleChange(event, index, el.placeholder)
+							handleInputChange(event, index, el.placeholder)
+						}
+					/>
+				</div>
+			))}
+			{form.selects.map((el, index: number) => (
+				<div
+					className={styles.input}
+					style={{
+						display: 'flex',
+						alignItems: 'center',
+						justifyContent: 'center',
+					}}
+					key={el.id}>
+					<div style={{ fontWeight: 'bold', textAlign: 'left' }}>
+						{el.label}
+					</div>
+					<Select
+						placeholder={el.placeholder}
+						fullWidth={true}
+						required={el.required}
+						size={'small'}
+						type={el.type}
+						variant='outlined'
+						defaultValue={!el.required ? '' : el.options[0].value}
+						value={formData[form.inputs.length + index]?.fill}
+						onChange={(event) => {
+							handleSelectChange(event, index, el.label);
+						}}>
+						{!el.required && <MenuItem value={''}>None</MenuItem>}
+						{el.options.map((option: any) => {
+							return (
+								<MenuItem key={option.id} value={option.value}>
+									{option.value}
+								</MenuItem>
+							);
+						})}
+					</Select>
+				</div>
+			))}
+			{form.checkboxes.map((el, index: number) => (
+				<div
+					className={styles.input}
+					style={{
+						display: 'flex',
+						alignItems: 'center',
+						justifyContent: 'center',
+					}}
+					key={el.id}>
+					<div style={{ fontWeight: 'bold', textAlign: 'left' }}>
+						{el.label}
+					</div>
+					<Switch
+						checked={
+							formData[
+								form.inputs.length + form.selects.length + index
+							]?.fill
+						}
+						onChange={(event) =>
+							handleCheckboxChange(event, index, el.label)
 						}
 					/>
 				</div>
@@ -135,10 +233,10 @@ const MainFrom = ({ setPageOption }: { setPageOption: any }) => {
 			<div style={{ color: palette.warning.main, fontWeight: '600' }}>
 				{error}
 			</div>
-			<Button variant='contained' onClick={handleClick}>
+			<Button type='submit' variant='contained' onClick={handleClick}>
 				Submit Order
 			</Button>
-		</div>
+		</form>
 	);
 };
 
