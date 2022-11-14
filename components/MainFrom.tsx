@@ -40,7 +40,6 @@ const MainFrom = ({ setPageOption }: { setPageOption: any }) => {
 			})
 				.then((response) => response.json())
 				.then(async (data) => {
-					console.log(data);
 					await signIn('credentials', {
 						redirect: false,
 						pin: data.pin,

@@ -42,7 +42,6 @@ const MyOrders = () => {
 			const fetchData = async () => await checkIfDataFetched();
 			fetchData();
 		}
-		console.log('test');
 		return () => {
 			abortController.abort();
 		};

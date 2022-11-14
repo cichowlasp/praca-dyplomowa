@@ -7,18 +7,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Reviewed {
-  APPROVED
-  DECLINE
-  NOTREVIEWED
-}
-
 model Order {
   id              String    @id @default(cuid())
   edited          Boolean   @default(false)
+  authorId        String
   reviewed        Reviewed  @default(NOTREVIEWED)
   realizationDate DateTime?
-  authorId        String
   user            User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   informations    Info[]
   messages        Message[]
@@ -29,8 +23,8 @@ model Message {
   date    DateTime @default(now())
   name    String
   message String
-  Order   Order?   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId String?
+  Order   Order?   @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
 model Info {
@@ -54,33 +48,33 @@ model User {
 }
 
 model Form {
-  id         String     @id @default(cuid())
+  id         String     @id @default("main")
   active     Boolean    @default(false)
+  checkboxes CheckBox[]
   inputs     Input[]
   selects    Select[]
-  checkboxes CheckBox[]
 }
 
 model Input {
   id          String  @id @default(cuid())
   placeholder String?
-  order       Int     @default(0)
   type        String
-  label       String?
   required    Boolean
   maxLength   Int?
   minLength   Int?
   formId      String?
+  label       String?
+  order       Int     @default(0)
   Form        Form?   @relation(fields: [formId], references: [id], onDelete: Cascade)
 }
 
 model Select {
   id          String   @id @default(cuid())
-  order       Int      @default(0)
   placeholder String?
-  label       String?
   required    Boolean  @default(false)
   formId      String?
+  label       String?
+  order       Int      @default(0)
   Form        Form?    @relation(fields: [formId], references: [id], onDelete: Cascade)
   options     Option[]
 }
@@ -90,8 +84,8 @@ model CheckBox {
   order    Int     @default(0)
   label    String?
   required Boolean
-  Form     Form?   @relation(fields: [formId], references: [id])
   formId   String?
+  Form     Form?   @relation(fields: [formId], references: [id])
 }
 
 model Option {
@@ -99,4 +93,10 @@ model Option {
   value    String
   selectId String?
   Select   Select? @relation(fields: [selectId], references: [id], onDelete: Cascade)
+}
+
+enum Reviewed {
+  APPROVED
+  DECLINE
+  NOTREVIEWED
 }
