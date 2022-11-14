@@ -56,7 +56,6 @@ const OrderCard = ({
 		moment()
 	);
 	const open = Boolean(anchorEl);
-	const router = useRouter();
 	const { data: session } = useSession();
 	const user = session?.user?.name
 		? session.user.name

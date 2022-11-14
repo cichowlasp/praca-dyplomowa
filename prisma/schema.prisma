@@ -54,7 +54,7 @@ model User {
 }
 
 model Form {
-  id         String     @id @default("main")
+  id         String     @id @default(cuid())
   active     Boolean    @default(false)
   inputs     Input[]
   selects    Select[]
