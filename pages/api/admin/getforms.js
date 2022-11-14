@@ -14,7 +14,9 @@ const handler = async (req, res) => {
 				selects: {
 					orderBy: { order: 'asc' },
 					include: {
-						options: true,
+						options: {
+							orderBy: { id: 'asc' },
+						},
 					},
 				},
 				checkboxes: true,

@@ -34,6 +34,15 @@ const AdminForms = () => {
 		setAnchorEl(null);
 	};
 
+	const updateForm = async (id: string, index: number) => {
+		setLoading(true);
+		await fetch('/api/admin/updateform', {
+			method: 'POST',
+			body: JSON.stringify({ id, data: forms[index] }),
+		});
+		setLoading(false);
+	};
+
 	const open = Boolean(anchorEl);
 	const id = open ? 'simple-popover' : undefined;
 
@@ -434,7 +443,7 @@ const AdminForms = () => {
 																		return (
 																			<div
 																				key={
-																					inp.value
+																					inp.id
 																				}
 																				style={{
 																					padding:
@@ -482,7 +491,44 @@ const AdminForms = () => {
 																				<Button
 																					color='error'
 																					variant='contained'
-																					onClick={() =>
+																					onClick={async () => {
+																						let options;
+
+																						await fetch(
+																							'/api/admin/removeoption',
+																							{
+																								method: 'POST',
+																								body: inp.id,
+																							}
+																						);
+
+																						await fetch(
+																							'/api/admin/getforms'
+																						)
+																							.then(
+																								(
+																									response
+																								) =>
+																									response.json()
+																							)
+																							.then(
+																								(
+																									data
+																								) => {
+																									console.log(
+																										data
+																									);
+																									options =
+																										data[
+																											index
+																										]
+																											.selects[
+																											selectIndex
+																										]
+																											.options;
+																								}
+																							);
+
 																						setForms(
 																							(
 																								prev
@@ -498,20 +544,15 @@ const AdminForms = () => {
 																										index
 																									].selects[
 																										selectIndex
-																									].options.filter(
-																										(
-																											rm: any
-																										) =>
-																											inp.value !=
-																											rm.value
-																									);
+																									].options =
+																										options;
 
 																								return [
 																									...updatedList,
 																								];
 																							}
-																						)
-																					}>
+																						);
+																					}}>
 																					<DeleteIcon />
 																				</Button>
 																			</div>
@@ -520,7 +561,56 @@ const AdminForms = () => {
 																)}
 																<Button
 																	variant='contained'
-																	onClick={() =>
+																	onClick={async () => {
+																		await fetch(
+																			'/api/admin/createoption',
+																			{
+																				method: 'POST',
+																				body: JSON.stringify(
+																					{
+																						value: 'New Option',
+																						selectId:
+																							select.id,
+																					}
+																				),
+																			}
+																		);
+																		let options =
+																			forms[
+																				index
+																			]
+																				.selects[
+																				selectIndex
+																			]
+																				.options;
+																		await fetch(
+																			'/api/admin/getforms'
+																		)
+																			.then(
+																				(
+																					response
+																				) =>
+																					response.json()
+																			)
+																			.then(
+																				(
+																					data
+																				) => {
+																					console.log(
+																						data
+																					);
+																					options.push(
+																						data[
+																							index
+																						].selects[
+																							selectIndex
+																						].options.at(
+																							-1
+																						)
+																					);
+																				}
+																			);
+
 																		setForms(
 																			(
 																				prev
@@ -531,20 +621,15 @@ const AdminForms = () => {
 																					index
 																				].selects[
 																					selectIndex
-																				].options.push(
-																					{
-																						selectId:
-																							select.id,
-																						value: '',
-																					}
-																				);
+																				].options =
+																					options;
 
 																				return [
 																					...updatedList,
 																				];
 																			}
-																		)
-																	}>
+																		);
+																	}}>
 																	Add Option
 																</Button>
 															</div>
@@ -750,6 +835,12 @@ const AdminForms = () => {
 									);
 								}
 							)}
+							<Button
+								disabled={loading}
+								variant='contained'
+								onClick={() => updateForm(el.id, index)}>
+								Save Changes
+							</Button>
 						</AccordionDetails>
 					</Accordion>
 				);

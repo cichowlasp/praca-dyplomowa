@@ -6,10 +6,18 @@ const handler = async (req, res) => {
 			id: 'main',
 		},
 		include: {
-			inputs: true,
+			inputs: {
+				orderBy: {
+					id: 'asc',
+				},
+			},
 			selects: {
 				include: {
-					options: true,
+					options: {
+						orderBy: {
+							id: 'asc',
+						},
+					},
 				},
 			},
 			checkboxes: true,
