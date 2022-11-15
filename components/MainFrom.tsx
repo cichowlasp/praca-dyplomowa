@@ -180,7 +180,7 @@ const MainFrom = ({ setPageOption }: { setPageOption: any }) => {
 							required={el.required}
 							type={el.type}
 							onChange={(event) =>
-								handleInputChange(event, index, el.placeholder)
+								handleInputChange(event, index, el.label)
 							}
 						/>
 					</div>
@@ -242,18 +242,21 @@ const MainFrom = ({ setPageOption }: { setPageOption: any }) => {
 							style={{ fontWeight: 'bold', textAlign: 'left' }}>
 							{el.label}
 						</div>
-						<Switch
-							checked={
-								formData[
-									form.inputs.length +
-										form.selects.length +
-										index
-								]?.fill
-							}
-							onChange={(event) =>
-								handleCheckboxChange(event, index, el.label)
-							}
-						/>
+						<div className={styles.checkbox}>
+							<Switch
+								style={{ alignSelf: 'left' }}
+								checked={
+									formData[
+										form.inputs.length +
+											form.selects.length +
+											index
+									]?.fill
+								}
+								onChange={(event) =>
+									handleCheckboxChange(event, index, el.label)
+								}
+							/>
+						</div>
 					</div>
 				))}
 				<div style={{ color: palette.warning.main, fontWeight: '600' }}>

@@ -17,7 +17,7 @@ const handler = async (req, res) => {
 		});
 		data.selects.forEach(async (select) => {
 			select.options.forEach(async (option) => {
-				await prisma.option.updateMany({
+				await prisma.option.update({
 					where: {
 						id: option.id,
 					},
@@ -25,11 +25,19 @@ const handler = async (req, res) => {
 				});
 			});
 			delete select.options;
-			await prisma.select.updateMany({
+			await prisma.select.update({
 				where: {
 					id: select.id,
 				},
 				data: select,
+			});
+		});
+		data.checkboxes.forEach(async (checkbox) => {
+			await prisma.checkBox.update({
+				where: {
+					id: checkbox.id,
+				},
+				data: checkbox,
 			});
 		});
 		return res.status(200).json('Success');

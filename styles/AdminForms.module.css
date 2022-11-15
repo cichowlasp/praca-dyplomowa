@@ -9,6 +9,7 @@
 	font-weight: bold;
 	text-align: center;
 	font-size: 12px;
+	position: relative;
 }
 .options {
 	font-size: 1rem;
@@ -30,4 +31,14 @@
 	flex-direction: row-reverse;
 
 	justify-content: space-between;
+}
+
+.delete {
+	position: absolute;
+	right: 5px;
+	top: 5px;
+}
+
+.delete:hover {
+	cursor: pointer;
 }

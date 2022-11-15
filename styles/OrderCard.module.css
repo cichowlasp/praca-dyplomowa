@@ -122,3 +122,7 @@
 	text-transform: uppercase;
 	text-align: center;
 }
+
+.cardWrapper:last-child {
+	margin-bottom: 15px;
+}

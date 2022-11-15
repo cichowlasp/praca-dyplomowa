@@ -166,7 +166,7 @@ const OrderCard = ({
 	}));
 
 	return (
-		<div key={index}>
+		<div className={styles.cardWrapper} key={index}>
 			<div
 				className={styles.card}
 				style={{
