@@ -5,7 +5,7 @@ import { unstable_getServerSession } from 'next-auth/next';
 const handler = async (req, res) => {
 	const { body } = req;
 	const { user } = await unstable_getServerSession(req, res, authOptions);
-	if (user.id && user.pin !== null) {
+	if ((user.id && user.pin !== null) || user.admin === true) {
 		await prisma.order.delete({
 			where: {
 				id: body,

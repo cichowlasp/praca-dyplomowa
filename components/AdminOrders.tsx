@@ -30,11 +30,6 @@ const AdminOrders = ({}: {}) => {
 		}
 	}, [session?.user.admin, setOrders]);
 
-	const handleComplete = async (pin: string) => {
-		await signOut({ redirect: false });
-		await signIn('credentials', { redirect: false, pin });
-	};
-
 	if (status === 'loading' || !status) return <Loading />;
 	if (status === 'unauthenticated' || !session?.user.admin)
 		return (
@@ -123,9 +118,9 @@ const AdminOrders = ({}: {}) => {
 				) : (
 					<div className={styles.orders}>
 						{orders
-							.filter(filters.search)
-							.filter(filters.option)
-							.map((order, index) => (
+							?.filter(filters.search)
+							?.filter(filters.option)
+							?.map((order, index) => (
 								<OrderCard
 									key={order.id}
 									order={order}

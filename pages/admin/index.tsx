@@ -106,7 +106,9 @@ const Home = () => {
 		<>
 			<div className={styles.container}>
 				<main className={styles.main}>
-					<h1>This is admin page please SIGNIN to access</h1>
+					<h1 style={{ maxWidth: '80vw' }}>
+						This is admin page please SIGNIN to access
+					</h1>
 				</main>
 				<footer className={styles.footer}>
 					<div>Politechnika Wrocławska</div>

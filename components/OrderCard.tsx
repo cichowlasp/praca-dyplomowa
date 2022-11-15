@@ -129,7 +129,16 @@ const OrderCard = ({
 			method: 'POST',
 			body: id,
 		});
-		await updateData();
+		if (admin) {
+			await fetch('/api/admin/getalldata')
+				.then((response) => response.json())
+				.then((data) =>
+					setOrders(data.map((el: any) => el.orders).flat(1))
+				);
+		} else {
+			await updateData();
+		}
+
 		setLoading(false);
 		handleClose();
 	};
@@ -503,6 +512,12 @@ const OrderCard = ({
 									}}>
 									<MessageIcon fontSize='large' />
 									Respond
+								</MenuItem>
+								<MenuItem
+									style={{ maxHeight: '2rem' }}
+									onClick={() => deleteOrder(order.id)}>
+									<DeleteForeverIcon fontSize='large' />
+									Delete
 								</MenuItem>
 							</div>
 						)}

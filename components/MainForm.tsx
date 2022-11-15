@@ -116,7 +116,7 @@ const MainFrom = ({ setPageOption }: { setPageOption: any }) => {
 					<></>
 				) : (
 					<>
-						<div className={styles.input}>
+						<div style={{ order: 1 }} className={styles.input}>
 							<div
 								style={{
 									fontWeight: 'bold',
@@ -127,6 +127,7 @@ const MainFrom = ({ setPageOption }: { setPageOption: any }) => {
 							<TextField
 								placeholder={'Company'}
 								type={'text'}
+								required={true}
 								onChange={(event) => {
 									setUserData((prev) => {
 										return {
@@ -137,7 +138,7 @@ const MainFrom = ({ setPageOption }: { setPageOption: any }) => {
 								}}
 							/>
 						</div>
-						<div className={styles.input}>
+						<div style={{ order: 1 }} className={styles.input}>
 							<div
 								style={{
 									fontWeight: 'bold',
@@ -148,6 +149,7 @@ const MainFrom = ({ setPageOption }: { setPageOption: any }) => {
 							<TextField
 								placeholder={'Email'}
 								type={'text'}
+								required={true}
 								onChange={(event) => {
 									setUserData((prev) => {
 										return {
@@ -167,6 +169,7 @@ const MainFrom = ({ setPageOption }: { setPageOption: any }) => {
 							display: 'flex',
 							alignItems: 'center',
 							justifyContent: 'center',
+							order: 1 + el.order,
 						}}
 						key={el.id}>
 						<div
@@ -192,6 +195,7 @@ const MainFrom = ({ setPageOption }: { setPageOption: any }) => {
 							display: 'flex',
 							alignItems: 'center',
 							justifyContent: 'center',
+							order: 1 + el.order,
 						}}
 						key={el.id}>
 						<div
@@ -235,6 +239,7 @@ const MainFrom = ({ setPageOption }: { setPageOption: any }) => {
 							display: 'flex',
 							alignItems: 'center',
 							justifyContent: 'center',
+							order: 1 + el.order,
 						}}
 						key={el.id}>
 						<div
@@ -262,7 +267,10 @@ const MainFrom = ({ setPageOption }: { setPageOption: any }) => {
 				<div style={{ color: palette.warning.main, fontWeight: '600' }}>
 					{error}
 				</div>
-				<Button type='submit' variant='contained'>
+				<Button
+					style={{ order: 999999 }}
+					type='submit'
+					variant='contained'>
 					Submit Order
 				</Button>
 			</form>

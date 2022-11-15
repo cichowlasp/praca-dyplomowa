@@ -16,6 +16,9 @@
 	display: flex;
 	gap: 20px;
 	text-align: left;
+	width: 100%;
+	padding-right: 5px;
+	overflow-x: auto;
 }
 .option {
 	display: flex;
@@ -41,4 +44,20 @@
 
 .delete:hover {
 	cursor: pointer;
+}
+
+.accordion {
+	border-radius: 50%;
+	width: 700px;
+	max-width: 95vw;
+}
+
+.container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	height: 100%;
+	width: 100%;
+	overflow-y: auto;
+	margin-top: 10px;
 }

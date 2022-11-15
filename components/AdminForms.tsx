@@ -134,14 +134,25 @@ const AdminForms = () => {
 			</div>
 		);
 	return (
-		<div>
+		<div className={styles.container}>
 			{forms.map((el, index) => {
 				const numberOfOptions =
 					el.inputs.length + el.selects.length + el.checkboxes.length;
 				return (
-					<Accordion key={index} elevation={3}>
+					<Accordion
+						key={index}
+						className={styles.accordion}
+						elevation={3}
+						style={{ border: `2px solid ${palette.primary.main}` }}>
 						<AccordionSummary expandIcon={<ExpandMoreIcon />}>
-							{el?.id}
+							<span>{el?.id}</span>{' '}
+							<span
+								style={{
+									fontWeight: 'bold',
+									paddingLeft: '5px',
+								}}>
+								{el.active ? '(Active)' : ''}
+							</span>
 						</AccordionSummary>
 						<AccordionDetails>
 							<>
@@ -502,7 +513,7 @@ const AdminForms = () => {
 																				prev;
 																			updatedList[
 																				index
-																			].inputs[
+																			].selects[
 																				selectIndex
 																			].order =
 																				event.target.value;

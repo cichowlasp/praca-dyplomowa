@@ -3,7 +3,7 @@ import { useSession, signOut } from 'next-auth/react';
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import { ButtonGroup, Button } from '@mui/material';
-import MainForm from '../components/MainFrom';
+import MainForm from '../components/MainForm';
 import MyOrders from '../components/MyOrders';
 
 export enum PageOption {
