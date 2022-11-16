@@ -9,17 +9,19 @@ const handler = async (req, res) => {
 			orderBy: { id: 'asc' },
 			include: {
 				inputs: {
-					orderBy: { order: 'asc' },
+					orderBy: { id: 'asc' },
 				},
 				selects: {
-					orderBy: { order: 'asc' },
+					orderBy: { id: 'asc' },
 					include: {
 						options: {
 							orderBy: { id: 'asc' },
 						},
 					},
 				},
-				checkboxes: true,
+				checkboxes: {
+					orderBy: { id: 'asc' },
+				},
 			},
 		});
 		return res.status(200).json(forms);
