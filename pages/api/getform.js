@@ -3,7 +3,7 @@ import prisma from '../../lib/prisma';
 const handler = async (req, res) => {
 	const form = await prisma.form.findFirst({
 		where: {
-			id: 'main',
+			active: true,
 		},
 		include: {
 			inputs: {

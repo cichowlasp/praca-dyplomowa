@@ -6,7 +6,7 @@ const handler = async (req, res) => {
 	const { user } = await unstable_getServerSession(req, res, authOptions);
 	if (user.id && user.admin === true) {
 		const forms = await prisma.form.findMany({
-			orderBy: { id: 'asc' },
+			orderBy: { id: 'desc' },
 			include: {
 				inputs: {
 					orderBy: { id: 'asc' },

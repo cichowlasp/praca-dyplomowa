@@ -125,16 +125,88 @@ const FormView = ({
 			key={index}
 			className={styles.accordion}
 			elevation={3}
-			style={{ border: `2px solid ${palette.primary.main}` }}>
-			<AccordionSummary expandIcon={<ExpandMoreIcon />}>
-				<span>{el?.id}</span>{' '}
-				<span
+			style={{
+				border: `2px solid ${palette.primary.main}`,
+				borderRadius: '10px',
+				marginTop: '10px',
+			}}>
+			<AccordionSummary
+				style={{
+					display: 'flex',
+					flexDirection: 'row',
+					alignItems: 'cenetr',
+					width: '100%',
+					position: 'relative',
+				}}
+				expandIcon={<ExpandMoreIcon />}>
+				<div
 					style={{
-						fontWeight: 'bold',
-						paddingLeft: '5px',
+						maxWidth: '80%',
+						whiteSpace: 'nowrap',
+						overflow: 'hidden',
 					}}>
-					{el.active ? '(Active)' : ''}
-				</span>
+					<span>{el?.name}</span>
+					<span
+						style={{
+							fontWeight: 'bold',
+							paddingLeft: '5px',
+						}}>
+						{el.active ? (
+							'(Active)'
+						) : (
+							<Button
+								onClick={async (event) => {
+									event.stopPropagation();
+									setLoading(true);
+									await fetch('/api/admin/activeform', {
+										method: 'POST',
+										body: el.id,
+									});
+									await fetch('/api/admin/getforms')
+										.then((response) => response.json())
+										.then((data) => setForms(data));
+									setLoading(false);
+								}}
+								style={{
+									padding: '0px',
+									marginBottom: 'auto',
+									minHeight: '26px',
+									height: '26px',
+									justifySelf: 'center',
+									alignSelf: 'center',
+									fontWeight: 'bold',
+									fontSize: '1rem',
+								}}>
+								{'(Make active)'}
+							</Button>
+						)}
+					</span>
+					{el.id !== 'main' ? (
+						<Button
+							color='error'
+							onClick={async (event) => {
+								event.stopPropagation();
+								setLoading(true);
+								await fetch('/api/admin/removeform', {
+									method: 'POST',
+									body: el.id,
+								});
+								await fetch('/api/admin/getforms')
+									.then((response) => response.json())
+									.then((data) => setForms(data));
+								setLoading(false);
+							}}
+							style={{
+								padding: '1px',
+								minWidth: 'fit-content',
+								justifyContent: 'flex-start',
+								position: 'absolute',
+								right: '60px',
+							}}>
+							<DeleteForeverIcon fontSize='medium' />
+						</Button>
+					) : null}
+				</div>
 			</AccordionSummary>
 			<AccordionDetails>
 				<>
