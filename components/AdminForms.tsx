@@ -7,19 +7,16 @@ import { Button, Backdrop, Paper, TextField } from '@mui/material';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 
 const AdminForms = () => {
-	const { data: session } = useSession();
 	const [loading, setLoading] = useState(false);
 	const [forms, setForms] = useState<any[]>([]);
 	const [backdrop, setBackdrop] = useState(false);
 	const [name, setName] = useState<string>('');
 
 	useEffect(() => {
-		if (session?.user.admin) {
-			fetch('/api/admin/getforms')
-				.then((response) => response.json())
-				.then((data) => setForms(data));
-		}
-	}, [session?.user.admin, setLoading]);
+		fetch('/api/admin/getforms')
+			.then((response) => response.json())
+			.then((data) => setForms(data));
+	}, [setLoading]);
 
 	const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();

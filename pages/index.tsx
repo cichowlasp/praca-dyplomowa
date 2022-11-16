@@ -5,6 +5,7 @@ import { useRouter } from 'next/router';
 import { ButtonGroup, Button } from '@mui/material';
 import MainForm from '../components/MainForm';
 import MyOrders from '../components/MyOrders';
+import Loading from '../components/Loading';
 
 export enum PageOption {
 	newOrder = 'new-order',
@@ -12,7 +13,6 @@ export enum PageOption {
 }
 
 const Home = () => {
-	const router = useRouter();
 	const { data: session, status } = useSession();
 	const [pageOption, setPageOption] = useState<PageOption>(
 		PageOption.newOrder
@@ -20,7 +20,7 @@ const Home = () => {
 
 	return (
 		<>
-			{session?.user.pin ? (
+			{session?.user?.pin ? (
 				<Button
 					variant='outlined'
 					onClick={async () =>
