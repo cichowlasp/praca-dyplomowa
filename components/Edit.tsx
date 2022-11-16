@@ -128,13 +128,14 @@ const Edit = ({
 								orderId: order.id,
 							});
 
-							fetch('/api/admin/getalldata')
+							await fetch('/api/admin/getalldata')
 								.then((response) => response.json())
 								.then((data) =>
 									setOrders(
 										data.map((el: any) => el.orders).flat(1)
 									)
 								);
+							setEditView(false);
 						}}
 						variant='contained'>
 						Set date
@@ -169,7 +170,9 @@ const Edit = ({
 					alignContent: 'center',
 				}}
 				elevation={3}>
-				<h1>{reorder ? 'Reorder' : 'Order editing'}</h1>
+				<h1 style={{ textAlign: 'center' }}>
+					{reorder ? 'Reorder' : 'Order editing'}
+				</h1>
 				<CancelIcon
 					style={{
 						position: 'absolute',
@@ -183,7 +186,13 @@ const Edit = ({
 						setEditView(false);
 					}}
 				/>
-				<form onSubmit={(event) => handleSubmit(event)}>
+				<form
+					style={{
+						display: 'flex',
+						flexDirection: 'column',
+						alignItems: 'center',
+					}}
+					onSubmit={(event) => handleSubmit(event)}>
 					{order.informations.map((el: any, index: number) => (
 						<div className={styles.input} key={el.name}>
 							<div>{el.name}</div>

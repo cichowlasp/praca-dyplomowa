@@ -1115,8 +1115,10 @@ const AdminForms = () => {
 								<Button
 									style={{
 										borderRadius: '50%',
-										height: '64px',
+										minWidth: '40px',
 										width: '50px',
+										height: '50px',
+										padding: '0 0',
 									}}
 									disabled={loading}
 									variant='contained'
