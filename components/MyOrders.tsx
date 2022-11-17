@@ -13,6 +13,7 @@ const MyOrders = () => {
 	const [orders, setOrders] = useState<
 		(Order & { informations: Info[]; messages: Message[] })[]
 	>([]);
+	const [loading, setLoading] = useState(false);
 	const [searchInputValue, setSearchInputValue] = useState('');
 	const [selectValue, setSelectValue] = useState('');
 	const defaultFilters = {
@@ -25,12 +26,14 @@ const MyOrders = () => {
 	}>(defaultFilters);
 
 	const handleComplete = async (pin: string) => {
+		setLoading(true);
 		await signOut({ redirect: false });
 		await signIn('credentials', { redirect: false, pin });
+		setLoading(false);
 	};
 
 	const checkIfDataFetched = async () => {
-		fetch('/api/user/getorders')
+		await fetch('/api/user/getorders')
 			.then((response) => response.json())
 			.then((data) => setOrders(data))
 			.catch((err) => {
@@ -55,26 +58,30 @@ const MyOrders = () => {
 		return (
 			<>
 				<h1>To see your orders you need to type in your access pin</h1>
-				<PinInput
-					length={6}
-					initialValue=''
-					secret
-					type='numeric'
-					inputMode='number'
-					style={{ padding: '10px' }}
-					inputStyle={{
-						borderColor: 'black',
-						borderRadius: '10px',
-						borderWidth: '3px',
-					}}
-					inputFocusStyle={{
-						borderColor: 'blue',
-						borderRadius: '10px',
-						borderWidth: '3px',
-					}}
-					onComplete={(pin) => handleComplete(pin)}
-					autoSelect={true}
-				/>
+				{!loading ? (
+					<PinInput
+						length={6}
+						initialValue=''
+						secret
+						type='numeric'
+						inputMode='number'
+						style={{ padding: '10px' }}
+						inputStyle={{
+							borderColor: 'black',
+							borderRadius: '10px',
+							borderWidth: '3px',
+						}}
+						inputFocusStyle={{
+							borderColor: 'blue',
+							borderRadius: '10px',
+							borderWidth: '3px',
+						}}
+						onComplete={(pin) => handleComplete(pin)}
+						autoSelect={true}
+					/>
+				) : (
+					<Loading />
+				)}
 			</>
 		);
 	return (
