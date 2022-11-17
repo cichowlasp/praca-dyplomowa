@@ -11,7 +11,6 @@ const handler = async (req, res) => {
 	const { user } = await unstable_getServerSession(req, res, authOptions);
 	const { body } = req;
 	const { formId, type } = JSON.parse(body);
-	console.log(formId, type);
 	if (user.id && user.admin === true) {
 		switch (type) {
 			case 'input':

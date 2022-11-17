@@ -263,9 +263,6 @@ const SelectView = ({
 																response.json()
 															)
 															.then((data) => {
-																console.log(
-																	data
-																);
 																options =
 																	data[index]
 																		.selects[
@@ -327,7 +324,6 @@ const SelectView = ({
 													response.json()
 												)
 												.then((data) => {
-													console.log(data);
 													options.push(
 														data[index].selects[
 															selectIndex

@@ -247,7 +247,7 @@ const OrderCard = ({
 								style={{
 									paddingLeft: '3px',
 								}}>
-								{`${order.edited}`}
+								{order.edited ? 'Yes' : 'No'}
 							</span>
 						</div>
 						{order.informations.map(

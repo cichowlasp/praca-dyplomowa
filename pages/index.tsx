@@ -50,35 +50,37 @@ const Home = () => {
 					</Button>
 				</div>
 			)}
-			<div className={styles.container}>
-				<main className={styles.main}>
-					<ButtonGroup size='large' aria-label='large button group'>
-						<Button
-							style={
-								pageOption === PageOption.newOrder
-									? {
-											backgroundColor: '#1876D2',
-											color: 'white',
-									  }
-									: {}
-							}
-							onClick={() => setPageOption(PageOption.newOrder)}>
-							New Order
-						</Button>
-						<Button
-							onClick={() => setPageOption(PageOption.myOrders)}
-							style={
-								pageOption === PageOption.myOrders
-									? {
-											backgroundColor: '#1876D2',
-											color: 'white',
-									  }
-									: {}
-							}>
-							My Orders
-						</Button>
-					</ButtonGroup>
-				</main>
+
+			<main className={styles.main}>
+				<ButtonGroup
+					size='large'
+					aria-label='large button group'
+					style={{ order: 0 }}>
+					<Button
+						style={
+							pageOption === PageOption.newOrder
+								? {
+										backgroundColor: '#1876D2',
+										color: 'white',
+								  }
+								: {}
+						}
+						onClick={() => setPageOption(PageOption.newOrder)}>
+						New Order
+					</Button>
+					<Button
+						onClick={() => setPageOption(PageOption.myOrders)}
+						style={
+							pageOption === PageOption.myOrders
+								? {
+										backgroundColor: '#1876D2',
+										color: 'white',
+								  }
+								: {}
+						}>
+						My Orders
+					</Button>
+				</ButtonGroup>
 				<div className={styles.wrapper}>
 					{pageOption === PageOption.newOrder ? (
 						<MainForm setPageOption={setPageOption} />
@@ -86,7 +88,8 @@ const Home = () => {
 						<MyOrders />
 					)}
 				</div>
-			</div>
+			</main>
+
 			<footer className={styles.footer}>Politechnika Wrocławska</footer>
 		</>
 	);

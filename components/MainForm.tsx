@@ -19,14 +19,7 @@ import styles from '../styles/MainForm.module.css';
 import { signIn, useSession } from 'next-auth/react';
 import { validForm } from '../utils/validationSchema';
 import { PageOption } from '../pages/index';
-import {
-	CheckBox,
-	Form,
-	Info,
-	Input,
-	Option,
-	Select as SelectTS,
-} from '@prisma/client';
+import { CheckBox, Input, Option, Select as SelectTS } from '@prisma/client';
 
 export interface FormData {
 	fill: string;

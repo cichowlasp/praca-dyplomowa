@@ -242,13 +242,15 @@ const FormView = ({
 								style={{
 									border: `2px solid ${palette.primary.main}`,
 								}}>
-								<div
-									className={styles.delete}
-									onClick={() => {
-										deleteFromForm('input', input.id);
-									}}>
-									<DeleteForeverIcon color='error' />
-								</div>
+								{el.inputs.length !== 1 ? (
+									<div
+										className={styles.delete}
+										onClick={() => {
+											deleteFromForm('input', input.id);
+										}}>
+										<DeleteForeverIcon color='error' />
+									</div>
+								) : null}
 								Input
 								<div className={styles.options}>
 									<div className={styles.option}>

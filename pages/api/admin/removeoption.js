@@ -6,7 +6,6 @@ const handler = async (req, res) => {
 	const { user } = await unstable_getServerSession(req, res, authOptions);
 	const { body } = req;
 	if (user.id && user.admin === true) {
-		console.log(body);
 		await prisma.option.delete({
 			where: {
 				id: body,

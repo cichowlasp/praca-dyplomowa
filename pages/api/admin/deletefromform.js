@@ -19,7 +19,6 @@ const handler = async (req, res) => {
 				});
 				break;
 			case 'checkbox':
-				console.log(id);
 				await prisma.checkBox.delete({
 					where: { id },
 				});

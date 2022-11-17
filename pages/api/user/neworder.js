@@ -11,7 +11,6 @@ const handler = async (req, res) => {
 			return { ...el, fill: JSON.stringify(el.fill) };
 		return el;
 	});
-	console.log(fixedData);
 	if (validForm(data).length !== 0)
 		return res.status(401).json('Data is not valid');
 	const { user } = await unstable_getServerSession(req, res, authOptions);

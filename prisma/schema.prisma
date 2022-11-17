@@ -13,8 +13,8 @@ model Order {
   authorId        String
   reviewed        Reviewed  @default(NOTREVIEWED)
   realizationDate DateTime?
-  user            User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   creationData    DateTime  @default(now())
+  user            User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   informations    Info[]
   messages        Message[]
 }
