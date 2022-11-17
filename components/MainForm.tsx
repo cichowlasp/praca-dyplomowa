@@ -189,7 +189,7 @@ const MainFrom = ({
 							</div>
 							<TextField
 								placeholder={'Email'}
-								type={'text'}
+								type={'email'}
 								required={true}
 								onChange={(event) => {
 									setUserData((prev) => {
