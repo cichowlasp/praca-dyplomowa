@@ -75,8 +75,8 @@ const AdminForms = () => {
 					borderRadius: '50%',
 					fontWeight: 'bold',
 					fontSize: '10px',
-					position: 'absolute',
-					bottom: '15px',
+					position: 'fixed',
+					bottom: '65px',
 					right: '15px',
 				}}
 				disabled={loading}
