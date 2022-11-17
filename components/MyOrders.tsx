@@ -170,6 +170,15 @@ const MyOrders = () => {
 			) : (
 				<div className={styles.orders}>
 					{orders
+						.sort((a, b) => {
+							if (a.creationData > b.creationData) {
+								return -1;
+							}
+							if (a.creationData < b.creationData) {
+								return 1;
+							}
+							return 0;
+						})
 						.filter(filters.search)
 						.filter(filters.option)
 						.map((order, index) => (

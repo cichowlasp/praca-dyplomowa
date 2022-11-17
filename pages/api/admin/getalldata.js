@@ -12,7 +12,7 @@ const handler = async (req, res) => {
 			orderBy: { id: 'asc' },
 			include: {
 				orders: {
-					orderBy: { id: 'asc' },
+					orderBy: { creationData: 'desc' },
 					include: {
 						informations: {
 							orderBy: {

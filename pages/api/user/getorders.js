@@ -6,7 +6,7 @@ const handler = async (req, res) => {
 	const { user } = await unstable_getServerSession(req, res, authOptions);
 	if (user.id && user.pin !== null) {
 		const orders = await prisma.order.findMany({
-			orderBy: { id: 'asc' },
+			orderBy: { creationData: 'desc' },
 			where: { authorId: user.id },
 			include: {
 				informations: {
