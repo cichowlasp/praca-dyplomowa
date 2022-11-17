@@ -276,15 +276,13 @@ const OrderCard = ({
 						)}
 					</div>
 
-					<div
-						className={styles.messages}
-						style={{
-							visibility: `${expanded ? 'visible' : 'hidden'}`,
-						}}>
+					<div className={styles.messages}>
 						<div
 							style={{
-								display:
-									messages.length === 0 ? 'none' : 'flex',
+								visibility:
+									messages.length === 0
+										? 'hidden'
+										: 'visible',
 							}}
 							className={styles.chat}>
 							{messages?.map((el, index) => (

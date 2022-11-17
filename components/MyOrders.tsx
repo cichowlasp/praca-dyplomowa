@@ -57,28 +57,33 @@ const MyOrders = () => {
 	if (status === 'unauthenticated' || !session?.user.pin)
 		return (
 			<>
-				<h1>To see your orders you need to type in your access pin</h1>
 				{!loading ? (
-					<PinInput
-						length={6}
-						initialValue=''
-						secret
-						type='numeric'
-						inputMode='number'
-						style={{ padding: '10px' }}
-						inputStyle={{
-							borderColor: 'black',
-							borderRadius: '10px',
-							borderWidth: '3px',
-						}}
-						inputFocusStyle={{
-							borderColor: 'blue',
-							borderRadius: '10px',
-							borderWidth: '3px',
-						}}
-						onComplete={(pin) => handleComplete(pin)}
-						autoSelect={true}
-					/>
+					<>
+						<h1 style={{ maxWidth: '80vw' }}>
+							To see your orders you need to type in your access
+							pin
+						</h1>
+						<PinInput
+							length={6}
+							initialValue=''
+							secret
+							type='numeric'
+							inputMode='number'
+							style={{ padding: '10px' }}
+							inputStyle={{
+								borderColor: 'black',
+								borderRadius: '10px',
+								borderWidth: '3px',
+							}}
+							inputFocusStyle={{
+								borderColor: 'blue',
+								borderRadius: '10px',
+								borderWidth: '3px',
+							}}
+							onComplete={(pin) => handleComplete(pin)}
+							autoSelect={true}
+						/>
+					</>
 				) : (
 					<Loading />
 				)}
@@ -149,7 +154,7 @@ const MyOrders = () => {
 								};
 							});
 						}}>
-						<MenuItem value={''}>None</MenuItem>
+						<MenuItem value={''}>All</MenuItem>
 						<MenuItem value={Reviewed.notReviewed}>
 							Awaiting Review
 						</MenuItem>

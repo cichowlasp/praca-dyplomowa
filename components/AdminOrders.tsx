@@ -112,7 +112,7 @@ const AdminOrders = ({}: {}) => {
 								};
 							});
 						}}>
-						<MenuItem value={''}>None</MenuItem>
+						<MenuItem value={''}>All</MenuItem>
 						<MenuItem value={Reviewed.notReviewed}>
 							Awaiting Review
 						</MenuItem>

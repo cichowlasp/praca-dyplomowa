@@ -85,8 +85,8 @@ model CheckBox {
   order    Int     @default(0)
   label    String?
   required Boolean
-  value    Boolean @default(false)
   formId   String?
+  value    Boolean @default(false)
   Form     Form?   @relation(fields: [formId], references: [id])
 }
 
