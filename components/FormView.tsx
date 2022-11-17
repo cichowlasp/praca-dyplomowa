@@ -8,6 +8,13 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import styles from '../styles/AdminForms.module.css';
 import SelectView from './SelectView';
 import {
+	Form,
+	Select as SelectTS,
+	CheckBox,
+	Input,
+	Option,
+} from '@prisma/client';
+import {
 	Accordion,
 	AccordionSummary,
 	AccordionDetails,
@@ -32,13 +39,30 @@ const FormView = ({
 	setForms,
 	el,
 }: {
-	forms: any[];
+	forms: (Form & {
+		selects: (SelectTS & { options: Option[] })[];
+		inputs: Input[];
+		checkboxes: CheckBox[];
+	})[];
 	numberOfOptions: number;
 	index: number;
 	loading: boolean;
 	setLoading: React.Dispatch<React.SetStateAction<boolean>>;
-	setForms: React.Dispatch<React.SetStateAction<any[]>>;
-	el: any;
+	setForms: React.Dispatch<
+		React.SetStateAction<
+			(Form & {
+				inputs: Input[];
+				selects: (SelectTS & { options: Option[] })[];
+				checkboxes: CheckBox[];
+			})[]
+		>
+	>;
+
+	el: Form & {
+		inputs: Input[];
+		selects: (SelectTS & { options: Option[] })[];
+		checkboxes: CheckBox[];
+	};
 }) => {
 	const [addToFormPopUp, setAddToFormPopUp] =
 		useState<HTMLButtonElement | null>(null);
@@ -210,7 +234,7 @@ const FormView = ({
 			</AccordionSummary>
 			<AccordionDetails>
 				<>
-					{el.inputs.map((input: any, inputIndex: number) => {
+					{el.inputs.map((input: Input, inputIndex: number) => {
 						return (
 							<div
 								key={input.id}
@@ -250,8 +274,10 @@ const FormView = ({
 															index
 														].inputs[
 															inputIndex
-														].order =
-															event.target.value;
+														].order = parseInt(
+															`${event.target.value}`,
+															10
+														);
 														return [...updatedList];
 													})
 												}>
@@ -417,24 +443,29 @@ const FormView = ({
 							</div>
 						);
 					})}
-					{el.selects.map((select: any, selectIndex: number) => {
-						return (
-							<SelectView
-								key={select.id}
-								select={select}
-								selectIndex={selectIndex}
-								deleteFromForm={deleteFromForm}
-								forms={forms}
-								setForms={setForms}
-								index={index}
-								numberOfOptions={numberOfOptions}
-								loading={loading}
-								setLoading={setLoading}
-							/>
-						);
-					})}
+					{el.selects.map(
+						(
+							select: SelectTS & { options: Option[] },
+							selectIndex: number
+						) => {
+							return (
+								<SelectView
+									key={select.id}
+									select={select}
+									selectIndex={selectIndex}
+									deleteFromForm={deleteFromForm}
+									forms={forms}
+									setForms={setForms}
+									index={index}
+									numberOfOptions={numberOfOptions}
+									loading={loading}
+									setLoading={setLoading}
+								/>
+							);
+						}
+					)}
 					{el.checkboxes.map(
-						(checkbox: any, checkboxIndex: number) => {
+						(checkbox: CheckBox, checkboxIndex: number) => {
 							return (
 								<div
 									key={checkbox.id}
@@ -478,8 +509,10 @@ const FormView = ({
 																index
 															].checkboxes[
 																checkboxIndex
-															].order =
-																event.target.value;
+															].order = parseInt(
+																`${event.target.value}`,
+																10
+															);
 															return [
 																...updatedList,
 															];

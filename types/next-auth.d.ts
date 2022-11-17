@@ -1,3 +1,4 @@
+import { Order } from '@prisma/client';
 import NextAuth from 'next-auth';
 
 declare module 'next-auth' {
@@ -14,7 +15,7 @@ declare module 'next-auth' {
 			password: string;
 			admin: boolean;
 			company?: string;
-			orders: any[];
+			orders: Order[];
 		};
 	}
 }

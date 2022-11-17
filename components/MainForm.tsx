@@ -1,8 +1,15 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {
+	Dispatch,
+	SetStateAction,
+	useEffect,
+	useRef,
+	useState,
+} from 'react';
 import {
 	Button,
 	MenuItem,
 	Select,
+	SelectChangeEvent,
 	Switch,
 	TextField,
 	useTheme,
@@ -12,46 +19,87 @@ import styles from '../styles/MainForm.module.css';
 import { signIn, useSession } from 'next-auth/react';
 import { validForm } from '../utils/validationSchema';
 import { PageOption } from '../pages/index';
+import {
+	CheckBox,
+	Form,
+	Info,
+	Input,
+	Option,
+	Select as SelectTS,
+} from '@prisma/client';
 
-const MainFrom = ({ setPageOption }: { setPageOption: any }) => {
-	const defaultState: { fill: string; name: string }[] = [];
+export interface FormData {
+	fill: string;
+	name: string;
+}
+
+const MainFrom = ({
+	setPageOption,
+}: {
+	setPageOption: Dispatch<SetStateAction<PageOption>>;
+}) => {
+	const defaultState: FormData[] = [];
 	const { data: session } = useSession();
 	const { palette } = useTheme();
-	const [formData, setFormData] = useState<any[]>(defaultState);
+	const [formData, setFormData] = useState<FormData[]>(defaultState);
 	const [userData, setUserData] = useState<{
 		company: string;
 		email: string;
 	}>({ company: '', email: '' });
 	const [form, setForm] = useState<{
-		form: { inputs: any[]; selects: any[]; checkboxes: any[] };
+		inputs: Input[];
+		selects: (SelectTS & { options: Option[] })[];
+		checkboxes: CheckBox[];
 	} | null>(null);
 	const [error, setError] = useState<string>('');
 	const [loading, setLoading] = useState<boolean>(false);
 
-	const handleInputChange = (event: any, index: number, name: string) => {
+	useEffect(() => {
+		fetch('api/getform')
+			.then((response) => response.json())
+			.then(({ form }) => setForm(form));
+	}, []);
+
+	if (form === null || loading) return <Loading />;
+
+	const handleInputChange = (
+		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+		index: number,
+		name: string
+	) => {
 		setFormData((pre) => {
-			let modifyFormData: any[] = pre;
+			let modifyFormData: FormData[] = pre;
 			modifyFormData[index] = { name, fill: event.target.value };
 			return modifyFormData;
 		});
 	};
-	const handleSelectChange = (event: any, index: number, name: string) => {
+	const handleSelectChange = (
+		event: SelectChangeEvent<string>,
+		index: number,
+		name: string
+	) => {
 		setFormData((pre) => {
 			const indexAtArr = form.inputs.length + index;
-			let modifyFormData: any[] = pre;
+			let modifyFormData: FormData[] = pre;
 			modifyFormData[indexAtArr] = { name, fill: event.target.value };
 			return modifyFormData;
 		});
 	};
 
-	const handleCheckboxChange = (event: any, index: number, name: string) => {
+	const handleCheckboxChange = (
+		event: React.ChangeEvent<HTMLInputElement>,
+		index: number,
+		name: string
+	) => {
 		setFormData((pre) => {
 			const indexAtArr = form.inputs.length + form.selects.length + index;
-			let modifyFormData: any[] = pre;
-			modifyFormData[indexAtArr] = { name, fill: event.target.checked };
+			let modifyFormData: FormData[] = pre;
+			modifyFormData[indexAtArr] = {
+				name,
+				fill: JSON.stringify(event.target.checked),
+			};
 			return modifyFormData;
 		});
-		console.log(formData);
 	};
 
 	const handleClick = async (event: any) => {
@@ -99,13 +147,6 @@ const MainFrom = ({ setPageOption }: { setPageOption: any }) => {
 		}
 	};
 
-	useEffect(() => {
-		fetch('api/getform')
-			.then((response) => response.json())
-			.then(({ form }) => setForm(form));
-	}, []);
-
-	if (form === null || loading) return <Loading />;
 	return (
 		<>
 			<h1>Fill up to take order</h1>
@@ -162,7 +203,7 @@ const MainFrom = ({ setPageOption }: { setPageOption: any }) => {
 						</div>
 					</>
 				)}
-				{form.inputs.map((el, index: number) => (
+				{form.inputs.map((el: Input, index: number) => (
 					<div
 						className={styles.input}
 						style={{
@@ -178,60 +219,78 @@ const MainFrom = ({ setPageOption }: { setPageOption: any }) => {
 							{el.label}
 						</div>
 						<TextField
-							placeholder={el.placeholder}
+							placeholder={
+								el.placeholder ? el.placeholder : undefined
+							}
 							fullWidth={true}
 							required={el.required}
 							type={el.type}
 							onChange={(event) =>
-								handleInputChange(event, index, el.label)
+								handleInputChange(
+									event,
+									index,
+									el.label ? el.label : el.id
+								)
 							}
 						/>
 					</div>
 				))}
-				{form.selects.map((el, index: number) => (
-					<div
-						className={styles.input}
-						style={{
-							display: 'flex',
-							alignItems: 'center',
-							justifyContent: 'center',
-							order: 1 + el.order,
-						}}
-						key={el.id}>
+				{form.selects.map(
+					(el: SelectTS & { options: Option[] }, index: number) => (
 						<div
-							className={styles.label}
-							style={{ fontWeight: 'bold', textAlign: 'left' }}>
-							{el.label}
+							className={styles.input}
+							style={{
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: 'center',
+								order: 1 + el.order,
+							}}
+							key={el.id}>
+							<div
+								className={styles.label}
+								style={{
+									fontWeight: 'bold',
+									textAlign: 'left',
+								}}>
+								{el.label}
+							</div>
+							<Select
+								placeholder={
+									el.placeholder ? el.placeholder : undefined
+								}
+								fullWidth={true}
+								required={el.required}
+								size={'small'}
+								variant='outlined'
+								defaultValue={
+									!el.required ? '' : el.options[0].value
+								}
+								value={
+									formData[form.inputs.length + index]?.fill
+								}
+								onChange={(event) => {
+									handleSelectChange(
+										event,
+										index,
+										el.label ? el.label : el.id
+									);
+								}}>
+								{!el.required && (
+									<MenuItem value={''}>None</MenuItem>
+								)}
+								{el.options.map((option: Option) => {
+									return (
+										<MenuItem
+											key={option.id}
+											value={option.value}>
+											{option.value}
+										</MenuItem>
+									);
+								})}
+							</Select>
 						</div>
-						<Select
-							placeholder={el.placeholder}
-							fullWidth={true}
-							required={el.required}
-							size={'small'}
-							type={el.type}
-							variant='outlined'
-							defaultValue={
-								!el.required ? '' : el.options[0].value
-							}
-							value={formData[form.inputs.length + index]?.fill}
-							onChange={(event) => {
-								handleSelectChange(event, index, el.label);
-							}}>
-							{!el.required && (
-								<MenuItem value={''}>None</MenuItem>
-							)}
-							{el.options.map((option: any) => {
-								return (
-									<MenuItem
-										key={option.id}
-										value={option.value}>
-										{option.value}
-									</MenuItem>
-								);
-							})}
-						</Select>
-					</div>
-				))}
+					)
+				)}
 				{form.checkboxes.map((el, index: number) => (
 					<div
 						className={styles.input}
@@ -251,14 +310,18 @@ const MainFrom = ({ setPageOption }: { setPageOption: any }) => {
 							<Switch
 								style={{ alignSelf: 'left' }}
 								checked={
-									formData[
+									!!formData[
 										form.inputs.length +
 											form.selects.length +
 											index
 									]?.fill
 								}
 								onChange={(event) =>
-									handleCheckboxChange(event, index, el.label)
+									handleCheckboxChange(
+										event,
+										index,
+										el.label ? el.label : el.id
+									)
 								}
 							/>
 						</div>

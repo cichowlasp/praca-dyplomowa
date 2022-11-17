@@ -5,10 +5,18 @@ import Loading from './Loading';
 import FormView from './FormView';
 import { Button, Backdrop, Paper, TextField } from '@mui/material';
 import AssignmentIcon from '@mui/icons-material/Assignment';
+import { CheckBox, Form, Input, Select } from '@prisma/client';
 
 const AdminForms = () => {
 	const [loading, setLoading] = useState(false);
-	const [forms, setForms] = useState<any[]>([]);
+	const [forms, setForms] = useState<
+		| (Form & {
+				selects: Select[];
+				inputs: Input[];
+				checkboxes: CheckBox[];
+		  })[]
+		| []
+	>([]);
 	const [backdrop, setBackdrop] = useState(false);
 	const [name, setName] = useState<string>('');
 

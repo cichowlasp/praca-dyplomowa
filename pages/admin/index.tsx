@@ -8,6 +8,7 @@ import { Button, ButtonGroup } from '@mui/material';
 import AdminOrders from '../../components/AdminOrders';
 import AdminUsers from '../../components/AdminUsers';
 import AdminForms from '../../components/AdminForms';
+import { User } from '@prisma/client';
 
 export enum PageOption {
 	orders = 'orders',
@@ -18,7 +19,7 @@ export enum PageOption {
 const Home = () => {
 	const { data: session, status } = useSession();
 	const [pageOption, setPageOption] = useState<PageOption>(PageOption.orders);
-	const [usersData, setUsersData] = useState<any[] | null>(null);
+	const [usersData, setUsersData] = useState<User[] | null>(null);
 
 	useEffect(() => {
 		if (session?.user.admin) {

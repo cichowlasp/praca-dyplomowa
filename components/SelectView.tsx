@@ -11,6 +11,13 @@ import {
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import {
+	CheckBox,
+	Form,
+	Input,
+	Option,
+	Select as SelectTS,
+} from '@prisma/client';
 
 const SelectView = ({
 	select,
@@ -23,13 +30,25 @@ const SelectView = ({
 	loading,
 	setLoading,
 }: {
-	select: any;
+	select: SelectTS & { options: Option[] };
 	selectIndex: number;
 	deleteFromForm: (type: string, id: string) => {};
-	forms: any[];
-	setForms: React.Dispatch<React.SetStateAction<any[]>>;
+	forms: (Form & {
+		inputs: Input[];
+		selects: (SelectTS & { options: Option[] })[];
+		checkboxes: CheckBox[];
+	})[];
+	setForms: React.Dispatch<
+		React.SetStateAction<
+			(Form & {
+				inputs: Input[];
+				selects: (SelectTS & { options: Option[] })[];
+				checkboxes: CheckBox[];
+			})[]
+		>
+	>;
 	index: number;
-	numberOfOptions: any;
+	numberOfOptions: number;
 	loading: boolean;
 	setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
@@ -74,12 +93,12 @@ const SelectView = ({
 						<Select
 							value={forms[index].selects[selectIndex].order}
 							size='small'
-							onChange={(event: any) =>
+							onChange={(event) =>
 								setForms((prev) => {
 									let updatedList = prev;
 									updatedList[index].selects[
 										selectIndex
-									].order = event.target.value;
+									].order = parseInt(`${event.target.value}`);
 									return [...updatedList];
 								})
 							}>
@@ -148,7 +167,7 @@ const SelectView = ({
 									justifyContent: 'center',
 								}}>
 								{select.options.map(
-									(inp: any, inpIndex: number) => {
+									(inp: Option, inpIndex: number) => {
 										return (
 											<div
 												key={inp.id}
@@ -187,7 +206,7 @@ const SelectView = ({
 													variant='contained'
 													disabled={loading}
 													onClick={async () => {
-														let options: any;
+														let options: Option[];
 														setLoading(true);
 														await fetch(
 															'/api/admin/removeoption',

@@ -5,10 +5,13 @@ import styles from '../styles/AdminOrders.module.css';
 import OrderCard from './OrderCard';
 import { Reviewed } from './OrderCard';
 import { TextField, Select, MenuItem } from '@mui/material';
+import { Info, Order, User, Message } from '@prisma/client';
 
 const AdminOrders = ({}: {}) => {
 	const { data: session, status } = useSession();
-	const [orders, setOrders] = useState<any[]>([]);
+	const [orders, setOrders] = useState<
+		(Order & { informations: Info[]; messages: Message[] })[]
+	>([]);
 	const [searchInputValue, setSearchInputValue] = useState('');
 	const [selectValue, setSelectValue] = useState('');
 	const defaultFilters = {
@@ -16,8 +19,12 @@ const AdminOrders = ({}: {}) => {
 		option: () => true,
 	};
 	const [filters, setFilters] = useState<{
-		search: (o: any) => boolean;
-		option: (o: any) => boolean;
+		search: (
+			o: Order & { informations: Info[]; messages: Message[] }
+		) => boolean;
+		option: (
+			o: Order & { informations: Info[]; messages: Message[] }
+		) => boolean;
 	}>(defaultFilters);
 
 	useEffect(() => {
@@ -25,7 +32,11 @@ const AdminOrders = ({}: {}) => {
 			fetch('/api/admin/getalldata')
 				.then((response) => response.json())
 				.then((data) =>
-					setOrders(data.map((el: any) => el.orders).flat(1))
+					setOrders(
+						data
+							.map((el: User & { orders: Order[] }) => el.orders)
+							.flat(1)
+					)
 				);
 		}
 	}, [session?.user.admin, setOrders]);

@@ -1,11 +1,9 @@
 import styles from '../styles/Home.module.css';
 import { useSession, signOut } from 'next-auth/react';
 import React, { useState } from 'react';
-import { useRouter } from 'next/router';
 import { ButtonGroup, Button } from '@mui/material';
 import MainForm from '../components/MainForm';
 import MyOrders from '../components/MyOrders';
-import Loading from '../components/Loading';
 
 export enum PageOption {
 	newOrder = 'new-order',

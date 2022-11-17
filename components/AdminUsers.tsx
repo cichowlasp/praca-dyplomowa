@@ -1,17 +1,22 @@
-import React, { useState } from 'react';
+import React, { Dispatch, useState, SetStateAction } from 'react';
 import UserCard from './UserCard';
 import styles from '../styles/AdminUsers.module.css';
 import { TextField } from '@mui/material';
+import { User } from '@prisma/client';
 
-type Props = { data: any[] | null; setUsersData: any };
-
-const AdminUsers = ({ data, setUsersData }: Props) => {
+const AdminUsers = ({
+	data,
+	setUsersData,
+}: {
+	data: User[] | null;
+	setUsersData: Dispatch<SetStateAction<User[] | null>>;
+}) => {
 	const [searchInputValue, setSearchInputValue] = useState('');
 	const defaultFilters = {
 		search: () => true,
 	};
 	const [filters, setFilters] = useState<{
-		search: (o: any) => boolean;
+		search: (o: User) => boolean;
 	}>(defaultFilters);
 
 	return (

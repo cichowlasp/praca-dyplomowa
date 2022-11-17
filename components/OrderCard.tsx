@@ -21,8 +21,9 @@ import MessageIcon from '@mui/icons-material/Message';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Edit from './Edit';
 import SendIcon from '@mui/icons-material/Send';
-import { now } from 'next-auth/client/_utils';
 import moment, { Moment } from 'moment';
+import { Order, Info, Message, User } from '@prisma/client';
+import Loading from './Loading';
 
 export enum Reviewed {
 	approved = 'APPROVED',
@@ -36,8 +37,12 @@ const OrderCard = ({
 	index,
 	admin,
 }: {
-	order: any;
-	setOrders: React.Dispatch<React.SetStateAction<any[]>>;
+	order: Order & { informations: Info[]; messages: Message[] };
+	setOrders: React.Dispatch<
+		React.SetStateAction<
+			(Order & { informations: Info[]; messages: Message[] })[]
+		>
+	>;
 	index: number;
 	admin: boolean;
 }) => {
@@ -49,20 +54,23 @@ const OrderCard = ({
 	const [reorderView, setReorderView] = useState<boolean>(false);
 	const [expanded, setExpanded] = useState<boolean>(false);
 	const [message, setMessage] = useState<string>('');
-	const [messages, setMessages] = useState<any[]>([]);
+	const [messages, setMessages] = useState<Message[]>([]);
 	const [realizationDate, setRealizationDate] = useState<Moment | null>(
 		moment()
 	);
 	const open = Boolean(anchorEl);
 	const { data: session } = useSession();
-	const user = session?.user?.name
-		? session.user.name
-		: session?.user.company;
+
 	const messageField = useRef(null);
 	useEffect(() => {
 		setMessages(order.messages);
 	}, [order.messages, setMessages]);
 
+	const bottomRef = useRef<null | HTMLDivElement>(null);
+
+	if (session === null) {
+		return <Loading />;
+	}
 	const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
 		setAnchorEl(event.currentTarget);
 	};
@@ -85,14 +93,18 @@ const OrderCard = ({
 					...prev,
 					{
 						id,
-						date: now(),
+						date: new Date(),
 						message,
-						name: session?.user?.name
-							? session?.user?.name
-							: session?.user?.company,
+						name: user === undefined ? 'Anonymous' : user,
+						orderId: id,
 					},
 				]);
 			}
+		});
+		bottomRef.current?.scrollIntoView({
+			behavior: 'smooth',
+			block: 'nearest',
+			inline: 'start',
 		});
 		setMessage('');
 		setLoading(false);
@@ -131,7 +143,11 @@ const OrderCard = ({
 			await fetch('/api/admin/getalldata')
 				.then((response) => response.json())
 				.then((data) =>
-					setOrders(data.map((el: any) => el.orders).flat(1))
+					setOrders(
+						data
+							.map((el: User & { orders: Order[] }) => el.orders)
+							.flat(1)
+					)
 				);
 		} else {
 			await updateData();
@@ -140,6 +156,10 @@ const OrderCard = ({
 		setLoading(false);
 		handleClose();
 	};
+
+	const user = session?.user.name
+		? session?.user.name
+		: session?.user.company;
 
 	const StyledMenu = styled((props: MenuProps) => (
 		<Menu elevation={0} {...props} />
@@ -199,6 +219,8 @@ const OrderCard = ({
 							<div>
 								{new Date(
 									order.realizationDate
+										? order.realizationDate
+										: Date.now()
 								).toLocaleDateString('en-GB')}
 							</div>
 						</div>
@@ -325,6 +347,7 @@ const OrderCard = ({
 									</div>
 								</>
 							))}
+							<div ref={bottomRef} />
 						</div>
 						<form onSubmit={(event) => handleSubmit(event, order)}>
 							<TextField
@@ -358,15 +381,6 @@ const OrderCard = ({
 						</form>
 					</div>
 				</div>
-				{messages.length !== 0 ? (
-					messages.at(-1).name !== user ? (
-						<div className={styles.dot} />
-					) : (
-						<></>
-					)
-				) : (
-					<></>
-				)}
 
 				<div
 					className={styles.expand}
@@ -384,6 +398,15 @@ const OrderCard = ({
 						<path d='M64 360c30.9 0 56 25.1 56 56s-25.1 56-56 56s-56-25.1-56-56s25.1-56 56-56zm0-160c30.9 0 56 25.1 56 56s-25.1 56-56 56s-56-25.1-56-56s25.1-56 56-56zM120 96c0 30.9-25.1 56-56 56S8 126.9 8 96S33.1 40 64 40s56 25.1 56 56z' />
 					</svg>
 				</div>
+				{messages.length !== 0 ? (
+					messages.at(-1)?.name !== user ? (
+						<div className={styles.dot} />
+					) : (
+						<></>
+					)
+				) : (
+					<></>
+				)}
 				{!admin ? (
 					<StyledMenu
 						id='basic-menu'
@@ -491,8 +514,11 @@ const OrderCard = ({
 												setOrders(
 													data
 														.map(
-															(el: any) =>
-																el.orders
+															(
+																el: User & {
+																	orders: Order[];
+																}
+															) => el.orders
 														)
 														.flat(1)
 												)

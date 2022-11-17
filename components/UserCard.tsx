@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
 import {
 	useTheme,
 	Menu,
@@ -10,15 +10,15 @@ import {
 } from '@mui/material';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import styles from '../styles/UserCard.module.css';
+import { User } from '@prisma/client';
 
 const UserCard = ({
 	user,
-	index,
 	setUsersData,
 }: {
-	user: any;
+	user: User;
 	index: number;
-	setUsersData: any;
+	setUsersData: Dispatch<SetStateAction<User[] | null>>;
 }) => {
 	const { palette } = useTheme();
 	const [loading, setLoading] = useState<boolean>(false);

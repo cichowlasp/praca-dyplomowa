@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
 import { Paper, TextField, Button, CircularProgress } from '@mui/material';
 import styles from '../styles/Edit.module.css';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -6,9 +6,10 @@ import { validForm } from '../utils/validationSchema';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import moment, { Moment } from 'moment';
 import { Reviewed } from './OrderCard';
+import { Info, Order, User, Message } from '@prisma/client';
 
 type Props = {
-	order: any;
+	order: Order & { informations: Info[] };
 	setEditView: React.Dispatch<React.SetStateAction<boolean>>;
 	updateData: () => {};
 	reorder: boolean;
@@ -22,7 +23,11 @@ type Props = {
 		};
 		orderId: string;
 	}) => Promise<void>;
-	setOrders: any;
+	setOrders: Dispatch<
+		SetStateAction<
+			(Order & { informations: Info[]; messages: Message[] })[]
+		>
+	>;
 };
 
 const Edit = ({
@@ -36,7 +41,7 @@ const Edit = ({
 	updateOrder,
 	setOrders,
 }: Props) => {
-	const [editedInfo, setEditedInfo] = useState(order.informations);
+	const [editedInfo, setEditedInfo] = useState<Info[]>(order.informations);
 	const [loading, setLoading] = useState<boolean>(false);
 	const [errorMessage, setError] = useState<string>('');
 
@@ -78,8 +83,8 @@ const Edit = ({
 		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
 		index: number
 	) => {
-		setEditedInfo((prev: any) => {
-			let formData: any[] = prev;
+		setEditedInfo((prev: Info[]) => {
+			let formData: Info[] = prev;
 			formData[index] = {
 				...formData[index],
 				fill: event.target.value.trim(),
@@ -132,7 +137,15 @@ const Edit = ({
 								.then((response) => response.json())
 								.then((data) =>
 									setOrders(
-										data.map((el: any) => el.orders).flat(1)
+										data
+											.map(
+												(
+													el: User & {
+														orders: Order[];
+													}
+												) => el.orders
+											)
+											.flat(1)
 									)
 								);
 							setEditView(false);
@@ -193,7 +206,7 @@ const Edit = ({
 						alignItems: 'center',
 					}}
 					onSubmit={(event) => handleSubmit(event)}>
-					{order.informations.map((el: any, index: number) => (
+					{order.informations.map((el: Info, index: number) => (
 						<div className={styles.input} key={el.name}>
 							<div>{el.name}</div>
 							<TextField

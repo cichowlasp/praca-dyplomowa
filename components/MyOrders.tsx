@@ -6,10 +6,13 @@ import { TextField, Select, MenuItem } from '@mui/material';
 import styles from '../styles/MyOrders.module.css';
 import OrderCard from './OrderCard';
 import { Reviewed } from './OrderCard';
+import { Info, Order, Message } from '@prisma/client';
 
 const MyOrders = () => {
 	const { data: session, status } = useSession();
-	const [orders, setOrders] = useState<any[]>([]);
+	const [orders, setOrders] = useState<
+		(Order & { informations: Info[]; messages: Message[] })[]
+	>([]);
 	const [searchInputValue, setSearchInputValue] = useState('');
 	const [selectValue, setSelectValue] = useState('');
 	const defaultFilters = {
@@ -17,8 +20,8 @@ const MyOrders = () => {
 		option: () => true,
 	};
 	const [filters, setFilters] = useState<{
-		search: (o: any) => boolean;
-		option: (o: any) => boolean;
+		search: (o: Order & { informations: Info[] }) => boolean;
+		option: (o: Order & { informations: Info[] }) => boolean;
 	}>(defaultFilters);
 
 	const handleComplete = async (pin: string) => {
