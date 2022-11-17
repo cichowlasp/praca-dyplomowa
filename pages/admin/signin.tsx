@@ -5,12 +5,14 @@ import { signIn as LogIn } from 'next-auth/react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import styles from '../../styles/signin.module.css';
+import Loading from '../../components/Loading';
 
 const signIn = () => {
 	const [credentials, setCredentials] = useState<{
 		email: string;
 		password: string;
 	}>({ email: '', password: '' });
+	const [loading, setLoading] = useState(false);
 	const { data: session, status } = useSession();
 	const router = useRouter();
 
@@ -20,14 +22,18 @@ const signIn = () => {
 		}
 	}, [status, router, session]);
 
-	const handleSubmit = (event: React.FormEvent) => {
+	const handleSubmit = async (event: React.FormEvent) => {
 		event.preventDefault();
-		LogIn('credentials', {
+		setLoading(true);
+		await LogIn('credentials', {
 			redirect: false,
 			email: credentials.email,
 			password: credentials.password,
 		});
+		setLoading(false);
 	};
+
+	if (loading) return <Loading />;
 
 	return (
 		<div className={styles.container}>
