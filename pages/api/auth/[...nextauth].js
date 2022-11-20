@@ -2,6 +2,7 @@ import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import prisma from '../../../lib/prisma';
+import bcrypt from 'bcrypt';
 
 export const authOptions = {
 	// Configure one or more authentication providers
@@ -31,7 +32,7 @@ export const authOptions = {
 					placeholder: 'Password',
 				},
 			},
-			async authorize(credentials, req) {
+			async authorize(credentials) {
 				if (credentials?.pin) {
 					const user = await prisma.user.findFirst({
 						where: {
@@ -41,15 +42,23 @@ export const authOptions = {
 					if (user) return user;
 					return null;
 				}
+
 				const user = await prisma.user.findFirst({
 					where: {
 						email: credentials.email,
-						password: credentials.password,
 					},
 				});
+				//hash generate!
+				// const salt = await bcrypt.genSalt(10);
+				// const hash = await bcrypt.hash(credentials.password, salt);
+
+				const passCorrect = await bcrypt.compare(
+					credentials.password,
+					user.password
+				);
 
 				// If no error and we have user data, return it
-				if (user) {
+				if (user && passCorrect) {
 					return user;
 				}
 				// Return null if user data could not be retrieved
