@@ -29,7 +29,7 @@ const Home = () => {
 		}
 	}, [session?.user.admin, setUsersData]);
 
-	if (status === 'loading') return <Loading />;
+	if (status === 'loading') return <></>;
 	if (status === 'authenticated' && session.user?.admin) {
 		return (
 			<>
