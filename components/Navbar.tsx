@@ -1,15 +1,13 @@
 import React from 'react';
 import { useSession } from 'next-auth/react';
 import styles from '../styles/Nav.module.css';
-import { signIn, signOut } from 'next-auth/react';
+import { signOut } from 'next-auth/react';
 import { Button } from '@mui/material';
 import { useRouter } from 'next/router';
-import Loading from './Loading';
 
 const Navbar = () => {
 	const { data: session, status } = useSession();
 	const router = useRouter();
-	if (status === 'loading') return <Loading />;
 	if (router.pathname !== '/admin') return <></>;
 
 	return (

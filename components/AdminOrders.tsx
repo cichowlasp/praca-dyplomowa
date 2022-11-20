@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { signIn, signOut, useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import Loading from './Loading';
 import styles from '../styles/AdminOrders.module.css';
 import OrderCard from './OrderCard';

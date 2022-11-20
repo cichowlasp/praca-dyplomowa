@@ -11,7 +11,7 @@ export enum PageOption {
 }
 
 const Home = () => {
-	const { data: session, status } = useSession();
+	const { data: session } = useSession();
 	const [pageOption, setPageOption] = useState<PageOption>(
 		PageOption.newOrder
 	);
