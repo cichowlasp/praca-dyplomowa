@@ -11,7 +11,7 @@ const handler = async (req, res) => {
 			include: {
 				informations: {
 					orderBy: {
-						name: 'desc',
+						index: 'asc',
 					},
 				},
 				messages: {

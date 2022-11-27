@@ -15,7 +15,6 @@ const handler = async (req, res) => {
 				data: option,
 			});
 		});
-		console.log(options);
 		return res.status(200).json('Success');
 	}
 	return res.status(401).json("You're not authorized");

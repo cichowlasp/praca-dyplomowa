@@ -18,6 +18,7 @@ import { CheckBox, Input, Option, Select as SelectTS } from '@prisma/client';
 export interface FormData {
 	fill: string;
 	name: string;
+	index: number;
 }
 
 const MainFrom = ({
@@ -25,10 +26,9 @@ const MainFrom = ({
 }: {
 	setPageOption: Dispatch<SetStateAction<PageOption>>;
 }) => {
-	const defaultState: FormData[] = [];
+	const [formData, setFormData] = useState<FormData[]>([]);
 	const { data: session } = useSession();
 	const { palette } = useTheme();
-	const [formData, setFormData] = useState<FormData[]>(defaultState);
 	const [userData, setUserData] = useState<{
 		company: string;
 		email: string;
@@ -44,7 +44,37 @@ const MainFrom = ({
 	useEffect(() => {
 		fetch('api/getform')
 			.then((response) => response.json())
-			.then(({ form }) => setForm(form));
+			.then(({ form }) => {
+				setForm(form);
+
+				setFormData(() => {
+					const arr: FormData[] = [];
+					form.inputs.forEach((el: Input) =>
+						arr.push({
+							name: el.label ? el.label : '',
+							fill: '',
+							index: el.order,
+						})
+					);
+
+					form.selects.forEach(
+						(el: SelectTS & { options: Option[] }) =>
+							arr.push({
+								name: el.label ? el.label : '',
+								fill: !el.required ? '' : el.options[0].value,
+								index: el.order,
+							})
+					);
+					form.checkboxes.forEach((el: CheckBox) =>
+						arr.push({
+							name: el.label ? el.label : '',
+							fill: JSON.stringify(false),
+							index: el.order,
+						})
+					);
+					return arr;
+				});
+			});
 	}, []);
 
 	if (form === null || loading) return <Loading />;
@@ -52,38 +82,49 @@ const MainFrom = ({
 	const handleInputChange = (
 		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
 		index: number,
-		name: string
+		name: string,
+		order: number
 	) => {
 		setFormData((pre) => {
 			let modifyFormData: FormData[] = pre;
-			modifyFormData[index] = { name, fill: event.target.value };
+			modifyFormData[index] = {
+				name,
+				fill: event.target.value,
+				index: order,
+			};
 			return modifyFormData;
 		});
 	};
 	const handleSelectChange = (
 		event: SelectChangeEvent<string>,
 		index: number,
-		name: string
+		name: string,
+		order: number
 	) => {
 		setFormData((pre) => {
 			const indexAtArr = form.inputs.length + index;
 			let modifyFormData: FormData[] = pre;
-			modifyFormData[indexAtArr] = { name, fill: event.target.value };
+			modifyFormData[indexAtArr] = {
+				name,
+				fill: event.target.value,
+				index: order,
+			};
 			return modifyFormData;
 		});
 	};
 
 	const handleCheckboxChange = (
-		event: React.ChangeEvent<HTMLInputElement>,
 		index: number,
-		name: string
+		name: string,
+		order: number
 	) => {
 		setFormData((pre) => {
 			const indexAtArr = form.inputs.length + form.selects.length + index;
 			let modifyFormData: FormData[] = pre;
 			modifyFormData[indexAtArr] = {
 				name,
-				fill: JSON.stringify(event.target.checked),
+				fill: JSON.stringify(!JSON.parse(pre[indexAtArr].fill)),
+				index: order,
 			};
 			return modifyFormData;
 		});
@@ -112,7 +153,7 @@ const MainFrom = ({
 						body: JSON.stringify(formData),
 					}).then((response) => {
 						if (response.status === 200) {
-							setFormData(defaultState);
+							setFormData([]);
 						}
 					});
 					setPageOption(PageOption.myOrders);
@@ -126,7 +167,7 @@ const MainFrom = ({
 				body: JSON.stringify(formData),
 			}).then((response) => {
 				if (response.status === 200) {
-					setFormData(defaultState);
+					setFormData([]);
 				}
 			});
 			setPageOption(PageOption.myOrders);
@@ -216,7 +257,8 @@ const MainFrom = ({
 								handleInputChange(
 									event,
 									index,
-									el.label ? el.label : el.id
+									el.label ? el.label : el.id,
+									el.order
 								)
 							}
 						/>
@@ -250,16 +292,14 @@ const MainFrom = ({
 								size={'small'}
 								variant='outlined'
 								defaultValue={
-									!el.required ? '' : el.options[0].value
-								}
-								value={
-									formData[form.inputs.length + index]?.fill
+									formData[form.inputs.length + index].fill
 								}
 								onChange={(event) => {
 									handleSelectChange(
 										event,
 										index,
-										el.label ? el.label : el.id
+										el.label ? el.label : el.id,
+										el.order
 									);
 								}}>
 								{!el.required && (
@@ -296,18 +336,18 @@ const MainFrom = ({
 						<div className={styles.checkbox}>
 							<Switch
 								style={{ alignSelf: 'left' }}
-								checked={
-									!!formData[
+								defaultChecked={JSON.parse(
+									formData[
 										form.inputs.length +
 											form.selects.length +
 											index
-									]?.fill
-								}
-								onChange={(event) =>
+									].fill
+								)}
+								onChange={() =>
 									handleCheckboxChange(
-										event,
 										index,
-										el.label ? el.label : el.id
+										el.label ? el.label : el.id,
+										el.order
 									)
 								}
 							/>

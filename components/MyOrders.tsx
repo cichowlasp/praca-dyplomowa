@@ -183,7 +183,7 @@ const MyOrders = () => {
 						.filter(filters.option)
 						.map((order, index) => (
 							<OrderCard
-								key={index}
+								key={order.id}
 								order={order}
 								setOrders={setOrders}
 								index={index}

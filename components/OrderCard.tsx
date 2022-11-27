@@ -193,7 +193,7 @@ const OrderCard = ({
 	}));
 
 	return (
-		<div className={styles.cardWrapper} key={index}>
+		<div className={styles.cardWrapper}>
 			<div
 				className={styles.card}
 				style={{
@@ -250,30 +250,25 @@ const OrderCard = ({
 								{order.edited ? 'Yes' : 'No'}
 							</span>
 						</div>
-						{order.informations.map(
-							(
-								el: { name: string; fill: string },
-								index: number
-							) => {
-								return (
-									<div key={index}>
-										<span
-											style={{
-												fontWeight: 'bold',
-												textAlign: 'left',
-											}}>
-											{el.name}:
-										</span>
-										<span
-											style={{
-												paddingLeft: '3px',
-											}}>
-											{el.fill}
-										</span>
-									</div>
-								);
-							}
-						)}
+						{order.informations.map((el: Info) => {
+							return (
+								<div key={el.id}>
+									<span
+										style={{
+											fontWeight: 'bold',
+											textAlign: 'left',
+										}}>
+										{el.name}:
+									</span>
+									<span
+										style={{
+											paddingLeft: '3px',
+										}}>
+										{el.fill}
+									</span>
+								</div>
+							);
+						})}
 					</div>
 
 					<div className={styles.messages}>
@@ -285,10 +280,10 @@ const OrderCard = ({
 										: 'visible',
 							}}
 							className={styles.chat}>
-							{messages?.map((el, index) => (
+							{messages?.map((el) => (
 								<>
 									<div
-										key={index}
+										key={el.id}
 										style={{
 											marginLeft:
 												session?.user?.name ===
