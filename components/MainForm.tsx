@@ -161,7 +161,7 @@ const MainFrom = ({
 					return;
 				});
 		}
-		if (session?.user.pin) {
+		if (session?.user?.pin) {
 			await fetch('/api/user/neworder', {
 				method: 'POST',
 				body: JSON.stringify(formData),
@@ -181,7 +181,7 @@ const MainFrom = ({
 			<form
 				className={styles.form}
 				onSubmit={(event) => handleClick(event)}>
-				{session?.user.pin ? (
+				{session?.user?.pin ? (
 					<></>
 				) : (
 					<>

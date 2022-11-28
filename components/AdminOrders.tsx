@@ -28,7 +28,7 @@ const AdminOrders = ({}: {}) => {
 	}>(defaultFilters);
 
 	useEffect(() => {
-		if (session?.user.admin) {
+		if (session?.user?.admin) {
 			fetch('/api/admin/getalldata')
 				.then((response) => response.json())
 				.then((data) =>
@@ -39,10 +39,10 @@ const AdminOrders = ({}: {}) => {
 					)
 				);
 		}
-	}, [session?.user.admin, setOrders]);
+	}, [session?.user?.admin, setOrders]);
 
 	if (status === 'loading' || !status) return <Loading />;
-	if (status === 'unauthenticated' || !session?.user.admin)
+	if (status === 'unauthenticated' || !session?.user?.admin)
 		return (
 			<>
 				<h1>To see this page you need to be administrator</h1>

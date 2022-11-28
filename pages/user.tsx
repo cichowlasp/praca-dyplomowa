@@ -1,10 +1,9 @@
 import styles from '../styles/Home.module.css';
 import { useSession, signOut } from 'next-auth/react';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ButtonGroup, Button } from '@mui/material';
-import CreateCompanyAcc from '../components/CreateCompanyAcc';
-import MyCompany from '../components/MyCompany';
-import { useRouter } from 'next/router';
+import MainForm from '../components/MainForm';
+import MyOrders from '../components/MyOrders';
 
 export enum PageOption {
 	newOrder = 'new-order',
@@ -16,17 +15,10 @@ const Home = () => {
 	const [pageOption, setPageOption] = useState<PageOption>(
 		PageOption.newOrder
 	);
-	const router = useRouter();
-
-	useEffect(() => {
-		if (session?.company?.nip) {
-			setPageOption(PageOption.myOrders);
-		}
-	}, [session?.company?.nip]);
 
 	return (
 		<>
-			{session?.company?.nip ? (
+			{session?.user?.pin ? (
 				<Button
 					variant='outlined'
 					onClick={async () =>
@@ -49,11 +41,11 @@ const Home = () => {
 						right: '10px',
 						fontWeight: 'bold',
 					}}>
-					Have a user account?
+					Have a pin?
 					<Button
 						style={{ marginLeft: '10px' }}
 						variant='contained'
-						onClick={() => router.push('/user')}>
+						onClick={() => setPageOption(PageOption.myOrders)}>
 						SignIn
 					</Button>
 				</div>
@@ -64,21 +56,18 @@ const Home = () => {
 					size='large'
 					aria-label='large button group'
 					style={{ order: 0 }}>
-					{!session?.company?.nip && (
-						<Button
-							style={
-								pageOption === PageOption.newOrder
-									? {
-											backgroundColor: '#1876D2',
-											color: 'white',
-									  }
-									: {}
-							}
-							onClick={() => setPageOption(PageOption.newOrder)}>
-							Create Company Account
-						</Button>
-					)}
-
+					<Button
+						style={
+							pageOption === PageOption.newOrder
+								? {
+										backgroundColor: '#1876D2',
+										color: 'white',
+								  }
+								: {}
+						}
+						onClick={() => setPageOption(PageOption.newOrder)}>
+						New Order
+					</Button>
 					<Button
 						onClick={() => setPageOption(PageOption.myOrders)}
 						style={
@@ -89,14 +78,14 @@ const Home = () => {
 								  }
 								: {}
 						}>
-						My Company
+						My Orders
 					</Button>
 				</ButtonGroup>
 				<div className={styles.wrapper}>
 					{pageOption === PageOption.newOrder ? (
-						<CreateCompanyAcc />
+						<MainForm setPageOption={setPageOption} />
 					) : (
-						<MyCompany />
+						<MyOrders />
 					)}
 				</div>
 			</main>

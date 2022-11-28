@@ -44,7 +44,7 @@ const MyOrders = () => {
 
 	useEffect(() => {
 		const abortController = new AbortController();
-		if (session?.user.pin) {
+		if (session?.user?.pin) {
 			const fetchData = async () => await checkIfDataFetched();
 			fetchData();
 		}
@@ -54,7 +54,7 @@ const MyOrders = () => {
 	}, [session]);
 
 	if (status === 'loading' || !status) return <Loading />;
-	if (status === 'unauthenticated' || !session?.user.pin)
+	if (status === 'unauthenticated' || !session?.user?.pin)
 		return (
 			<>
 				{!loading ? (
@@ -187,7 +187,11 @@ const MyOrders = () => {
 								order={order}
 								setOrders={setOrders}
 								index={index}
-								admin={session?.user.admin}
+								admin={
+									session?.user?.admin
+										? session?.user?.admin
+										: false
+								}
 							/>
 						))}
 				</div>

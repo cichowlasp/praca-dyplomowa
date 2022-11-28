@@ -33,6 +33,17 @@ export const authOptions = {
 				},
 			},
 			async authorize(credentials) {
+				if (credentials?.companyEmail && credentials?.id) {
+					const company = await prisma.company.findFirst({
+						where: {
+							companyEmail: credentials.companyEmail,
+							id: credentials.id,
+						},
+					});
+					if (company) return company;
+					return null;
+				}
+
 				if (credentials?.pin) {
 					const user = await prisma.user.findFirst({
 						where: {
@@ -72,7 +83,10 @@ export const authOptions = {
 			return token;
 		},
 		session: async ({ session, token }) => {
-			token?.user && (session.user = token.user);
+			token?.user.admin ||
+				(token?.user.pin && (session.user = token.user));
+			token.user.nip && (session.company = token.user);
+
 			return session;
 		},
 	},

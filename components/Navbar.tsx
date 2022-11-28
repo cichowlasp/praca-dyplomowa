@@ -26,11 +26,11 @@ const Navbar = () => {
 				</div>
 			)}
 
-			{status === 'unauthenticated' || session?.user.pin ? (
+			{status === 'unauthenticated' || session?.user?.pin ? (
 				<Button
 					variant='contained'
 					onClick={() => {
-						if (session?.user.pin) {
+						if (session?.user?.pin) {
 							signOut({ redirect: false });
 						}
 						router.push('/admin/signin');

@@ -157,9 +157,9 @@ const OrderCard = ({
 		handleClose();
 	};
 
-	const user = session?.user.name
-		? session?.user.name
-		: session?.user.company;
+	const user = session?.user?.name
+		? session?.user?.name
+		: session?.user?.company;
 
 	const StyledMenu = styled((props: MenuProps) => (
 		<Menu elevation={0} {...props} />
