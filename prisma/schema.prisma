@@ -45,21 +45,24 @@ model Company {
   companyAddress String
   phoneNumber    String
   createUserPin  String
+  secretPhrase   String @unique
   users          User[]
 }
 
 model User {
-  id        String   @id @default(cuid())
-  name      String?
-  surname   String?
-  email     String   @unique
-  pin       String?
-  password  String?
-  admin     Boolean  @default(false)
-  company   String?
-  orders    Order[]
-  Company   Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  companyId String?
+  id          String   @id @default(cuid())
+  name        String
+  surname     String
+  email       String   @unique
+  pin         String?
+  password    String?
+  admin       Boolean  @default(false)
+  company     String
+  createdAt   DateTime @default(now())
+  phoneNumber String
+  orders      Order[]
+  Company     Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId   String?
 }
 
 model Form {

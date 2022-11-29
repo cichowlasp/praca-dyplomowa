@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Loading from './Loading';
+import UserCard from './UserCard';
 import { Button, TextField, useTheme } from '@mui/material';
 import { signIn, signOut, useSession } from 'next-auth/react';
 import styles from '../styles/MainForm.module.css';
+import { User } from '@prisma/client';
 
 const MyCompany = () => {
 	const [loading, setLoading] = useState<boolean>(false);
 	const [error, setError] = useState<string>('');
+	const [users, setUsers] = useState<User[] | null>(null);
 	const [loginInfo, setLoginInfo] = useState({
 		companyEmail: '',
 		id: '',
@@ -14,6 +17,15 @@ const MyCompany = () => {
 
 	const { palette } = useTheme();
 	const { data: session, status } = useSession();
+
+	useEffect(() => {
+		if (session?.company?.id) {
+			fetch('/api/company/getusers')
+				.then((response) => response.json())
+				.then(({ users }) => setUsers(users));
+		}
+	}, [session?.company?.id]);
+
 	if (status === 'loading') return <Loading />;
 
 	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -86,7 +98,7 @@ const MyCompany = () => {
 								placeholder={'Company Identificator'}
 								fullWidth={true}
 								required={true}
-								type={'text'}
+								type={'password'}
 								value={loginInfo.id}
 								onChange={(event) =>
 									setLoginInfo((pre) => {
@@ -122,11 +134,41 @@ const MyCompany = () => {
 							{session.company.createUserPin}
 						</span>
 					</h2>
-					<main>
-						<div style={{ fontWeight: 'bold' }}>
+					<div style={{ height: '100%', overflow: 'hidden' }}>
+						<h3 style={{ marginTop: 0, marginBottom: 0 }}>
 							Registered Users:
-						</div>
-					</main>
+						</h3>
+						{users ? (
+							<>
+								{users?.length === 0 ? (
+									<div>{'0 users registerd :('}</div>
+								) : (
+									<div
+										style={{
+											display: 'flex',
+											flexDirection: 'column',
+											height: 'calc(100% - 20px)',
+											overflowY: 'auto',
+										}}>
+										{users?.map(
+											(user: User, index: number) => {
+												return (
+													<UserCard
+														key={user.id}
+														user={user}
+														index={index}
+														setUsersData={setUsers}
+													/>
+												);
+											}
+										)}
+									</div>
+								)}
+							</>
+						) : (
+							<Loading />
+						)}
+					</div>
 				</>
 			)}
 		</>

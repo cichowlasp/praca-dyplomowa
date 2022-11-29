@@ -12,7 +12,7 @@ import Loading from './Loading';
 import styles from '../styles/MainForm.module.css';
 import { signIn, useSession } from 'next-auth/react';
 import { validForm } from '../utils/validationSchema';
-import { PageOption } from '../pages/index';
+import { PageOption } from '../pages/company';
 import { CheckBox, Input, Option, Select as SelectTS } from '@prisma/client';
 
 export interface FormData {
@@ -46,7 +46,7 @@ const MainFrom = ({
 			.then((response) => response.json())
 			.then(({ form }) => {
 				setForm(form);
-
+				if (!form) return;
 				setFormData(() => {
 					const arr: FormData[] = [];
 					form.inputs.forEach((el: Input) =>

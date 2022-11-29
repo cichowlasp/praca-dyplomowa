@@ -87,6 +87,21 @@ const UserCard = ({
 							fontWeight: 'bold',
 							textAlign: 'left',
 						}}>
+						Fullname:
+					</span>
+					<span
+						style={{
+							paddingLeft: '3px',
+						}}>
+						{user.name} {user.surname}
+					</span>
+				</div>
+				<div>
+					<span
+						style={{
+							fontWeight: 'bold',
+							textAlign: 'left',
+						}}>
 						Email:
 					</span>
 					<span
@@ -94,6 +109,21 @@ const UserCard = ({
 							paddingLeft: '3px',
 						}}>
 						{user.email}
+					</span>
+				</div>
+				<div>
+					<span
+						style={{
+							fontWeight: 'bold',
+							textAlign: 'left',
+						}}>
+						Phone number:
+					</span>
+					<span
+						style={{
+							paddingLeft: '3px',
+						}}>
+						{user.phoneNumber}
 					</span>
 				</div>
 				<div>

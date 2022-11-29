@@ -2,6 +2,7 @@ import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { Button, TextField, useTheme } from '@mui/material';
 import Loading from './Loading';
 import styles from '../styles/MainForm.module.css';
+import { signIn } from 'next-auth/react';
 
 const CreateCompanyAcc = ({}) => {
 	const [error, setError] = useState<string>('');
@@ -11,6 +12,7 @@ const CreateCompanyAcc = ({}) => {
 		companyEmail: '',
 		companyAddress: '',
 		phoneNumber: '',
+		secretPhrase: '',
 	});
 	const [loading, setLoading] = useState<boolean>(false);
 	const { palette } = useTheme();
@@ -22,7 +24,14 @@ const CreateCompanyAcc = ({}) => {
 		await fetch('/api/company/createcompany', {
 			method: 'POST',
 			body: JSON.stringify(formData),
-		});
+		})
+			.then((data) => data.json())
+			.then(async (company) => {
+				await signIn('credentials', {
+					companyEmail: company.companyEmail,
+					id: company.id,
+				});
+			});
 		setLoading(false);
 	};
 
@@ -56,11 +65,10 @@ const CreateCompanyAcc = ({}) => {
 								setFormData((pre) => {
 									return {
 										...pre,
-										companyName: event.target.value,
+										companyName: event.target.value.trim(),
 									};
 								})
 							}
-							name='name'
 						/>
 					</div>
 					<div
@@ -89,7 +97,6 @@ const CreateCompanyAcc = ({}) => {
 									};
 								})
 							}
-							name='nip'
 						/>
 					</div>
 					<div
@@ -113,11 +120,10 @@ const CreateCompanyAcc = ({}) => {
 								setFormData((pre) => {
 									return {
 										...pre,
-										companyEmail: event.target.value,
+										companyEmail: event.target.value.trim(),
 									};
 								})
 							}
-							name='email'
 						/>
 					</div>
 					<div
@@ -141,11 +147,11 @@ const CreateCompanyAcc = ({}) => {
 								setFormData((pre) => {
 									return {
 										...pre,
-										companyAddress: event.target.value,
+										companyAddress:
+											event.target.value.trim(),
 									};
 								})
 							}
-							name='address'
 						/>
 					</div>
 					<div
@@ -169,11 +175,37 @@ const CreateCompanyAcc = ({}) => {
 								setFormData((pre) => {
 									return {
 										...pre,
-										phoneNumber: event.target.value,
+										phoneNumber: event.target.value.trim(),
 									};
 								})
 							}
-							name='phoneNumber'
+						/>
+					</div>
+					<div
+						className={styles.input}
+						style={{
+							display: 'flex',
+							alignItems: 'center',
+							justifyContent: 'center',
+						}}>
+						<div
+							className={styles.label}
+							style={{ fontWeight: 'bold', textAlign: 'left' }}>
+							Secret Phrase
+						</div>
+						<TextField
+							placeholder={'Secret Phrase'}
+							fullWidth={true}
+							required={true}
+							type={'password'}
+							onChange={(event) =>
+								setFormData((pre) => {
+									return {
+										...pre,
+										secretPhrase: event.target.value.trim(),
+									};
+								})
+							}
 						/>
 					</div>
 

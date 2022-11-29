@@ -42,8 +42,75 @@ const AdminForms = () => {
 
 	if (forms.length === 0)
 		return (
-			<div style={{ height: '100vh', width: '100vw' }}>
+			<div
+				style={{
+					position: 'relative',
+					height: '100vh',
+					width: '100vw',
+				}}>
 				<Loading />
+				<Button
+					onClick={() => setBackdrop(true)}
+					color='info'
+					style={{
+						height: '70px',
+						width: '70px',
+						minWidth: '50px',
+						borderRadius: '50%',
+						fontWeight: 'bold',
+						fontSize: '10px',
+						position: 'fixed',
+						bottom: '65px',
+						right: '15px',
+					}}
+					disabled={loading}
+					variant='contained'>
+					<AssignmentIcon fontSize='large' />
+				</Button>
+				{backdrop ? (
+					<div className={styles.popup}>
+						<Paper style={{ padding: '10px 20px' }} elevation={3}>
+							<h3
+								style={{
+									marginTop: '0px',
+									marginBottom: '5px',
+								}}>
+								Enter form name
+							</h3>
+							<form onSubmit={(event) => onSubmit(event)}>
+								<TextField
+									required={true}
+									value={name}
+									onChange={(event) =>
+										setName(event.target.value)
+									}
+									placeholder='Enter form name'></TextField>
+								<div
+									style={{
+										marginTop: '10px',
+										display: 'flex',
+										justifyContent: 'space-around',
+									}}>
+									<span>
+										<Button
+											disabled={loading}
+											variant='contained'
+											type='submit'>
+											Submit
+										</Button>
+									</span>
+									<span>
+										<Button
+											onClick={() => setBackdrop(false)}
+											variant='outlined'>
+											Cancel
+										</Button>
+									</span>
+								</div>
+							</form>
+						</Paper>
+					</div>
+				) : null}
 			</div>
 		);
 	return (

@@ -25,13 +25,6 @@ const MyOrders = () => {
 		option: (o: Order & { informations: Info[] }) => boolean;
 	}>(defaultFilters);
 
-	const handleComplete = async (pin: string) => {
-		setLoading(true);
-		await signOut({ redirect: false });
-		await signIn('credentials', { redirect: false, pin });
-		setLoading(false);
-	};
-
 	const checkIfDataFetched = async () => {
 		await fetch('/api/user/getorders')
 			.then((response) => response.json())
@@ -54,45 +47,16 @@ const MyOrders = () => {
 	}, [session]);
 
 	if (status === 'loading' || !status) return <Loading />;
-	if (status === 'unauthenticated' || !session?.user?.pin)
-		return (
-			<>
-				{!loading ? (
-					<>
-						<h1 style={{ maxWidth: '80vw' }}>
-							To see your orders you need to type in your access
-							pin
-						</h1>
-						<PinInput
-							length={6}
-							initialValue=''
-							secret
-							type='numeric'
-							inputMode='number'
-							style={{ padding: '10px' }}
-							inputStyle={{
-								borderColor: 'black',
-								borderRadius: '10px',
-								borderWidth: '3px',
-							}}
-							inputFocusStyle={{
-								borderColor: 'blue',
-								borderRadius: '10px',
-								borderWidth: '3px',
-							}}
-							onComplete={(pin) => handleComplete(pin)}
-							autoSelect={true}
-						/>
-					</>
-				) : (
-					<Loading />
-				)}
-			</>
-		);
+	if (
+		status === 'unauthenticated' ||
+		!session?.user?.pin ||
+		orders.length === 0
+	)
+		return <Loading />;
 	return (
 		<div className={styles.ordersContainer}>
 			<h2 style={{ marginTop: 0, marginBottom: 0 }}>
-				Hi {session.user.company} your pin is: {session.user.pin}
+				Hi {`${session.user.name} `} your pin is: {session.user.pin}
 			</h2>
 			<div
 				style={{
@@ -165,37 +129,34 @@ const MyOrders = () => {
 					</Select>
 				</span>
 			</div>
-			{orders.length === 0 ? (
-				<Loading />
-			) : (
-				<div className={styles.orders}>
-					{orders
-						.sort((a, b) => {
-							if (a.creationData > b.creationData) {
-								return -1;
+
+			<div className={styles.orders}>
+				{orders
+					.sort((a, b) => {
+						if (a.creationData > b.creationData) {
+							return -1;
+						}
+						if (a.creationData < b.creationData) {
+							return 1;
+						}
+						return 0;
+					})
+					.filter(filters.search)
+					.filter(filters.option)
+					.map((order, index) => (
+						<OrderCard
+							key={order.id}
+							order={order}
+							setOrders={setOrders}
+							index={index}
+							admin={
+								session?.user?.admin
+									? session?.user?.admin
+									: false
 							}
-							if (a.creationData < b.creationData) {
-								return 1;
-							}
-							return 0;
-						})
-						.filter(filters.search)
-						.filter(filters.option)
-						.map((order, index) => (
-							<OrderCard
-								key={order.id}
-								order={order}
-								setOrders={setOrders}
-								index={index}
-								admin={
-									session?.user?.admin
-										? session?.user?.admin
-										: false
-								}
-							/>
-						))}
-				</div>
-			)}
+						/>
+					))}
+			</div>
 		</div>
 	);
 };
