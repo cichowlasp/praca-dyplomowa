@@ -56,9 +56,9 @@ const OrderCard = ({
 	const [message, setMessage] = useState<string>('');
 	const [messages, setMessages] = useState<Message[]>([]);
 	const [realizationDate, setRealizationDate] = useState<{
-		start: Moment | null;
-		end: Moment | null;
-	}>({ start: null, end: null });
+		realizationDateStart: Moment | null;
+		realizationDateEnd: Moment | null;
+	}>({ realizationDateStart: null, realizationDateEnd: null });
 	const open = Boolean(anchorEl);
 	const { data: session } = useSession();
 
@@ -120,7 +120,10 @@ const OrderCard = ({
 	const updateOrder = async (data: {
 		data: {
 			reviewed: Reviewed;
-			realizationDate?: { start: Moment | null; end: Moment | null };
+			realizationDate?: {
+				realizationDateStart: Moment | null;
+				realizationDateEnd: Moment | null;
+			};
 		};
 		orderId: string;
 	}) => {
@@ -221,6 +224,12 @@ const OrderCard = ({
 								{new Date(
 									order?.realizationDateStart
 										? order?.realizationDateStart
+										: Date.now()
+								).toLocaleDateString('en-GB')}
+								{' - '}
+								{new Date(
+									order?.realizationDateEnd
+										? order?.realizationDateEnd
 										: Date.now()
 								).toLocaleDateString('en-GB')}
 							</div>

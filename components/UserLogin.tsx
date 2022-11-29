@@ -17,7 +17,7 @@ const UserLogin = () => {
 
 	return (
 		<>
-			<h1>Create Your Account</h1>
+			<h1>Welcome Back</h1>
 			<form
 				className={styles.form}
 				onSubmit={(event) => handleSubmit(event)}>
@@ -64,8 +64,17 @@ const UserLogin = () => {
 						placeholder={'Pin'}
 						fullWidth={true}
 						required={true}
-						type={'number'}
-						inputProps={{ maxLength: 6, minLength: 6 }}
+						type={'text'}
+						onKeyPress={(event) => {
+							if (!/[0-9]/.test(event.key)) {
+								event.preventDefault();
+							}
+						}}
+						inputProps={{
+							maxLength: 6,
+							minLength: 6,
+							inputMode: 'numeric',
+						}}
 						onChange={(event) =>
 							setFormData((pre) => {
 								return {

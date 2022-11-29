@@ -3,7 +3,7 @@ import { Paper, TextField, Button, CircularProgress } from '@mui/material';
 import styles from '../styles/Edit.module.css';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { validForm } from '../utils/validationSchema';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { MobileDatePicker } from '@mui/x-date-pickers';
 import moment, { Moment } from 'moment';
 import { Reviewed } from './OrderCard';
 import { Info, Order, User, Message } from '@prisma/client';
@@ -15,21 +15,21 @@ type Props = {
 	reorder: boolean;
 	date?: boolean;
 	realizationDate: {
-		start: Moment | null;
-		end: Moment | null;
+		realizationDateStart: Moment | null;
+		realizationDateEnd: Moment | null;
 	};
 	setRealizationDate: React.Dispatch<
 		React.SetStateAction<{
-			start: Moment | null;
-			end: Moment | null;
+			realizationDateStart: Moment | null;
+			realizationDateEnd: Moment | null;
 		}>
 	>;
 	updateOrder: (data: {
 		data: {
 			reviewed: Reviewed;
 			realizationDate?: {
-				start: Moment | null;
-				end: Moment | null;
+				realizationDateStart: Moment | null;
+				realizationDateEnd: Moment | null;
 			};
 		};
 		orderId: string;
@@ -122,30 +122,57 @@ const Edit = ({
 					<h3 style={{ textAlign: 'center' }}>
 						Choose realization date
 					</h3>
-					<DateTimePicker
-						minDate={moment()}
-						label='Start Date'
-						value={realizationDate?.start}
-						componentsProps={{}}
-						onChange={(newValue: Moment | null) => {
-							setRealizationDate((pre) => {
-								return { ...pre, start: newValue };
-							});
-						}}
-						renderInput={(params) => <TextField {...params} />}
-					/>
-					<DateTimePicker
-						minDate={moment()}
-						label='End Date'
-						value={realizationDate?.end}
-						componentsProps={{}}
-						onChange={(newValue: Moment | null) => {
-							setRealizationDate((pre) => {
-								return { ...pre, end: newValue };
-							});
-						}}
-						renderInput={(params) => <TextField {...params} />}
-					/>
+					<div
+						style={{
+							display: 'flex',
+							maxWidth: '350px',
+							gap: '10px',
+						}}>
+						<span>
+							<MobileDatePicker
+								minDate={moment(new Date())}
+								label='Start Date'
+								value={realizationDate?.realizationDateStart}
+								onChange={(newValue: Moment | null) => {
+									setRealizationDate((pre) => {
+										return {
+											...pre,
+											realizationDateStart: newValue,
+										};
+									});
+								}}
+								renderInput={(params) => (
+									<TextField {...params} />
+								)}
+							/>
+						</span>
+						<span>
+							<MobileDatePicker
+								minDate={
+									realizationDate.realizationDateStart
+										? moment(
+												realizationDate.realizationDateStart
+										  ).add(1, 'd')
+										: moment().add(1, 'd')
+								}
+								label='End Date'
+								value={realizationDate?.realizationDateEnd}
+								componentsProps={{}}
+								onChange={(newValue: Moment | null) => {
+									setRealizationDate((pre) => {
+										return {
+											...pre,
+											realizationDateEnd: newValue,
+										};
+									});
+								}}
+								renderInput={(params) => (
+									<TextField {...params} />
+								)}
+							/>
+						</span>
+					</div>
+
 					<div style={{ height: '20px' }} />
 					<Button
 						disabled={loading}

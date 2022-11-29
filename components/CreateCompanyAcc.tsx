@@ -87,7 +87,16 @@ const CreateCompanyAcc = ({}) => {
 							placeholder={'NIP'}
 							fullWidth={true}
 							required={true}
-							inputProps={{ minLength: 10, maxLength: 10 }}
+							inputProps={{
+								minLength: 10,
+								maxLength: 10,
+								inputMode: 'numeric',
+							}}
+							onKeyPress={(event) => {
+								if (!/[0-9]/.test(event.key)) {
+									event.preventDefault();
+								}
+							}}
 							type={'text'}
 							onChange={(event) =>
 								setFormData((pre) => {

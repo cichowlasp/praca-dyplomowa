@@ -5,11 +5,13 @@ import { unstable_getServerSession } from 'next-auth/next';
 const handler = async (req, res) => {
 	const { body } = req;
 	const { user } = await unstable_getServerSession(req, res, authOptions);
-	const data = JSON.parse(body);
+	const { data, orderId } = JSON.parse(body);
+	const realizationDate = data.realizationDate;
+	delete data.realizationDate;
 	if (user.id && user.admin === true) {
 		await prisma.order.update({
-			where: { id: data.orderId },
-			data: data.data,
+			where: { id: orderId },
+			data: { ...data, ...realizationDate },
 		});
 		return res.status(200).json('success');
 	}

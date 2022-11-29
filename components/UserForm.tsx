@@ -179,8 +179,17 @@ const UserForm = () => {
 						placeholder={'Pin'}
 						fullWidth={true}
 						required={true}
-						type={'number'}
-						inputProps={{ maxLength: 6, minLength: 6 }}
+						type={'text'}
+						onKeyPress={(event) => {
+							if (!/[0-9]/.test(event.key)) {
+								event.preventDefault();
+							}
+						}}
+						inputProps={{
+							maxLength: 6,
+							minLength: 6,
+							inputMode: 'numeric',
+						}}
 						onChange={(event) =>
 							setFormData((pre) => {
 								return {
