@@ -8,15 +8,16 @@ datasource db {
 }
 
 model Order {
-  id              String    @id @default(cuid())
-  edited          Boolean   @default(false)
-  authorId        String
-  reviewed        Reviewed  @default(NOTREVIEWED)
-  realizationDate DateTime?
-  creationData    DateTime  @default(now())
-  user            User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  informations    Info[]
-  messages        Message[]
+  id                   String    @id @default(cuid())
+  edited               Boolean   @default(false)
+  authorId             String
+  reviewed             Reviewed  @default(NOTREVIEWED)
+  realizationDateStart DateTime?
+  realizationDateEnd   DateTime?
+  creationData         DateTime  @default(now())
+  user                 User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  informations         Info[]
+  messages             Message[]
 }
 
 model Message {
@@ -40,7 +41,7 @@ model Info {
 model Company {
   id             String @id @default(cuid())
   companyName    String
-  nip            String
+  nip            String @unique
   companyEmail   String @unique
   companyAddress String
   phoneNumber    String
@@ -54,15 +55,15 @@ model User {
   name        String
   surname     String
   email       String   @unique
-  pin         String?
+  pin         String?  @unique
   password    String?
   admin       Boolean  @default(false)
   company     String
   createdAt   DateTime @default(now())
   phoneNumber String
-  orders      Order[]
-  Company     Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
   companyId   String?
+  Company     Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  orders      Order[]
 }
 
 model Form {

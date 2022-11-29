@@ -3,7 +3,7 @@ import { Paper, TextField, Button, CircularProgress } from '@mui/material';
 import styles from '../styles/Edit.module.css';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { validForm } from '../utils/validationSchema';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import moment, { Moment } from 'moment';
 import { Reviewed } from './OrderCard';
 import { Info, Order, User, Message } from '@prisma/client';
@@ -14,12 +14,23 @@ type Props = {
 	updateData: () => {};
 	reorder: boolean;
 	date?: boolean;
-	realizationDate: Moment | null;
-	setRealizationDate: React.Dispatch<React.SetStateAction<Moment | null>>;
+	realizationDate: {
+		start: Moment | null;
+		end: Moment | null;
+	};
+	setRealizationDate: React.Dispatch<
+		React.SetStateAction<{
+			start: Moment | null;
+			end: Moment | null;
+		}>
+	>;
 	updateOrder: (data: {
 		data: {
 			reviewed: Reviewed;
-			realizationDate?: moment.Moment | null | undefined;
+			realizationDate?: {
+				start: Moment | null;
+				end: Moment | null;
+			};
 		};
 		orderId: string;
 	}) => Promise<void>;
@@ -111,12 +122,27 @@ const Edit = ({
 					<h3 style={{ textAlign: 'center' }}>
 						Choose realization date
 					</h3>
-					<DatePicker
+					<DateTimePicker
 						minDate={moment()}
-						label='Realization Date'
-						value={realizationDate}
+						label='Start Date'
+						value={realizationDate?.start}
+						componentsProps={{}}
 						onChange={(newValue: Moment | null) => {
-							setRealizationDate(newValue);
+							setRealizationDate((pre) => {
+								return { ...pre, start: newValue };
+							});
+						}}
+						renderInput={(params) => <TextField {...params} />}
+					/>
+					<DateTimePicker
+						minDate={moment()}
+						label='End Date'
+						value={realizationDate?.end}
+						componentsProps={{}}
+						onChange={(newValue: Moment | null) => {
+							setRealizationDate((pre) => {
+								return { ...pre, end: newValue };
+							});
 						}}
 						renderInput={(params) => <TextField {...params} />}
 					/>

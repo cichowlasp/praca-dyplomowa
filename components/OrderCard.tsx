@@ -21,7 +21,7 @@ import MessageIcon from '@mui/icons-material/Message';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Edit from './Edit';
 import SendIcon from '@mui/icons-material/Send';
-import moment, { Moment } from 'moment';
+import { Moment } from 'moment';
 import { Order, Info, Message, User } from '@prisma/client';
 import Loading from './Loading';
 
@@ -55,9 +55,10 @@ const OrderCard = ({
 	const [expanded, setExpanded] = useState<boolean>(false);
 	const [message, setMessage] = useState<string>('');
 	const [messages, setMessages] = useState<Message[]>([]);
-	const [realizationDate, setRealizationDate] = useState<Moment | null>(
-		moment()
-	);
+	const [realizationDate, setRealizationDate] = useState<{
+		start: Moment | null;
+		end: Moment | null;
+	}>({ start: null, end: null });
 	const open = Boolean(anchorEl);
 	const { data: session } = useSession();
 
@@ -119,7 +120,7 @@ const OrderCard = ({
 	const updateOrder = async (data: {
 		data: {
 			reviewed: Reviewed;
-			realizationDate?: Moment | null;
+			realizationDate?: { start: Moment | null; end: Moment | null };
 		};
 		orderId: string;
 	}) => {
@@ -218,8 +219,8 @@ const OrderCard = ({
 							Approved, realization date:
 							<div>
 								{new Date(
-									order.realizationDate
-										? order.realizationDate
+									order?.realizationDateStart
+										? order?.realizationDateStart
 										: Date.now()
 								).toLocaleDateString('en-GB')}
 							</div>
