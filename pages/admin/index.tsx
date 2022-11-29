@@ -22,12 +22,12 @@ const Home = () => {
 	const [usersData, setUsersData] = useState<User[] | null>(null);
 
 	useEffect(() => {
-		if (session?.user.admin) {
+		if (session?.user?.admin) {
 			fetch('/api/admin/getalldata')
 				.then((response) => response.json())
 				.then((data) => setUsersData(data));
 		}
-	}, [session?.user.admin, setUsersData]);
+	}, [session?.user?.admin, setUsersData]);
 
 	if (status === 'loading') return <></>;
 	if (status === 'authenticated' && session.user?.admin) {
