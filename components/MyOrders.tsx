@@ -25,6 +25,7 @@ const MyOrders = () => {
 	}>(defaultFilters);
 
 	const checkIfDataFetched = async () => {
+		setLoading(true);
 		await fetch('/api/user/getorders')
 			.then((response) => response.json())
 			.then((data) => setOrders(data))
@@ -32,6 +33,7 @@ const MyOrders = () => {
 				console.error(err);
 				return Promise.reject();
 			});
+		setLoading(false);
 	};
 
 	useEffect(() => {
@@ -67,13 +69,8 @@ const MyOrders = () => {
 			});
 	};
 
-	if (status === 'loading' || !status) return <Loading />;
-	if (
-		status === 'unauthenticated' ||
-		!session?.user?.pin ||
-		orders.length === 0
-	)
-		return <Loading />;
+	if (status === 'loading' || !status || loading) return <Loading />;
+	if (status === 'unauthenticated' || !session?.user?.pin) return <Loading />;
 	return (
 		<div className={styles.ordersContainer}>
 			<h2 style={{ marginTop: 0, marginBottom: 0 }}>
@@ -150,34 +147,39 @@ const MyOrders = () => {
 					</Select>
 				</span>
 			</div>
-
-			<div className={styles.orders}>
-				{orders
-					.sort((a, b) => {
-						if (a.creationData > b.creationData) {
-							return -1;
-						}
-						if (a.creationData < b.creationData) {
-							return 1;
-						}
-						return 0;
-					})
-					.filter(filters.search)
-					.filter(filters.option)
-					.map((order, index) => (
-						<OrderCard
-							key={order.id}
-							order={order}
-							updateData={updateData}
-							index={index}
-							admin={
-								session?.user?.admin
-									? session?.user?.admin
-									: false
+			{orders.length === 0 ? (
+				<div className={styles.orders}>
+					<h3>{"You don't have any orders :c"}</h3>
+				</div>
+			) : (
+				<div className={styles.orders}>
+					{orders
+						.sort((a, b) => {
+							if (a.creationData > b.creationData) {
+								return -1;
 							}
-						/>
-					))}
-			</div>
+							if (a.creationData < b.creationData) {
+								return 1;
+							}
+							return 0;
+						})
+						.filter(filters.search)
+						.filter(filters.option)
+						.map((order, index) => (
+							<OrderCard
+								key={order.id}
+								order={order}
+								updateData={updateData}
+								index={index}
+								admin={
+									session?.user?.admin
+										? session?.user?.admin
+										: false
+								}
+							/>
+						))}
+				</div>
+			)}
 		</div>
 	);
 };

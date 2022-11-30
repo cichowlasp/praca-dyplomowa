@@ -25,13 +25,21 @@ const CreateCompanyAcc = ({}) => {
 			method: 'POST',
 			body: JSON.stringify(formData),
 		})
-			.then((data) => data.json())
+			.then((data) => {
+				return data.json();
+			})
 			.then(async (company) => {
+				console.log(company);
+				if (company?.meta) {
+					setError(`Error try different ${company.meta?.target}`);
+					return;
+				}
 				await signIn('credentials', {
 					companyEmail: company.companyEmail,
 					id: company.id,
 				});
 			});
+
 		setLoading(false);
 	};
 

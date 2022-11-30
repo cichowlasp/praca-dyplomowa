@@ -13,16 +13,20 @@ const handler = async (req, res) => {
 				createUserPin: true,
 			},
 		})
-	).map((el) => el.pin);
+	).map((el) => el.createUserPin);
 	let pin = `${Math.floor(100000 + Math.random() * 900000)}`;
 	while (pins.includes(pin)) {
 		pin = `${Math.floor(100000 + Math.random() * 900000)}`;
 	}
 
-	const user = await prisma.company.create({
-		data: { ...data, createUserPin: pin },
-	});
-	return res.status(200).json(user);
+	try {
+		const company = await prisma.company.create({
+			data: { ...data, createUserPin: pin },
+		});
+		return res.status(200).json(company);
+	} catch (error) {
+		return res.status(400).json(error);
+	}
 };
 
 export default handler;

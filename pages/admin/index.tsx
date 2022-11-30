@@ -8,7 +8,7 @@ import { Button, ButtonGroup } from '@mui/material';
 import AdminOrders from '../../components/AdminOrders';
 import AdminUsers from '../../components/AdminUsers';
 import AdminForms from '../../components/AdminForms';
-import { Company, Message, User, Order } from '@prisma/client';
+import { Company, Message, User, Order, Info } from '@prisma/client';
 
 export enum PageOption {
 	orders = 'orders',
@@ -22,8 +22,10 @@ const Home = () => {
 	const [companiesData, setCompaniesData] = useState<
 		| (Company & {
 				users: User[] & {
-					messages: Message[];
-					orders: Order[];
+					orders: Order[] & {
+						messages: Message[];
+						informations: Info[];
+					};
 				};
 		  })[]
 		| null
