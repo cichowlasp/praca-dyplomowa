@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { signIn, signOut, useSession } from 'next-auth/react';
 import Loading from './Loading';
-import PinInput from 'react-pin-input';
 import { TextField, Select, MenuItem } from '@mui/material';
 import styles from '../styles/MyOrders.module.css';
 import OrderCard from './OrderCard';
@@ -45,6 +44,28 @@ const MyOrders = () => {
 			abortController.abort();
 		};
 	}, [session]);
+
+	const updateData = async (
+		localLoading?: React.Dispatch<React.SetStateAction<boolean>>
+	) => {
+		if (localLoading) {
+			localLoading(true);
+			await fetch('/api/user/getorders')
+				.then((response) => response.json())
+				.then((data) => setOrders(data))
+				.catch((err) => {
+					console.error(err);
+				});
+			localLoading(false);
+			return;
+		}
+		await fetch('/api/user/getorders')
+			.then((response) => response.json())
+			.then((data) => setOrders(data))
+			.catch((err) => {
+				console.error(err);
+			});
+	};
 
 	if (status === 'loading' || !status) return <Loading />;
 	if (
@@ -147,7 +168,7 @@ const MyOrders = () => {
 						<OrderCard
 							key={order.id}
 							order={order}
-							setOrders={setOrders}
+							updateData={updateData}
 							index={index}
 							admin={
 								session?.user?.admin

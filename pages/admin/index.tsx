@@ -8,7 +8,7 @@ import { Button, ButtonGroup } from '@mui/material';
 import AdminOrders from '../../components/AdminOrders';
 import AdminUsers from '../../components/AdminUsers';
 import AdminForms from '../../components/AdminForms';
-import { User } from '@prisma/client';
+import { Company, Message, User, Order } from '@prisma/client';
 
 export enum PageOption {
 	orders = 'orders',
@@ -19,15 +19,23 @@ export enum PageOption {
 const Home = () => {
 	const { data: session, status } = useSession();
 	const [pageOption, setPageOption] = useState<PageOption>(PageOption.orders);
-	const [usersData, setUsersData] = useState<User[] | null>(null);
+	const [companiesData, setCompaniesData] = useState<
+		| (Company & {
+				users: User[] & {
+					messages: Message[];
+					orders: Order[];
+				};
+		  })[]
+		| null
+	>(null);
 
 	useEffect(() => {
 		if (session?.user?.admin) {
 			fetch('/api/admin/getalldata')
 				.then((response) => response.json())
-				.then((data) => setUsersData(data));
+				.then((data) => setCompaniesData(data));
 		}
-	}, [session?.user?.admin, setUsersData]);
+	}, [session?.user?.admin, setCompaniesData]);
 
 	if (status === 'loading') return <></>;
 	if (status === 'authenticated' && session.user?.admin) {
@@ -89,8 +97,8 @@ const Home = () => {
 						{pageOption === PageOption.orders && <AdminOrders />}
 						{pageOption === PageOption.users && (
 							<AdminUsers
-								data={usersData}
-								setUsersData={setUsersData}
+								data={companiesData}
+								setUsersData={setCompaniesData}
 							/>
 						)}
 						{pageOption === PageOption.form && <AdminForms />}

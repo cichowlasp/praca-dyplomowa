@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import styles from '../styles/MainForm.module.css';
 import { TextField, Button } from '@mui/material';
+import { signIn } from 'next-auth/react';
+import Loading from './Loading';
 
 const UserForm = () => {
+	const [loading, setLoading] = useState(false);
 	const [formData, setFormData] = useState({
 		email: '',
 		name: '',
@@ -14,13 +17,24 @@ const UserForm = () => {
 
 	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
+		setLoading(true);
 		fetch('/api/user/createnewuser', {
 			method: 'POST',
 			body: JSON.stringify(formData),
 		})
 			.then((data) => data.json())
-			.then((user) => console.log(user));
+			.then(
+				async (user) =>
+					await signIn('credentials', {
+						redirect: false,
+						secretPhrase: formData.secretPhrase,
+						pin: user.pin,
+					})
+			);
+		setLoading(false);
 	};
+
+	if (loading) return <Loading />;
 
 	return (
 		<>

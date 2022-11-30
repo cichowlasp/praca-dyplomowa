@@ -5,23 +5,27 @@ import prisma from '../../../lib/prisma';
 const handler = async (req, res) => {
 	const { user } = await unstable_getServerSession(req, res, authOptions);
 	if (user.id && user.admin === true) {
-		const orders = await prisma.user.findMany({
+		const orders = await prisma.company.findMany({
 			where: {
-				pin: { not: null },
+				NOT: { companyEmail: undefined },
 			},
-			orderBy: { id: 'asc' },
 			include: {
-				orders: {
-					orderBy: { creationData: 'desc' },
+				users: {
+					orderBy: { id: 'asc' },
 					include: {
-						informations: {
-							orderBy: {
-								index: 'asc',
-							},
-						},
-						messages: {
-							orderBy: {
-								date: 'asc',
+						orders: {
+							orderBy: { creationData: 'desc' },
+							include: {
+								informations: {
+									orderBy: {
+										index: 'asc',
+									},
+								},
+								messages: {
+									orderBy: {
+										date: 'asc',
+									},
+								},
 							},
 						},
 					},

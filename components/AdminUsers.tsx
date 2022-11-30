@@ -2,21 +2,38 @@ import React, { Dispatch, useState, SetStateAction } from 'react';
 import UserCard from './UserCard';
 import styles from '../styles/AdminUsers.module.css';
 import { TextField } from '@mui/material';
-import { User } from '@prisma/client';
+import { Company, User, Message, Order } from '@prisma/client';
 
 const AdminUsers = ({
 	data,
 	setUsersData,
 }: {
-	data: User[] | null;
-	setUsersData: Dispatch<SetStateAction<User[] | null>>;
+	data:
+		| (Company & {
+				users: User[] & {
+					messages: Message[];
+					orders: Order[];
+				};
+		  })[]
+		| null;
+	setUsersData: Dispatch<
+		SetStateAction<
+			| (Company & {
+					users: User[] & {
+						messages: Message[];
+						orders: Order[];
+					};
+			  })[]
+			| null
+		>
+	>;
 }) => {
 	const [searchInputValue, setSearchInputValue] = useState('');
 	const defaultFilters = {
 		search: () => true,
 	};
 	const [filters, setFilters] = useState<{
-		search: (o: User) => boolean;
+		search: (o: Company) => boolean;
 	}>(defaultFilters);
 
 	return (
@@ -30,7 +47,7 @@ const AdminUsers = ({
 					marginBottom: '20px',
 					width: '20rem',
 				}}>
-				<span>
+				{/* <span>
 					<TextField
 						style={{ borderRadius: '50%' }}
 						placeholder='Search'
@@ -58,17 +75,30 @@ const AdminUsers = ({
 						}}>
 						Search
 					</TextField>
-				</span>
+				</span> */}
 			</div>
 			<div className={styles.orders}>
-				{data?.filter(filters.search).map((el, index) => (
-					<UserCard
-						setUsersData={setUsersData}
-						key={index}
-						user={el}
-						index={index}
-					/>
-				))}
+				{data?.map(
+					(
+						el: Company & {
+							users: User[] & {
+								messages: Message[];
+								orders: Order[];
+							};
+						}
+					) => (
+						<>
+							{el.users.map((el, index) => (
+								<UserCard
+									setUsersData={setUsersData}
+									key={index}
+									user={el}
+									index={index}
+								/>
+							))}
+						</>
+					)
+				)}
 			</div>
 		</>
 	);

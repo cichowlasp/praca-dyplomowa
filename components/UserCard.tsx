@@ -31,15 +31,17 @@ const UserCard = ({
 	};
 	const open = Boolean(anchorEl);
 
-	const deleteUser = async (id: string) => {
+	const deleteUser = async () => {
 		setLoading(true);
 		await fetch('/api/admin/deleteuser', {
 			method: 'POST',
-			body: id,
+			body: JSON.stringify(user),
 		});
-		await fetch('/api/admin/getalldata')
+		await fetch('/api/company/getusers')
 			.then((response) => response.json())
-			.then((data) => setUsersData(data));
+			.then(({ users }) => {
+				setUsersData(users);
+			});
 		setLoading(false);
 		handleClose();
 	};
@@ -185,7 +187,7 @@ const UserCard = ({
 							<div>
 								<MenuItem
 									onClick={() => {
-										deleteUser(user.id);
+										deleteUser();
 									}}>
 									<DeleteForeverIcon fontSize='large' />
 									Delete User

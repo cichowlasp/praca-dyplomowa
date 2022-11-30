@@ -22,7 +22,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Edit from './Edit';
 import SendIcon from '@mui/icons-material/Send';
 import { Moment } from 'moment';
-import { Order, Info, Message, User } from '@prisma/client';
+import { Order, Info, Message, User, Company } from '@prisma/client';
 import Loading from './Loading';
 
 export enum Reviewed {
@@ -33,18 +33,19 @@ export enum Reviewed {
 
 const OrderCard = ({
 	order,
-	setOrders,
+	updateData,
+	user,
 	index,
 	admin,
 }: {
 	order: Order & { informations: Info[]; messages: Message[] };
-	setOrders: React.Dispatch<
-		React.SetStateAction<
-			(Order & { informations: Info[]; messages: Message[] })[]
-		>
-	>;
+	updateData: (
+		localLoading?: React.Dispatch<React.SetStateAction<boolean>>
+	) => {};
+
 	index: number;
 	admin: boolean;
+	user?: User;
 }) => {
 	const { palette } = useTheme();
 	const [loading, setLoading] = useState<boolean>(false);
@@ -69,7 +70,7 @@ const OrderCard = ({
 
 	const bottomRef = useRef<null | HTMLDivElement>(null);
 
-	if (session === null) {
+	if (session === null || session === undefined) {
 		return <Loading />;
 	}
 	const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -96,8 +97,11 @@ const OrderCard = ({
 						id,
 						date: new Date(),
 						message,
-						name: user === undefined ? 'Anonymous' : user,
+						name: `${
+							session.user?.name
+						} ${session.user?.surname?.substring(0, 1)}`,
 						orderId: id,
+						from: session.user?.admin ? 'ADMIN' : 'USER',
 					},
 				]);
 			}
@@ -109,12 +113,6 @@ const OrderCard = ({
 		});
 		setMessage('');
 		setLoading(false);
-	};
-
-	const updateData = async () => {
-		await fetch('/api/user/getorders')
-			.then((response) => response.json())
-			.then((data) => setOrders(data));
 	};
 
 	const updateOrder = async (data: {
@@ -143,27 +141,12 @@ const OrderCard = ({
 			method: 'POST',
 			body: id,
 		});
-		if (admin) {
-			await fetch('/api/admin/getalldata')
-				.then((response) => response.json())
-				.then((data) =>
-					setOrders(
-						data
-							.map((el: User & { orders: Order[] }) => el.orders)
-							.flat(1)
-					)
-				);
-		} else {
-			await updateData();
-		}
+
+		await updateData(setLoading);
 
 		setLoading(false);
 		handleClose();
 	};
-
-	const user = session?.user?.name
-		? session?.user?.name
-		: session?.user?.company;
 
 	const StyledMenu = styled((props: MenuProps) => (
 		<Menu elevation={0} {...props} />
@@ -209,6 +192,8 @@ const OrderCard = ({
 							? 'rgba(0, 0, 0, 0.0)'
 							: 'rgba(255, 0, 0, 0.3)',
 					height: expanded ? 'fit-content' : '8rem',
+					marginTop: session.user?.admin ? '0' : '1rem',
+					marginBottom: session.user?.admin ? '1rem' : '0',
 				}}
 				key={index}>
 				<div
@@ -245,6 +230,57 @@ const OrderCard = ({
 					)}
 
 					<div style={{ maxHeight: '100%', overflow: 'hidden' }}>
+						{user ? (
+							<>
+								<div>
+									<span
+										style={{
+											fontWeight: 'bold',
+											textAlign: 'left',
+										}}>
+										Name:
+									</span>
+									<span
+										style={{
+											paddingLeft: '3px',
+										}}>
+										{`${user.name} ${user.surname}`}
+									</span>
+								</div>
+								<div>
+									<span
+										style={{
+											fontWeight: 'bold',
+											textAlign: 'left',
+										}}>
+										Email:
+									</span>
+									<span
+										style={{
+											paddingLeft: '3px',
+										}}>
+										{`${user.email}`}
+									</span>
+								</div>
+								<div>
+									<span
+										style={{
+											fontWeight: 'bold',
+											textAlign: 'left',
+										}}>
+										Phone:
+									</span>
+									<span
+										style={{
+											paddingLeft: '3px',
+										}}>
+										{`${user.phoneNumber}`}
+									</span>
+								</div>
+							</>
+						) : (
+							<></>
+						)}
 						<div>
 							<span
 								style={{
@@ -296,17 +332,17 @@ const OrderCard = ({
 										key={el.id}
 										style={{
 											marginLeft:
-												session?.user?.name ===
-													el.name ||
-												session?.user?.company ===
-													el.name
+												(el.from === 'USER' &&
+													!session.user?.admin) ||
+												(el.from === 'ADMIN' &&
+													session.user?.admin)
 													? 'auto'
 													: '',
 											marginRight:
-												session?.user?.name ===
-													el.name ||
-												session?.user?.company ===
-													el.name
+												(el.from === 'USER' &&
+													!session.user?.admin) ||
+												(el.from === 'ADMIN' &&
+													session.user?.admin)
 													? ''
 													: 'auto',
 										}}
@@ -324,10 +360,10 @@ const OrderCard = ({
 										<div
 											style={{
 												textAlign:
-													session?.user?.name ===
-														el.name ||
-													session?.user?.company ===
-														el.name
+													(el.from === 'USER' &&
+														!session.user?.admin) ||
+													(el.from === 'ADMIN' &&
+														session.user?.admin)
 														? 'right'
 														: 'left',
 											}}
@@ -337,10 +373,10 @@ const OrderCard = ({
 										<div
 											style={{
 												textAlign:
-													session?.user?.name ===
-														el.name ||
-													session?.user?.company ===
-														el.name
+													(el.from === 'USER' &&
+														!session.user?.admin) ||
+													(el.from === 'ADMIN' &&
+														session.user?.admin)
 														? 'right'
 														: 'left',
 											}}
@@ -402,7 +438,11 @@ const OrderCard = ({
 					</svg>
 				</div>
 				{messages.length !== 0 ? (
-					messages.at(-1)?.name !== user ? (
+					messages.at(-1)?.name !==
+					`${session.user?.name} ${session.user?.surname?.substring(
+						0,
+						1
+					)}` ? (
 						<div className={styles.dot} />
 					) : (
 						<></>
@@ -511,21 +551,7 @@ const OrderCard = ({
 											orderId: order.id,
 										});
 										setLoading(false);
-										fetch('/api/admin/getalldata')
-											.then((response) => response.json())
-											.then((data) =>
-												setOrders(
-													data
-														.map(
-															(
-																el: User & {
-																	orders: Order[];
-																}
-															) => el.orders
-														)
-														.flat(1)
-												)
-											);
+										await updateData(setLoading);
 										handleClose();
 									}}>
 									<CloseIcon fontSize='large' />
@@ -561,7 +587,6 @@ const OrderCard = ({
 					realizationDate={realizationDate}
 					date={date}
 					updateOrder={updateOrder}
-					setOrders={setOrders}
 				/>
 			)}
 		</div>

@@ -23,6 +23,7 @@ model Order {
 model Message {
   id      String   @id @default(cuid())
   date    DateTime @default(now())
+  from    From     @default(USER)
   name    String
   message String
   orderId String?
@@ -120,4 +121,9 @@ enum Reviewed {
   APPROVED
   DECLINE
   NOTREVIEWED
+}
+
+enum From {
+  USER
+  ADMIN
 }

@@ -11,7 +11,9 @@ import { Info, Order, User, Message } from '@prisma/client';
 type Props = {
 	order: Order & { informations: Info[] };
 	setEditView: React.Dispatch<React.SetStateAction<boolean>>;
-	updateData: () => {};
+	updateData: (
+		loaclLoading?: React.Dispatch<React.SetStateAction<boolean>>
+	) => {};
 	reorder: boolean;
 	date?: boolean;
 	realizationDate: {
@@ -34,11 +36,6 @@ type Props = {
 		};
 		orderId: string;
 	}) => Promise<void>;
-	setOrders: Dispatch<
-		SetStateAction<
-			(Order & { informations: Info[]; messages: Message[] })[]
-		>
-	>;
 };
 
 const Edit = ({
@@ -50,7 +47,6 @@ const Edit = ({
 	date,
 	realizationDate,
 	updateOrder,
-	setOrders,
 }: Props) => {
 	const [editedInfo, setEditedInfo] = useState<Info[]>(order.informations);
 	const [loading, setLoading] = useState<boolean>(false);
@@ -188,19 +184,7 @@ const Edit = ({
 
 							await fetch('/api/admin/getalldata')
 								.then((response) => response.json())
-								.then((data) =>
-									setOrders(
-										data
-											.map(
-												(
-													el: User & {
-														orders: Order[];
-													}
-												) => el.orders
-											)
-											.flat(1)
-									)
-								);
+								.then(() => updateData(setLoading));
 							setEditView(false);
 						}}
 						variant='contained'>

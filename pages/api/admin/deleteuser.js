@@ -4,10 +4,14 @@ import { unstable_getServerSession } from 'next-auth/next';
 
 const handler = async (req, res) => {
 	const { body } = req;
-	const { user } = await unstable_getServerSession(req, res, authOptions);
-	if (body && user.admin === true) {
+	const user = JSON.parse(body);
+	const session = await unstable_getServerSession(req, res, authOptions);
+	if (
+		(body && session?.user.admin === true) ||
+		session?.company.id === user.companyId
+	) {
 		await prisma.user.delete({
-			where: { id: body },
+			where: { id: user.id },
 		});
 		return res.status(200).json('success');
 	}

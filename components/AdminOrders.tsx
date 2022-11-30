@@ -5,12 +5,19 @@ import styles from '../styles/AdminOrders.module.css';
 import OrderCard from './OrderCard';
 import { Reviewed } from './OrderCard';
 import { TextField, Select, MenuItem } from '@mui/material';
-import { Info, Order, User, Message } from '@prisma/client';
+import { Info, Order, User, Message, Company } from '@prisma/client';
 
 const AdminOrders = ({}: {}) => {
 	const { data: session, status } = useSession();
-	const [orders, setOrders] = useState<
-		(Order & { informations: Info[]; messages: Message[] })[]
+	const [companies, setCompanies] = useState<
+		(Company & {
+			users: (User & {
+				orders: (Order & {
+					informations: Info[];
+					messages: Message[];
+				})[];
+			})[];
+		})[]
 	>([]);
 	const [searchInputValue, setSearchInputValue] = useState('');
 	const [selectValue, setSelectValue] = useState('');
@@ -31,15 +38,31 @@ const AdminOrders = ({}: {}) => {
 		if (session?.user?.admin) {
 			fetch('/api/admin/getalldata')
 				.then((response) => response.json())
-				.then((data) =>
-					setOrders(
-						data
-							.map((el: User & { orders: Order[] }) => el.orders)
-							.flat(1)
-					)
-				);
+				.then((data) => {
+					setCompanies(data);
+				});
 		}
-	}, [session?.user?.admin, setOrders]);
+	}, [session?.user?.admin, setCompanies]);
+
+	const updateData = async (
+		localLoading?: React.Dispatch<React.SetStateAction<boolean>>
+	) => {
+		if (localLoading) {
+			localLoading(true);
+			await fetch('/api/admin/getalldata')
+				.then((response) => response.json())
+				.then((data) => {
+					setCompanies(data);
+				});
+			localLoading(false);
+			return;
+		}
+		await fetch('/api/admin/getalldata')
+			.then((response) => response.json())
+			.then((data) => {
+				setCompanies(data);
+			});
+	};
 
 	if (status === 'loading' || !status) return <Loading />;
 	if (status === 'unauthenticated' || !session?.user?.admin)
@@ -124,31 +147,55 @@ const AdminOrders = ({}: {}) => {
 				</span>
 			</div>
 			<div className={styles.ordersContainer}>
-				{orders.length === 0 ? (
+				{companies.length === 0 ? (
 					<Loading />
 				) : (
 					<div className={styles.orders}>
-						{orders
-							.sort((a, b) => {
-								if (a.creationData > b.creationData) {
-									return -1;
-								}
-								if (a.creationData < b.creationData) {
-									return 1;
-								}
-								return 0;
-							})
-							?.filter(filters.search)
-							?.filter(filters.option)
-							?.map((order, index) => (
-								<OrderCard
-									key={order.id}
-									order={order}
-									index={index}
-									admin={true}
-									setOrders={setOrders}
-								/>
-							))}
+						{companies.map((company) => {
+							return (
+								<div key={company.id}>
+									<h1 style={{ margin: 0 }}>
+										{company.companyName}
+									</h1>
+									{company.users?.map((user) => {
+										return (
+											<>
+												{user.orders
+													?.sort((a, b) => {
+														if (
+															a.creationData >
+															b.creationData
+														) {
+															return -1;
+														}
+														if (
+															a.creationData <
+															b.creationData
+														) {
+															return 1;
+														}
+														return 0;
+													})
+													?.filter(filters.search)
+													?.filter(filters.option)
+													?.map((order, index) => (
+														<OrderCard
+															key={order.id}
+															order={order}
+															index={index}
+															admin={true}
+															user={user}
+															updateData={
+																updateData
+															}
+														/>
+													))}
+											</>
+										);
+									})}
+								</div>
+							);
+						})}
 					</div>
 				)}
 			</div>

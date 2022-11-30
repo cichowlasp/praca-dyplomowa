@@ -10,6 +10,7 @@ const MyCompany = () => {
 	const [loading, setLoading] = useState<boolean>(false);
 	const [error, setError] = useState<string>('');
 	const [users, setUsers] = useState<User[] | null>(null);
+	const [pin, setPin] = useState<string | null>(null);
 	const [loginInfo, setLoginInfo] = useState({
 		companyEmail: '',
 		id: '',
@@ -22,7 +23,10 @@ const MyCompany = () => {
 		if (session?.company?.id) {
 			fetch('/api/company/getusers')
 				.then((response) => response.json())
-				.then(({ users }) => setUsers(users));
+				.then(({ users, createUserPin }) => {
+					setUsers(users);
+					setPin(createUserPin);
+				});
 		}
 	}, [session?.company?.id]);
 
@@ -131,7 +135,7 @@ const MyCompany = () => {
 					<h2 style={{ marginTop: 0 }}>
 						<span>Pin to create user account:</span>{' '}
 						<span style={{ color: palette.primary.main }}>
-							{session.company.createUserPin}
+							{pin ? pin : session.company.createUserPin}
 						</span>
 					</h2>
 					<div style={{ height: '100%', overflow: 'hidden' }}>
@@ -149,6 +153,7 @@ const MyCompany = () => {
 											flexDirection: 'column',
 											height: 'calc(100% - 20px)',
 											overflowY: 'auto',
+											textAlign: 'left',
 										}}>
 										{users?.map(
 											(user: User, index: number) => {

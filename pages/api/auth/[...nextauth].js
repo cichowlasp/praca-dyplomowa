@@ -55,7 +55,7 @@ export const authOptions = {
 					const user = await company.users.find(
 						(user) => user.pin === credentials.pin
 					);
-					console.log(user);
+
 					if (user) return user;
 					return null;
 				}

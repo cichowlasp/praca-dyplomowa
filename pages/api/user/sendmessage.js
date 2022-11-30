@@ -12,7 +12,8 @@ const handler = async (req, res) => {
 			data: {
 				orderId,
 				message,
-				name: user?.name ? user.name : user.company,
+				name: `${user.name} ${user.surname[0]}`,
+				from: user.admin ? 'ADMIN' : 'USER',
 			},
 		});
 		return res.status(200).json(response);
