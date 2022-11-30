@@ -327,9 +327,8 @@ const OrderCard = ({
 							}}
 							className={styles.chat}>
 							{messages?.map((el) => (
-								<>
+								<div key={el.id}>
 									<div
-										key={el.id}
 										style={{
 											marginLeft:
 												(el.from === 'USER' &&
@@ -384,7 +383,7 @@ const OrderCard = ({
 											{el.message}
 										</div>
 									</div>
-								</>
+								</div>
 							))}
 							<div ref={bottomRef} />
 						</div>

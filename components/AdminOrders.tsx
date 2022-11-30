@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import Loading from './Loading';
 import styles from '../styles/AdminOrders.module.css';
-import OrderCard from './OrderCard';
+import OrderWithCompany from './OrderWithCompany';
 import { Reviewed } from './OrderCard';
 import { TextField, Select, MenuItem } from '@mui/material';
 import { Info, Order, User, Message, Company } from '@prisma/client';
 
-const AdminOrders = ({}: {}) => {
+const AdminOrders = () => {
 	const { data: session, status } = useSession();
 	const [companies, setCompanies] = useState<
 		(Company & {
@@ -99,16 +99,20 @@ const AdminOrders = ({}: {}) => {
 													name: string;
 													fill: string;
 												}) => {
-													return el.fill
-														.toLowerCase()
-														.includes(
-															event.target.value
-																.trim()
-																.toLowerCase()
-														);
+													return (
+														el.fill.toLowerCase() +
+														' ' +
+														el.name
+															.toLocaleLowerCase
+													);
 												}
 											)
-											.includes(true);
+											.join(' ')
+											.includes(
+												event.target.value
+													.trim()
+													.toLowerCase()
+											);
 									},
 								};
 							});
@@ -153,47 +157,12 @@ const AdminOrders = ({}: {}) => {
 					<div className={styles.orders}>
 						{companies.map((company) => {
 							return (
-								<div key={company.id}>
-									<h1 style={{ margin: 0 }}>
-										{company.companyName}
-									</h1>
-									{company.users?.map((user) => {
-										return (
-											<>
-												{user.orders
-													?.sort((a, b) => {
-														if (
-															a.creationData >
-															b.creationData
-														) {
-															return -1;
-														}
-														if (
-															a.creationData <
-															b.creationData
-														) {
-															return 1;
-														}
-														return 0;
-													})
-													?.filter(filters.search)
-													?.filter(filters.option)
-													?.map((order, index) => (
-														<OrderCard
-															key={order.id}
-															order={order}
-															index={index}
-															admin={true}
-															user={user}
-															updateData={
-																updateData
-															}
-														/>
-													))}
-											</>
-										);
-									})}
-								</div>
+								<OrderWithCompany
+									key={company.id}
+									company={company}
+									updateData={updateData}
+									filters={filters}
+								/>
 							);
 						})}
 					</div>

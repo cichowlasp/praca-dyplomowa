@@ -100,16 +100,15 @@ const MyOrders = () => {
 													name: string;
 													fill: string;
 												}) => {
-													return el.fill
-														.toLowerCase()
-														.includes(
-															event.target.value
-																.trim()
-																.toLowerCase()
-														);
+													return el.fill.toLowerCase();
 												}
 											)
-											.includes(true);
+											.join(' ')
+											.includes(
+												event.target.value
+													.trim()
+													.toLowerCase()
+											);
 									},
 								};
 							});
