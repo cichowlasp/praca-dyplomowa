@@ -6,7 +6,7 @@ import { Company, User, Message, Order } from '@prisma/client';
 
 const AdminUsers = ({
 	data,
-	setUsersData,
+	updateData,
 }: {
 	data:
 		| (Company & {
@@ -16,17 +16,7 @@ const AdminUsers = ({
 				};
 		  })[]
 		| null;
-	setUsersData: Dispatch<
-		SetStateAction<
-			| (Company & {
-					users: User[] & {
-						messages: Message[];
-						orders: Order[];
-					};
-			  })[]
-			| null
-		>
-	>;
+	updateData: () => {};
 }) => {
 	const [searchInputValue, setSearchInputValue] = useState('');
 	const defaultFilters = {
@@ -90,7 +80,7 @@ const AdminUsers = ({
 						<>
 							{el.users.map((el, index) => (
 								<UserCard
-									setUsersData={setUsersData}
+									updateData={updateData}
 									key={index}
 									user={el}
 									index={index}

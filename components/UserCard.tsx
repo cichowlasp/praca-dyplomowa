@@ -10,15 +10,15 @@ import {
 } from '@mui/material';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import styles from '../styles/UserCard.module.css';
-import { User } from '@prisma/client';
+import { User, Company, Message, Order } from '@prisma/client';
 
 const UserCard = ({
 	user,
-	setUsersData,
+	updateData,
 }: {
 	user: User;
 	index: number;
-	setUsersData: Dispatch<SetStateAction<User[] | null>>;
+	updateData: () => {};
 }) => {
 	const { palette } = useTheme();
 	const [loading, setLoading] = useState<boolean>(false);
@@ -37,11 +37,7 @@ const UserCard = ({
 			method: 'POST',
 			body: JSON.stringify(user),
 		});
-		await fetch('/api/company/getusers')
-			.then((response) => response.json())
-			.then(({ users }) => {
-				setUsersData(users);
-			});
+		await updateData();
 		setLoading(false);
 		handleClose();
 	};

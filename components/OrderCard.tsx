@@ -406,7 +406,9 @@ const OrderCard = ({
 							<Button
 								variant='contained'
 								size='small'
-								disabled={loading}
+								disabled={
+									loading || message.trim().length === 0
+								}
 								style={{
 									maxWidth: '40px',
 									maxHeight: '40px',

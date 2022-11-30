@@ -32,6 +32,14 @@ const MyCompany = () => {
 
 	if (status === 'loading') return <Loading />;
 
+	const updateData = async () => {
+		await fetch('/api/company/getusers')
+			.then((response) => response.json())
+			.then(({ users }) => {
+				setUsers(users);
+			});
+	};
+
 	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		setLoading(true);
@@ -162,7 +170,7 @@ const MyCompany = () => {
 														key={user.id}
 														user={user}
 														index={index}
-														setUsersData={setUsers}
+														updateData={updateData}
 													/>
 												);
 											}

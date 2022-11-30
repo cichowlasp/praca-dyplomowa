@@ -37,6 +37,12 @@ const Home = () => {
 		}
 	}, [session?.user?.admin, setCompaniesData]);
 
+	const updateData = async () => {
+		await fetch('/api/admin/getalldata')
+			.then((response) => response.json())
+			.then((data) => setCompaniesData(data));
+	};
+
 	if (status === 'loading') return <></>;
 	if (status === 'authenticated' && session.user?.admin) {
 		return (
@@ -98,7 +104,7 @@ const Home = () => {
 						{pageOption === PageOption.users && (
 							<AdminUsers
 								data={companiesData}
-								setUsersData={setCompaniesData}
+								updateData={updateData}
 							/>
 						)}
 						{pageOption === PageOption.form && <AdminForms />}
