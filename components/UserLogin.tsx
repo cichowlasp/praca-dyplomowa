@@ -2,18 +2,24 @@ import React, { useState } from 'react';
 import styles from '../styles/MainForm.module.css';
 import { TextField, Button } from '@mui/material';
 import { signIn, signOut } from 'next-auth/react';
+import Loading from './Loading';
 
 const UserLogin = () => {
 	const [formData, setFormData] = useState({
 		secretPhrase: '',
 		pin: '',
 	});
+	const [loading, setLoading] = useState(false);
 
 	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
+		setLoading(true);
 		await signOut({ redirect: false });
 		await signIn('credentials', { redirect: false, ...formData });
+		setLoading(false);
 	};
+
+	if (loading) return <Loading />;
 
 	return (
 		<>
