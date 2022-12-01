@@ -56,6 +56,7 @@ const MyCompany = () => {
 		<>
 			{status === 'unauthenticated' || !session?.company?.id ? (
 				<>
+					<h1>Welcome Back</h1>
 					<form
 						className={styles.form}
 						onSubmit={(event) => handleSubmit(event)}>
