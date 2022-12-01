@@ -23,10 +23,10 @@ model Order {
 model Message {
   id      String   @id @default(cuid())
   date    DateTime @default(now())
-  from    From     @default(USER)
   name    String
   message String
   orderId String?
+  from    From     @default(USER)
   Order   Order?   @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
