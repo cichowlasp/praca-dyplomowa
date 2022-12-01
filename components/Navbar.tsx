@@ -1,15 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { signIn, useSession } from 'next-auth/react';
 import { signOut } from 'next-auth/react';
 import { Button } from '@mui/material';
 import { useRouter } from 'next/router';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import Loading from './Loading';
 import { AppBar, Toolbar, Typography, MenuItem, Menu } from '@mui/material';
+import ShowCompanyId from './ShowCompanyId';
+import LockIcon from '@mui/icons-material/Lock';
 
 const Navbar = () => {
-	const { data: session, status } = useSession();
+	const { data: session } = useSession();
 	const router = useRouter();
 	const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+	const [loading, setLoading] = useState(false);
+	const [show, setShow] = useState(false);
 
 	const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
 		setAnchorEl(event.currentTarget);
@@ -17,6 +23,14 @@ const Navbar = () => {
 
 	const handleClose = () => {
 		setAnchorEl(null);
+	};
+
+	const updatePin = async () => {
+		await fetch('/api/company/refreshCreateUserPin');
+	};
+
+	const close = () => {
+		setShow(false);
 	};
 
 	return (
@@ -93,6 +107,7 @@ const Navbar = () => {
 							Options
 						</Button>
 						<Menu
+							sx={{ minWidth: '5rem' }}
 							id='menu-appbar'
 							anchorEl={anchorEl}
 							anchorOrigin={{
@@ -106,17 +121,47 @@ const Navbar = () => {
 							}}
 							open={Boolean(anchorEl)}
 							onClose={handleClose}>
-							<MenuItem
-								onClick={async () => {
-									await signOut({ redirect: false });
-									handleClose();
-								}}>
-								<ExitToAppIcon /> {`SIGNOUT`}
-							</MenuItem>
+							{loading ? (
+								<div style={{}}>
+									<Loading />
+								</div>
+							) : (
+								<>
+									{' '}
+									<MenuItem
+										onClick={async () => {
+											setLoading(true);
+											await signOut({ redirect: false });
+											handleClose();
+											setLoading(false);
+										}}>
+										<ExitToAppIcon /> {`SIGNOUT`}
+									</MenuItem>
+									<MenuItem
+										onClick={async () => {
+											setLoading(true);
+											await updatePin();
+											await router.reload();
+											handleClose();
+											setLoading(false);
+										}}>
+										<RefreshIcon /> {`REFRESH PIN`}
+									</MenuItem>
+									<MenuItem
+										onClick={async () => {
+											setShow(true);
+											handleClose();
+										}}>
+										<LockIcon />
+										{`Company Identyficator`}
+									</MenuItem>
+								</>
+							)}
 						</Menu>
 					</div>
 				)}
 			</Toolbar>
+			{show ? <ShowCompanyId close={close} /> : null}
 		</AppBar>
 	);
 };

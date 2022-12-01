@@ -1,6 +1,6 @@
 import React from 'react';
 import '../styles/globals.css';
-import { SessionProvider, useSession } from 'next-auth/react';
+import { SessionProvider } from 'next-auth/react';
 import { AppProps } from 'next/app';
 import { Session } from 'next-auth';
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
