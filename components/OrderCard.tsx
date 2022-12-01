@@ -327,7 +327,7 @@ const OrderCard = ({
 							}}
 							className={styles.chat}>
 							{messages?.map((el) => (
-								<div key={el.id}>
+								<div style={{ width: '100%' }} key={el.id}>
 									<div
 										style={{
 											marginLeft:

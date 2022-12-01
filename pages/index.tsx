@@ -10,6 +10,8 @@ const Index = () => {
 			style={{
 				width: '100vw',
 				height: '100%',
+				maxWidth: '100%',
+				maxHeight: 'calc(100% - 50px)',
 				display: 'flex',
 				flexDirection: 'column',
 				justifyContent: 'center',

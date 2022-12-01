@@ -26,38 +26,6 @@ const Home = () => {
 
 	return (
 		<>
-			{session?.company?.nip ? (
-				<Button
-					variant='outlined'
-					onClick={async () => {
-						signOut({ redirect: false });
-						router.push('/');
-					}}
-					style={{
-						position: 'absolute',
-						top: '10px',
-						right: '10px',
-					}}>
-					SignOut
-				</Button>
-			) : (
-				<div
-					style={{
-						position: 'absolute',
-						top: '10px',
-						right: '10px',
-						fontWeight: 'bold',
-					}}>
-					Have a user account?
-					<Button
-						style={{ marginLeft: '10px' }}
-						variant='contained'
-						onClick={() => router.push('/user')}>
-						SignIn
-					</Button>
-				</div>
-			)}
-
 			<main className={styles.main}>
 				<ButtonGroup
 					size='large'

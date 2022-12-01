@@ -1,5 +1,5 @@
 import styles from '../styles/Home.module.css';
-import { useSession, signOut } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import React, { useState } from 'react';
 import { ButtonGroup, Button } from '@mui/material';
 import MainForm from '../components/MainForm';
@@ -21,39 +21,6 @@ const Home = () => {
 		return <CreateUserAcc />;
 	return (
 		<>
-			{session?.user?.pin ? (
-				<Button
-					variant='outlined'
-					onClick={async () =>
-						await signOut({
-							redirect: false,
-						})
-					}
-					style={{
-						position: 'absolute',
-						top: '10px',
-						right: '10px',
-					}}>
-					SignOut
-				</Button>
-			) : (
-				<div
-					style={{
-						position: 'absolute',
-						top: '10px',
-						right: '10px',
-						fontWeight: 'bold',
-					}}>
-					Have a pin?
-					<Button
-						style={{ marginLeft: '10px' }}
-						variant='contained'
-						onClick={() => setPageOption(PageOption.myOrders)}>
-						SignIn
-					</Button>
-				</div>
-			)}
-
 			<main className={styles.main}>
 				<ButtonGroup
 					size='large'

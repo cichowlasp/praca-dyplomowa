@@ -1,56 +1,123 @@
 import React from 'react';
-import { useSession } from 'next-auth/react';
-import styles from '../styles/Nav.module.css';
+import { signIn, useSession } from 'next-auth/react';
 import { signOut } from 'next-auth/react';
 import { Button } from '@mui/material';
 import { useRouter } from 'next/router';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import { AppBar, Toolbar, Typography, MenuItem, Menu } from '@mui/material';
 
 const Navbar = () => {
 	const { data: session, status } = useSession();
 	const router = useRouter();
-	if (router.pathname !== '/admin') return <></>;
+	const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+	const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
+		setAnchorEl(event.currentTarget);
+	};
+
+	const handleClose = () => {
+		setAnchorEl(null);
+	};
 
 	return (
-		<nav className={styles.nav}>
-			{status === 'unauthenticated' ? (
-				<div className={styles.welcome}>Admin Page</div>
-			) : (
-				<div className={styles.welcome}>
-					<span>Welcome</span>
-					<span className={styles.name}>
-						{session?.user?.admin
-							? `${session?.user?.name} ${session?.user?.surname}`
-							: ''}
-						{}
-					</span>
-				</div>
-			)}
-
-			{status === 'unauthenticated' || session?.user?.pin ? (
-				<Button
-					variant='contained'
-					onClick={() => {
-						if (session?.user?.pin) {
-							signOut({ redirect: false });
-						}
-						router.push('/admin/signin');
-					}}>
-					SignIn
-				</Button>
-			) : (
-				<Button
-					variant='outlined'
-					onClick={async () => {
-						const data = await signOut({
-							redirect: false,
-							callbackUrl: '/',
-						});
-						router.push(data.url);
-					}}>
-					SignOut
-				</Button>
-			)}
-		</nav>
+		<AppBar sx={{}} position='static'>
+			<Toolbar>
+				<Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
+					Welcome{' '}
+					{session === null ? null : (
+						<>
+							{session?.user?.name
+								? `${session?.user?.name} (${
+										session.user.admin ? 'Admin' : 'User'
+								  })`
+								: `${session?.company?.companyName} (Company)`}
+						</>
+					)}
+				</Typography>
+				{session === null && router.pathname === '/admin' && (
+					<div>
+						<Button
+							size='large'
+							aria-label='account of current user'
+							aria-controls='menu-appbar'
+							aria-haspopup='true'
+							onClick={async () => signIn()}
+							variant='outlined'
+							color='inherit'>
+							SIGNIN
+						</Button>
+					</div>
+				)}
+				{session === null &&
+					router.pathname !== '/admin' &&
+					router.pathname !== '/' && (
+						<div>
+							<Button
+								size='large'
+								aria-label='account of current user'
+								aria-controls='menu-appbar'
+								aria-haspopup='true'
+								onClick={async () => router.push('/')}
+								variant='outlined'
+								color='inherit'>
+								HOME
+							</Button>
+						</div>
+					)}
+				{(session?.user?.admin || session?.user?.pin) && (
+					<div>
+						<Button
+							size='large'
+							aria-label='account of current user'
+							aria-controls='menu-appbar'
+							aria-haspopup='true'
+							onClick={async () =>
+								await signOut({ redirect: false })
+							}
+							variant='outlined'
+							color='inherit'>
+							SignOUT
+						</Button>
+					</div>
+				)}
+				{session?.company && (
+					<div>
+						<Button
+							size='large'
+							aria-label='account of current user'
+							aria-controls='menu-appbar'
+							aria-haspopup='true'
+							onClick={handleMenu}
+							variant='outlined'
+							color='inherit'>
+							Options
+						</Button>
+						<Menu
+							id='menu-appbar'
+							anchorEl={anchorEl}
+							anchorOrigin={{
+								vertical: 'bottom',
+								horizontal: 'center',
+							}}
+							keepMounted
+							transformOrigin={{
+								vertical: 'top',
+								horizontal: 'center',
+							}}
+							open={Boolean(anchorEl)}
+							onClose={handleClose}>
+							<MenuItem
+								onClick={async () => {
+									await signOut({ redirect: false });
+									handleClose();
+								}}>
+								<ExitToAppIcon /> {`SIGNOUT`}
+							</MenuItem>
+						</Menu>
+					</div>
+				)}
+			</Toolbar>
+		</AppBar>
 	);
 };
 
