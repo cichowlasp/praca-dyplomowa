@@ -7,9 +7,8 @@ import {
 	Switch,
 	useTheme,
 	Button,
-	Popover,
 } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
+
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import {
 	CheckBox,
@@ -18,6 +17,7 @@ import {
 	Option,
 	Select as SelectTS,
 } from '@prisma/client';
+import SelectOptions from './SelectOptions';
 
 const SelectView = ({
 	select,
@@ -53,17 +53,7 @@ const SelectView = ({
 	setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
 	const { palette } = useTheme();
-	const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-
-	const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-		setAnchorEl(event.currentTarget);
-	};
-	const handleClose = () => {
-		setAnchorEl(null);
-	};
-
-	const open = Boolean(anchorEl);
-	const id = open ? 'simple-popover' : undefined;
+	const [open, setOpen] = useState<boolean>(false);
 
 	return (
 		<div
@@ -146,228 +136,22 @@ const SelectView = ({
 					</span>
 					<span>
 						<Button
-							aria-describedby={id}
 							variant='contained'
-							onClick={handleClick}>
+							onClick={() => setOpen(true)}>
 							Options
 						</Button>
-						<Popover
-							id={id}
-							open={open}
-							anchorEl={anchorEl}
-							onClose={handleClose}
-							anchorOrigin={{
-								vertical: 'bottom',
-								horizontal: 'left',
-							}}>
-							<div
-								style={{
-									display: 'flex',
-									flexDirection: 'column',
-									justifyContent: 'center',
-								}}>
-								{select.options.length === 0 ? (
-									<div
-										style={{
-											display: 'flex',
-											padding: '10px',
-											justifyContent: 'center',
-											width: '15rem',
-										}}>
-										{'No options :('}
-									</div>
-								) : (
-									select.options.map(
-										(inp: Option, inpIndex: number) => {
-											return (
-												<div
-													key={inp.id}
-													style={{
-														padding: '5px',
-														display: 'flex',
-														alignItems: 'center',
-													}}>
-													<TextField
-														size='small'
-														placeholder='option'
-														value={
-															forms[index]
-																.selects[
-																selectIndex
-															]?.options[inpIndex]
-																.value
-														}
-														onChange={(event) =>
-															setForms((prev) => {
-																let updatedList =
-																	prev;
-																updatedList[
-																	index
-																].selects[
-																	selectIndex
-																].options[
-																	inpIndex
-																].value =
-																	event.target.value;
-																return [
-																	...updatedList,
-																];
-															})
-														}
-													/>
-													<Button
-														color='error'
-														variant='contained'
-														disabled={loading}
-														style={{
-															marginLeft: '5px',
-														}}
-														onClick={async () => {
-															let options: Option[];
-															setLoading(true);
-															await fetch(
-																'/api/admin/removeoption',
-																{
-																	method: 'POST',
-																	body: inp.id,
-																}
-															);
-
-															await fetch(
-																'/api/admin/getforms'
-															)
-																.then(
-																	(
-																		response
-																	) =>
-																		response.json()
-																)
-																.then(
-																	(data) => {
-																		options =
-																			data[
-																				index
-																			]
-																				.selects[
-																				selectIndex
-																			]
-																				.options;
-																	}
-																);
-															setLoading(false);
-															setForms((prev) => {
-																let updatedList =
-																	prev;
-																updatedList[
-																	index
-																].selects[
-																	selectIndex
-																].options = updatedList[
-																	index
-																].selects[
-																	selectIndex
-																].options = options;
-
-																return [
-																	...updatedList,
-																];
-															});
-														}}>
-														<DeleteIcon />
-													</Button>
-												</div>
-											);
-										}
-									)
-								)}
-								<div style={{ display: 'flex' }}>
-									<Button
-										disabled={loading}
-										fullWidth={true}
-										variant='contained'
-										style={{
-											borderBottomRightRadius: '0px',
-											borderTopRightRadius: '0px',
-										}}
-										onClick={async () => {
-											setLoading(true);
-
-											await fetch(
-												'/api/admin/updateoption',
-												{
-													method: 'POST',
-													body: JSON.stringify({
-														options: select.options,
-													}),
-												}
-											);
-
-											await fetch(
-												'/api/admin/createoption',
-												{
-													method: 'POST',
-													body: JSON.stringify({
-														value: 'New Option',
-														selectId: select.id,
-													}),
-												}
-											);
-											let options =
-												forms[index].selects[
-													selectIndex
-												].options;
-											await fetch('/api/admin/getforms')
-												.then((response) =>
-													response.json()
-												)
-												.then((data) => {
-													options.push(
-														data[index].selects[
-															selectIndex
-														].options.at(-1)
-													);
-												});
-											setLoading(false);
-
-											setForms((prev) => {
-												let updatedList = prev;
-												updatedList[index].selects[
-													selectIndex
-												].options = options;
-
-												return [...updatedList];
-											});
-										}}>
-										Add Option
-									</Button>
-
-									<Button
-										fullWidth={true}
-										disabled={loading}
-										variant='outlined'
-										style={{
-											borderBottomLeftRadius: '0px',
-											borderTopLeftRadius: '0px',
-										}}
-										onClick={async () => {
-											setLoading(true);
-											await fetch(
-												'/api/admin/updateoption',
-												{
-													method: 'POST',
-													body: JSON.stringify({
-														options: select.options,
-													}),
-												}
-											);
-											setLoading(false);
-											handleClose();
-										}}>
-										Close
-									</Button>
-								</div>
-							</div>
-						</Popover>
+						{open && (
+							<SelectOptions
+								setLoading={setLoading}
+								index={index}
+								forms={forms}
+								loading={loading}
+								select={select}
+								selectIndex={selectIndex}
+								setForms={setForms}
+								close={() => setOpen(false)}
+							/>
+						)}
 					</span>
 				</div>
 				<div className={styles.option}>

@@ -13,6 +13,7 @@ const UserForm = () => {
 		phoneNumber: '',
 		secretPhrase: '',
 		pin: '',
+		companyEmail: '',
 	});
 
 	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -27,6 +28,7 @@ const UserForm = () => {
 				async (user) =>
 					await signIn('credentials', {
 						redirect: false,
+						companyEmail: user.companyEmail,
 						secretPhrase: formData.secretPhrase,
 						pin: user.pin,
 					})
@@ -145,6 +147,33 @@ const UserForm = () => {
 								return {
 									...pre,
 									phoneNumber: event.target.value.trim(),
+								};
+							})
+						}
+					/>
+				</div>
+				<div
+					className={styles.input}
+					style={{
+						display: 'flex',
+						alignItems: 'center',
+						justifyContent: 'center',
+					}}>
+					<div
+						className={styles.label}
+						style={{ fontWeight: 'bold', textAlign: 'left' }}>
+						Company Email
+					</div>
+					<TextField
+						placeholder={'Company Email'}
+						fullWidth={true}
+						required={true}
+						type={'email'}
+						onChange={(event) =>
+							setFormData((pre) => {
+								return {
+									...pre,
+									companyEmail: event.target.value.trim(),
 								};
 							})
 						}

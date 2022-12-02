@@ -47,7 +47,7 @@ model Company {
   companyAddress String
   phoneNumber    String
   createUserPin  String
-  secretPhrase   String @unique
+  secretPhrase   String
   users          User[]
 }
 

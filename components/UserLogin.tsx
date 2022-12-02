@@ -6,6 +6,7 @@ import Loading from './Loading';
 
 const UserLogin = () => {
 	const [formData, setFormData] = useState({
+		companyEmail: '',
 		secretPhrase: '',
 		pin: '',
 	});
@@ -27,6 +28,33 @@ const UserLogin = () => {
 			<form
 				className={styles.form}
 				onSubmit={(event) => handleSubmit(event)}>
+				<div
+					className={styles.input}
+					style={{
+						display: 'flex',
+						alignItems: 'center',
+						justifyContent: 'center',
+					}}>
+					<div
+						className={styles.label}
+						style={{ fontWeight: 'bold', textAlign: 'left' }}>
+						Company Email
+					</div>
+					<TextField
+						placeholder={'Company Email'}
+						fullWidth={true}
+						required={true}
+						type={'email'}
+						onChange={(event) =>
+							setFormData((pre) => {
+								return {
+									...pre,
+									companyEmail: event.target.value.trim(),
+								};
+							})
+						}
+					/>
+				</div>
 				<div
 					className={styles.input}
 					style={{

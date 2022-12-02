@@ -500,7 +500,7 @@ const OrderCard = ({
 								<MenuItem
 									style={{ maxHeight: '2rem' }}
 									onClick={() => {
-										setExpanded(true);
+										setExpanded((pre) => !pre);
 										handleClose();
 									}}>
 									<MessageIcon fontSize='large' />
@@ -561,7 +561,7 @@ const OrderCard = ({
 								<MenuItem
 									style={{ maxHeight: '2rem' }}
 									onClick={() => {
-										setExpanded(true);
+										setExpanded((pre) => !pre);
 										handleClose();
 									}}>
 									<MessageIcon fontSize='large' />

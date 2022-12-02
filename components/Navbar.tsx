@@ -38,13 +38,16 @@ const Navbar = () => {
 			<Toolbar>
 				<Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
 					Welcome{' '}
-					{session === null ? null : (
+					{session === null ? (
+						<></>
+					) : (
 						<>
-							{session?.user?.name
-								? `${session?.user?.name} (${
-										session.user.admin ? 'Admin' : 'User'
-								  })`
-								: `${session?.company?.companyName} (Company)`}
+							{session?.user?.name &&
+								`${session?.user?.name} (${
+									session.user.admin ? 'Admin' : 'User'
+								})`}
+							{session?.company?.companyName &&
+								`${session?.company?.companyName} (Company)`}
 						</>
 					)}
 				</Typography>

@@ -11,7 +11,6 @@ export enum PageOption {
 }
 
 const CreateUserAcc = () => {
-	const { data: session } = useSession();
 	const { palette } = useTheme();
 	const [pageOption, setPageOption] = useState<PageOption>(
 		PageOption.newOrder

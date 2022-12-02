@@ -43,9 +43,14 @@ export const authOptions = {
 					if (company) return company;
 					return null;
 				}
-				if (credentials?.pin && credentials?.secretPhrase) {
+				if (
+					credentials?.pin &&
+					credentials?.secretPhrase &&
+					credentials?.companyEmail
+				) {
 					const company = await prisma.company.findFirst({
 						where: {
+							companyEmail: credentials.companyEmail,
 							secretPhrase: credentials.secretPhrase,
 						},
 						include: {

@@ -5,6 +5,7 @@ const handler = async (req, res) => {
 	const data = JSON.parse(body);
 	const company = await prisma.company.findFirst({
 		where: {
+			companyEmail: data.companyEmail,
 			secretPhrase: data.secretPhrase,
 			createUserPin: data.pin,
 		},
@@ -42,7 +43,9 @@ const handler = async (req, res) => {
 			data: { createUserPin: pin },
 		});
 
-		return res.status(200).json(user);
+		return res
+			.status(200)
+			.json({ ...user, companyEmail: data.companyEmail });
 	}
 	return res.status(401).json('Pin or secret is invalid');
 };
