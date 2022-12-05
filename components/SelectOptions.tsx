@@ -26,11 +26,11 @@ const SelectOptions = ({
 	setForms,
 	close,
 }: {
-	select: Select & { options: Option[] };
+	select: Select & { options: OptionTS[] };
 	setLoading: React.Dispatch<SetStateAction<boolean>>;
 	forms: (Form & {
 		inputs: Input[];
-		selects: (SelectTS & { options: Option[] })[];
+		selects: (SelectTS & { options: OptionTS[] })[];
 		checkboxes: CheckBox[];
 	})[];
 	loading: boolean;
@@ -40,7 +40,7 @@ const SelectOptions = ({
 		SetStateAction<
 			(Form & {
 				inputs: Input[];
-				selects: (SelectTS & { options: Option[] })[];
+				selects: (SelectTS & { options: OptionTS[] })[];
 				checkboxes: CheckBox[];
 			})[]
 		>
