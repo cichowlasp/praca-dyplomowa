@@ -40,7 +40,7 @@ const Option = ({
 		>
 	>;
 }) => {
-	const [connect, setConnect] = useState(false);
+	const [connect, setConnect] = useState(inp?.formId ? true : false);
 	const [value, setValue] = useState<String | null>('');
 
 	return (
@@ -110,29 +110,39 @@ const Option = ({
 				Connect Form
 				<Switch
 					checked={connect}
+					inputProps={{ role: 'switch' }}
 					onChange={async () => {
 						setConnect((pre) => {
-							if (!pre === false) {
-								setLoading(true);
-								setValue(null);
-								fetch('/api/admin/addconnectedform', {
-									method: 'POST',
-									body: JSON.stringify({
-										...inp,
-										formId: null,
-									}),
-								});
-								setLoading(false);
-							}
 							return !pre;
 						});
+						if (connect !== false) {
+							setLoading(true);
+							setValue(null);
+							await fetch('/api/admin/addconnectedform', {
+								method: 'POST',
+								body: JSON.stringify({
+									...inp,
+									formId: null,
+								}),
+							});
+							setLoading(false);
+						}
 					}}
 				/>
 			</div>
 			{connect && (
-				<div style={{ marginLeft: '0.5rem' }}>
+				<div
+					style={{
+						display: 'flex',
+						flexDirection: 'column',
+						justifyContent: 'center',
+						alignItems: 'center',
+						marginLeft: '0.5rem',
+					}}>
+					Form
 					<Select
-						value={value}
+						size='small'
+						defaultValue={inp?.formId ? inp.formId : ''}
 						onChange={async (event) => {
 							setLoading(true);
 							setValue(event.target.value);

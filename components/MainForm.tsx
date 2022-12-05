@@ -45,6 +45,8 @@ const MainFrom = ({
 		selects: (SelectTS & { options: Option[] })[];
 		checkboxes: CheckBox[];
 	} | null>(null);
+	const [initalIndex, setInitalIndex] = useState(0);
+	const [disabled, setDisabled] = useState(false);
 
 	useEffect(() => {
 		fetch('api/getform')
@@ -93,27 +95,29 @@ const MainFrom = ({
 	) => {
 		setFormData((pre) => {
 			let modifyFormData: FormData[] = pre;
-			modifyFormData[index] = {
+			modifyFormData[initalIndex + index] = {
 				name,
 				fill: event.target.value,
-				index: order,
+				index: initalIndex + order,
 			};
 			return modifyFormData;
 		});
 	};
 	const handleSelectChange = async (
-		event: SelectChangeEvent<string>,
+		event: SelectChangeEvent<unknown>,
 		index: number,
 		name: string,
 		order: number
 	) => {
 		setFormData((pre) => {
-			const indexAtArr = form.inputs.length + index;
+			const indexAtArr = initalIndex + form.inputs.length + index;
 			let modifyFormData: FormData[] = pre;
 			modifyFormData[indexAtArr] = {
 				name,
-				fill: event.target.value,
-				index: order,
+				fill: event.target.value
+					? JSON.stringify(event.target.value)
+					: '',
+				index: initalIndex + order,
 			};
 			return modifyFormData;
 		});
@@ -141,18 +145,19 @@ const MainFrom = ({
 		order: number
 	) => {
 		setFormData((pre) => {
-			const indexAtArr = form.inputs.length + form.selects.length + index;
+			const indexAtArr =
+				initalIndex + form.inputs.length + form.selects.length + index;
 			let modifyFormData: FormData[] = pre;
 			modifyFormData[indexAtArr] = {
 				name,
 				fill: JSON.stringify(!JSON.parse(pre[indexAtArr].fill)),
-				index: order,
+				index: initalIndex + order,
 			};
 			return modifyFormData;
 		});
 	};
 
-	const handleClick = async (event: any) => {
+	const handleClick = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		setError(validForm(formData));
 		if (validForm(formData).length !== 0) {
@@ -313,10 +318,7 @@ const MainFrom = ({
 								required={el.required}
 								size={'small'}
 								variant='outlined'
-								defaultValue={
-									''
-									// formData[form.inputs.length + index].fill
-								}
+								defaultValue={''}
 								onChange={(event) => {
 									handleSelectChange(
 										event,
@@ -325,8 +327,6 @@ const MainFrom = ({
 										el.order
 									);
 								}}>
-								<MenuItem value={''}></MenuItem>
-
 								{el.options.map((option: Option) => {
 									return (
 										<MenuItem
@@ -382,7 +382,13 @@ const MainFrom = ({
 				{nextForm !== null ? (
 					<>
 						<Button
-							onClick={(event) => {
+							disabled={disabled}
+							onClick={() => {
+								setError(validForm(formData));
+								if (validForm(formData).length !== 0) {
+									return;
+								}
+								setInitalIndex(formData.length);
 								setForm(nextForm);
 								setNextForm(null);
 							}}

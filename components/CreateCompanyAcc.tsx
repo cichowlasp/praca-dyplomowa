@@ -19,7 +19,6 @@ const CreateCompanyAcc = ({}) => {
 
 	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
-		console.log(formData);
 		setLoading(true);
 		await fetch('/api/company/createcompany', {
 			method: 'POST',
@@ -29,7 +28,6 @@ const CreateCompanyAcc = ({}) => {
 				return data.json();
 			})
 			.then(async (company) => {
-				console.log(company);
 				if (company?.meta) {
 					setError(`Error try different ${company.meta?.target}`);
 					return;

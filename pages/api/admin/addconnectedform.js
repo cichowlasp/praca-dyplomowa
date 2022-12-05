@@ -6,7 +6,6 @@ const handler = async (req, res) => {
 	const { body } = req;
 	const { user } = await unstable_getServerSession(req, res, authOptions);
 	const option = JSON.parse(body);
-	console.log(option);
 	if (user.id && user.admin === true) {
 		await prisma.option.update({
 			where: {

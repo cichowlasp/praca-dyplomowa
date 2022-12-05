@@ -49,7 +49,6 @@ const MyCompany = () => {
 			...loginInfo,
 		});
 		setLoading(false);
-		console.log(session);
 	};
 
 	return (
