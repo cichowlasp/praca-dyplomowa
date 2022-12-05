@@ -40,6 +40,11 @@ const MainFrom = ({
 	} | null>(null);
 	const [error, setError] = useState<string>('');
 	const [loading, setLoading] = useState<boolean>(false);
+	const [nextForm, setNextForm] = useState<{
+		inputs: Input[];
+		selects: (SelectTS & { options: Option[] })[];
+		checkboxes: CheckBox[];
+	} | null>(null);
 
 	useEffect(() => {
 		fetch('api/getform')
@@ -75,6 +80,7 @@ const MainFrom = ({
 					return arr;
 				});
 			});
+		setNextForm(null);
 	}, []);
 
 	if (form === null || loading) return <Loading />;
@@ -95,7 +101,7 @@ const MainFrom = ({
 			return modifyFormData;
 		});
 	};
-	const handleSelectChange = (
+	const handleSelectChange = async (
 		event: SelectChangeEvent<string>,
 		index: number,
 		name: string,
@@ -111,6 +117,22 @@ const MainFrom = ({
 			};
 			return modifyFormData;
 		});
+		const option = form.selects[index].options.find(
+			(option: Option) => option.value === event.target.value
+		);
+		if (option?.formId !== null) {
+			await fetch('api/nextform', {
+				method: 'POST',
+				body: option?.formId,
+			})
+				.then((response) => response.json())
+				.then(({ form }) => {
+					setNextForm(form);
+					if (!nextForm) return;
+				});
+		} else {
+			setNextForm(null);
+		}
 	};
 
 	const handleCheckboxChange = (
@@ -264,7 +286,7 @@ const MainFrom = ({
 						/>
 					</div>
 				))}
-				{form.selects.map(
+				{form?.selects?.map(
 					(el: SelectTS & { options: Option[] }, index: number) => (
 						<div
 							className={styles.input}
@@ -292,7 +314,8 @@ const MainFrom = ({
 								size={'small'}
 								variant='outlined'
 								defaultValue={
-									formData[form.inputs.length + index].fill
+									''
+									// formData[form.inputs.length + index].fill
 								}
 								onChange={(event) => {
 									handleSelectChange(
@@ -302,9 +325,8 @@ const MainFrom = ({
 										el.order
 									);
 								}}>
-								{!el.required && (
-									<MenuItem value={''}>None</MenuItem>
-								)}
+								<MenuItem value={''}></MenuItem>
+
 								{el.options.map((option: Option) => {
 									return (
 										<MenuItem
@@ -357,12 +379,26 @@ const MainFrom = ({
 				<div style={{ color: palette.warning.main, fontWeight: '600' }}>
 					{error}
 				</div>
-				<Button
-					style={{ order: 999999999, marginBottom: '10px' }}
-					type='submit'
-					variant='contained'>
-					Submit Order
-				</Button>
+				{nextForm !== null ? (
+					<>
+						<Button
+							onClick={(event) => {
+								setForm(nextForm);
+								setNextForm(null);
+							}}
+							style={{ order: 999999999, marginBottom: '10px' }}
+							variant='contained'>
+							Next
+						</Button>
+					</>
+				) : (
+					<Button
+						style={{ order: 999999999, marginBottom: '10px' }}
+						type='submit'
+						variant='contained'>
+						Submit Order
+					</Button>
+				)}
 			</form>
 		</>
 	);

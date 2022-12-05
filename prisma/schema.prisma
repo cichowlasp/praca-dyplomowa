@@ -74,6 +74,7 @@ model Form {
   checkboxes CheckBox[]
   inputs     Input[]
   selects    Select[]
+  Option     Option[]
 }
 
 model Input {
@@ -114,7 +115,9 @@ model Option {
   id       String  @id @default(cuid())
   value    String
   selectId String?
+  form     Form?   @relation(fields: [formId], references: [id])
   Select   Select? @relation(fields: [selectId], references: [id], onDelete: Cascade)
+  formId   String?
 }
 
 enum Reviewed {

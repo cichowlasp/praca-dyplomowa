@@ -1,19 +1,20 @@
 import React, { SetStateAction } from 'react';
 import { Paper } from '@mui/material';
 import styles from '../styles/Edit.module.css';
-import { TextField, Button } from '@mui/material';
+import { TextField, Button, Switch } from '@mui/material';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { useSession } from 'next-auth/react';
 import Loading from './Loading';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {
-	Option,
+	Option as OptionTS,
 	Select,
 	Form,
 	Input,
 	Select as SelectTS,
 	CheckBox,
 } from '@prisma/client';
+import Option from './Option';
 
 const SelectOptions = ({
 	select,
@@ -53,7 +54,6 @@ const SelectOptions = ({
 				style={{
 					position: 'relative',
 					height: 'fit-content',
-					width: '90%',
 					padding: '20px',
 					paddingBottom: '40px',
 					display: 'flex',
@@ -82,97 +82,19 @@ const SelectOptions = ({
 								</div>
 							) : (
 								select.options.map(
-									(inp: Option, inpIndex: number) => {
+									(inp: OptionTS, inpIndex: number) => {
 										return (
-											<div
+											<Option
 												key={inp.id}
-												style={{
-													padding: '5px',
-													display: 'flex',
-													alignItems: 'center',
-												}}>
-												<TextField
-													size='small'
-													placeholder='option'
-													value={
-														forms[index].selects[
-															selectIndex
-														]?.options[inpIndex]
-															.value
-													}
-													onChange={(event) =>
-														setForms((prev) => {
-															let updatedList =
-																prev;
-															updatedList[
-																index
-															].selects[
-																selectIndex
-															].options[
-																inpIndex
-															].value =
-																event.target.value;
-															return [
-																...updatedList,
-															];
-														})
-													}
-												/>
-												<Button
-													color='error'
-													variant='contained'
-													disabled={loading}
-													style={{
-														marginLeft: '5px',
-													}}
-													onClick={async () => {
-														let options: Option[];
-														setLoading(true);
-														await fetch(
-															'/api/admin/removeoption',
-															{
-																method: 'POST',
-																body: inp.id,
-															}
-														);
-
-														await fetch(
-															'/api/admin/getforms'
-														)
-															.then((response) =>
-																response.json()
-															)
-															.then((data) => {
-																options =
-																	data[index]
-																		.selects[
-																		selectIndex
-																	].options;
-															});
-														setLoading(false);
-														setForms((prev) => {
-															let updatedList =
-																prev;
-															updatedList[
-																index
-															].selects[
-																selectIndex
-															].options =
-																updatedList[
-																	index
-																].selects[
-																	selectIndex
-																].options =
-																	options;
-
-															return [
-																...updatedList,
-															];
-														});
-													}}>
-													<DeleteIcon />
-												</Button>
-											</div>
+												setLoading={setLoading}
+												forms={forms}
+												loading={loading}
+												index={index}
+												selectIndex={selectIndex}
+												setForms={setForms}
+												inp={inp}
+												inpIndex={inpIndex}
+											/>
 										);
 									}
 								)
@@ -231,27 +153,6 @@ const SelectOptions = ({
 									}}>
 									Add Option
 								</Button>
-
-								<Button
-									disabled={loading}
-									variant='outlined'
-									style={{
-										borderBottomLeftRadius: '0px',
-										borderTopLeftRadius: '0px',
-									}}
-									onClick={async () => {
-										setLoading(true);
-										await fetch('/api/admin/updateoption', {
-											method: 'POST',
-											body: JSON.stringify({
-												options: select.options,
-											}),
-										});
-										close();
-										setLoading(false);
-									}}>
-									Close
-								</Button>
 							</div>
 						</div>
 					</>
@@ -267,7 +168,23 @@ const SelectOptions = ({
 						cursor: 'pointer',
 					}}
 					fontSize='large'
-					onClick={close}
+					onClick={async () => {
+						setLoading(true);
+						await fetch('/api/admin/updateoption', {
+							method: 'POST',
+							body: JSON.stringify({
+								options: select.options.map((option) => {
+									return {
+										id: option.id,
+										value: option.value,
+										selectId: option.selectId,
+									};
+								}),
+							}),
+						});
+						close();
+						setLoading(false);
+					}}
 				/>
 			</Paper>
 		</div>
