@@ -40,11 +40,13 @@ const MainFrom = ({
 	} | null>(null);
 	const [error, setError] = useState<string>('');
 	const [loading, setLoading] = useState<boolean>(false);
-	const [nextForm, setNextForm] = useState<{
-		inputs: Input[];
-		selects: (SelectTS & { options: Option[] })[];
-		checkboxes: CheckBox[];
-	} | null>(null);
+	const [nextForm, setNextForm] = useState<
+		{
+			inputs: Input[];
+			selects: (SelectTS & { options: Option[] })[];
+			checkboxes: CheckBox[];
+		}[]
+	>([]);
 	const [initalIndex, setInitalIndex] = useState(0);
 	const [disabled, setDisabled] = useState(false);
 
@@ -82,7 +84,6 @@ const MainFrom = ({
 					return arr;
 				});
 			});
-		setNextForm(null);
 	}, []);
 
 	if (form === null || loading) return <Loading />;
@@ -125,17 +126,18 @@ const MainFrom = ({
 			(option: Option) => option.value === event.target.value
 		);
 		if (option?.formId !== null) {
+			setDisabled(true);
 			await fetch('api/nextform', {
 				method: 'POST',
 				body: option?.formId,
 			})
 				.then((response) => response.json())
 				.then(({ form }) => {
-					setNextForm(form);
+					setNextForm((pre) => [...pre, form]);
 					if (!nextForm) return;
 				});
-		} else {
-			setNextForm(null);
+			setDisabled(false);
+			console.log(nextForm);
 		}
 	};
 
@@ -258,7 +260,7 @@ const MainFrom = ({
 						</div>
 					</>
 				)}
-				{form.inputs.map((el: Input, index: number) => (
+				{form?.inputs.map((el: Input, index: number) => (
 					<div
 						className={styles.input}
 						style={{
@@ -340,7 +342,7 @@ const MainFrom = ({
 						</div>
 					)
 				)}
-				{form.checkboxes.map((el, index: number) => (
+				{form?.checkboxes.map((el, index: number) => (
 					<div
 						className={styles.input}
 						style={{
@@ -379,7 +381,7 @@ const MainFrom = ({
 				<div style={{ color: palette.warning.main, fontWeight: '600' }}>
 					{error}
 				</div>
-				{nextForm !== null ? (
+				{nextForm.length !== 0 ? (
 					<>
 						<Button
 							disabled={disabled}
@@ -389,8 +391,10 @@ const MainFrom = ({
 									return;
 								}
 								setInitalIndex(formData.length);
-								setForm(nextForm);
-								setNextForm(null);
+								setForm(nextForm[0]);
+								if (nextForm.length !== 0) {
+									setNextForm((pre) => pre.splice(0, 1));
+								}
 							}}
 							style={{ order: 999999999, marginBottom: '10px' }}
 							variant='contained'>
@@ -399,6 +403,7 @@ const MainFrom = ({
 					</>
 				) : (
 					<Button
+						disabled={disabled}
 						style={{ order: 999999999, marginBottom: '10px' }}
 						type='submit'
 						variant='contained'>

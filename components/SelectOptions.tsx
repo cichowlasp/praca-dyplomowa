@@ -182,6 +182,9 @@ const SelectOptions = ({
 								}),
 							}),
 						});
+						await fetch('/api/admin/getforms')
+							.then((response) => response.json())
+							.then((data) => setForms(data));
 						close();
 						setLoading(false);
 					}}
