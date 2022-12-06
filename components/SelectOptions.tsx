@@ -1,11 +1,11 @@
 import React, { SetStateAction } from 'react';
 import { Paper } from '@mui/material';
 import styles from '../styles/Edit.module.css';
-import { TextField, Button, Switch } from '@mui/material';
+import { Button } from '@mui/material';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { useSession } from 'next-auth/react';
 import Loading from './Loading';
-import DeleteIcon from '@mui/icons-material/Delete';
+
 import {
 	Option as OptionTS,
 	Select,

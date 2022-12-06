@@ -140,6 +140,10 @@ const MainFrom = ({
 				});
 			setDisabled(false);
 			console.log(nextForm);
+		} else {
+			setNextForm((pre) =>
+				pre.filter((_, localIndex) => localIndex !== index)
+			);
 		}
 	};
 
