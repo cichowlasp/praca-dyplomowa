@@ -23,7 +23,7 @@ const AdminForms = () => {
 		fetch('/api/admin/getforms')
 			.then((response) => response.json())
 			.then((data) => setForms(data));
-	}, [setLoading]);
+	}, []);
 
 	const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();

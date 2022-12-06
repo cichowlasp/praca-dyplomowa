@@ -19,6 +19,8 @@ model Order {
   informations         Info[]
   messages             Message[]
   user                 User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  form                 Form?     @relation(fields: [formId], references: [id])
+  formId               String?
 }
 
 model Message {
@@ -76,6 +78,7 @@ model Form {
   inputs     Input[]
   Option     Option[]
   selects    Select[]
+  Order      Order[]
 }
 
 model Input {

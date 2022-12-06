@@ -20,11 +20,13 @@ import CloseIcon from '@mui/icons-material/Close';
 import MessageIcon from '@mui/icons-material/Message';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SportsScoreIcon from '@mui/icons-material/SportsScore';
+import TextFieldsIcon from '@mui/icons-material/TextFields';
 import Edit from './Edit';
 import SendIcon from '@mui/icons-material/Send';
 import { Moment } from 'moment';
 import { Order, Info, Message, User, Company } from '@prisma/client';
 import Loading from './Loading';
+import AdditionalForm from './AdditionalForm';
 
 export enum Reviewed {
 	approved = 'APPROVED',
@@ -64,6 +66,7 @@ const OrderCard = ({
 	}>({ realizationDateStart: null, realizationDateEnd: null });
 	const [completeView, setCompleteView] = useState(false);
 	const [completeDate, setCompleteDate] = useState<Moment | null>(null);
+	const [additionalFormView, setAdditionalFormView] = useState(false);
 	const open = Boolean(anchorEl);
 	const { data: session } = useSession();
 
@@ -214,14 +217,12 @@ const OrderCard = ({
 					}}>
 					{order.reviewed === 'COMPLETED' && (
 						<div className={styles.orderTitle}>
-							completed at:
-							<div>
-								{new Date(
-									order?.completedAt
-										? order?.completedAt
-										: Date.now()
-								).toLocaleDateString('en-GB')}
-							</div>
+							completed at:{' '}
+							{new Date(
+								order?.completedAt
+									? order?.completedAt
+									: Date.now()
+							).toLocaleDateString('en-GB')}
 						</div>
 					)}
 					{order.reviewed === 'APPROVED' && (
@@ -554,6 +555,15 @@ const OrderCard = ({
 								<MenuItem
 									style={{ maxHeight: '2rem' }}
 									onClick={async () => {
+										setAdditionalFormView(true);
+										handleClose();
+									}}>
+									<TextFieldsIcon fontSize='large' />
+									Additional form
+								</MenuItem>
+								<MenuItem
+									style={{ maxHeight: '2rem' }}
+									onClick={async () => {
 										setLoading(true);
 										setCompleteView(true);
 										setLoading(false);
@@ -627,6 +637,9 @@ const OrderCard = ({
 					completeView={completeView}
 					completeDate={completeDate}
 				/>
+			)}
+			{additionalFormView && (
+				<AdditionalForm setAdditionalFormView={setAdditionalFormView} />
 			)}
 		</div>
 	);
