@@ -125,7 +125,7 @@ const Home = () => {
 		<>
 			<div className={styles.container}>
 				<main className={styles.main}>
-					<h1 style={{ maxWidth: '80vw', textAlign: 'center' }}>
+					<h1 style={{ maxWidth: '80vw', textAlign: 'justify' }}>
 						This is admin page please SIGNIN to access
 					</h1>
 					<Button
