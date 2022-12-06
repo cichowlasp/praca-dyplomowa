@@ -53,22 +53,25 @@ const SelectOptions = ({
 			<Paper
 				style={{
 					position: 'relative',
-					height: 'fit-content',
 					padding: '20px',
-					paddingBottom: '40px',
+					paddingBottom: '20px',
 					display: 'flex',
 					flexDirection: 'column',
 					alignContent: 'center',
+					height: '90vh',
+					width: '21rem',
+					minWidth: '50%',
+					maxWidth: '90vw',
+					maxHeight: '90%',
 				}}
 				elevation={3}>
-				<h1 style={{ textAlign: 'center' }}>Options:</h1>
+				<h1 style={{ textAlign: 'center', marginTop: 0 }}>Options:</h1>
 				{session?.user?.admin ? (
 					<>
 						<div
 							style={{
-								display: 'flex',
-								flexDirection: 'column',
-								justifyContent: 'center',
+								height: '100%',
+								maxHeight: '100%',
 							}}>
 							{select.options.length === 0 ? (
 								<div
@@ -81,23 +84,31 @@ const SelectOptions = ({
 									{'No options :('}
 								</div>
 							) : (
-								select.options.map(
-									(inp: OptionTS, inpIndex: number) => {
-										return (
-											<Option
-												key={inp.id}
-												setLoading={setLoading}
-												forms={forms}
-												loading={loading}
-												index={index}
-												selectIndex={selectIndex}
-												setForms={setForms}
-												inp={inp}
-												inpIndex={inpIndex}
-											/>
-										);
-									}
-								)
+								<div
+									style={{
+										overflowY: 'auto',
+										height: '95%',
+										maxHeight: '87%',
+										width: '100%',
+									}}>
+									{select.options.map(
+										(inp: OptionTS, inpIndex: number) => {
+											return (
+												<Option
+													key={inp.id}
+													setLoading={setLoading}
+													forms={forms}
+													loading={loading}
+													index={index}
+													selectIndex={selectIndex}
+													setForms={setForms}
+													inp={inp}
+													inpIndex={inpIndex}
+												/>
+											);
+										}
+									)}
+								</div>
 							)}
 							<div
 								style={{

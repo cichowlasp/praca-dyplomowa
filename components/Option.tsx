@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { TextField, Button, Switch, Select, MenuItem } from '@mui/material';
+import {
+	TextField,
+	Button,
+	Switch,
+	Select,
+	MenuItem,
+	useTheme,
+} from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {
 	Option,
@@ -42,6 +49,7 @@ const Option = ({
 }) => {
 	const [connect, setConnect] = useState(inp?.formId ? true : false);
 	const [value, setValue] = useState<String | null>('');
+	const { palette } = useTheme();
 
 	return (
 		<div
@@ -50,55 +58,65 @@ const Option = ({
 				padding: '5px',
 				display: 'flex',
 				alignItems: 'center',
+				flexDirection: 'column',
+				border: '2px solid ' + palette.primary.main,
+				borderRadius: '0.5rem',
+				marginBottom: '0.5rem',
 			}}>
-			<TextField
-				size='small'
-				placeholder='option'
-				value={
-					forms[index].selects[selectIndex]?.options[inpIndex].value
-				}
-				onChange={(event) =>
-					setForms((prev) => {
-						let updatedList = prev;
-						updatedList[index].selects[selectIndex].options[
-							inpIndex
-						].value = event.target.value;
-						return [...updatedList];
-					})
-				}
-			/>
-			<Button
-				color='error'
-				variant='contained'
-				disabled={loading}
-				style={{
-					marginLeft: '5px',
-				}}
-				onClick={async () => {
-					let options: Option[];
-					setLoading(true);
-					await fetch('/api/admin/removeoption', {
-						method: 'POST',
-						body: inp.id,
-					});
-
-					await fetch('/api/admin/getforms')
-						.then((response) => response.json())
-						.then((data) => {
-							options = data[index].selects[selectIndex].options;
+			<div>
+				<TextField
+					size='small'
+					placeholder='option'
+					value={
+						forms[index].selects[selectIndex]?.options[inpIndex]
+							.value
+					}
+					onChange={(event) =>
+						setForms((prev) => {
+							let updatedList = prev;
+							updatedList[index].selects[selectIndex].options[
+								inpIndex
+							].value = event.target.value;
+							return [...updatedList];
+						})
+					}
+				/>
+				<Button
+					color='error'
+					variant='contained'
+					disabled={loading}
+					style={{
+						marginLeft: '5px',
+					}}
+					onClick={async () => {
+						let options: Option[];
+						setLoading(true);
+						await fetch('/api/admin/removeoption', {
+							method: 'POST',
+							body: inp.id,
 						});
-					setLoading(false);
-					setForms((prev) => {
-						let updatedList = prev;
-						updatedList[index].selects[selectIndex].options =
-							updatedList[index].selects[selectIndex].options =
-								options;
 
-						return [...updatedList];
-					});
-				}}>
-				<DeleteIcon />
-			</Button>
+						await fetch('/api/admin/getforms')
+							.then((response) => response.json())
+							.then((data) => {
+								options =
+									data[index].selects[selectIndex].options;
+							});
+						setLoading(false);
+						setForms((prev) => {
+							let updatedList = prev;
+							updatedList[index].selects[selectIndex].options =
+								updatedList[index].selects[
+									selectIndex
+								].options = options;
+
+							return [...updatedList];
+						});
+					}}>
+					<DeleteIcon />
+				</Button>
+			</div>
+
 			<div
 				style={{
 					display: 'flex',
