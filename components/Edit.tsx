@@ -36,6 +36,8 @@ type Props = {
 		};
 		orderId: string;
 	}) => Promise<void>;
+	setCompleteView: React.Dispatch<React.SetStateAction<boolean>>;
+	setCompleteDate: React.Dispatch<React.SetStateAction<Moment | null>>;
 };
 
 const Edit = ({
@@ -47,6 +49,8 @@ const Edit = ({
 	date,
 	realizationDate,
 	updateOrder,
+	setCompleteView,
+	setCompleteDate,
 }: Props) => {
 	const [editedInfo, setEditedInfo] = useState<Info[]>(order.informations);
 	const [loading, setLoading] = useState<boolean>(false);
@@ -113,6 +117,7 @@ const Edit = ({
 						display: 'flex',
 						flexDirection: 'column',
 						alignContent: 'center',
+						overflowY: 'auto',
 					}}
 					elevation={3}>
 					<h3 style={{ textAlign: 'center' }}>
@@ -218,6 +223,7 @@ const Edit = ({
 					display: 'flex',
 					flexDirection: 'column',
 					alignContent: 'center',
+					overflowY: 'auto',
 				}}
 				elevation={3}>
 				<h1 style={{ textAlign: 'center' }}>

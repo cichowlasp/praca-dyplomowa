@@ -15,6 +15,7 @@ model Order {
   creationData         DateTime  @default(now())
   realizationDateEnd   DateTime?
   realizationDateStart DateTime?
+  completedAt          DateTime?
   user                 User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   informations         Info[]
   messages             Message[]
@@ -124,6 +125,7 @@ enum Reviewed {
   APPROVED
   DECLINE
   NOTREVIEWED
+  COMPLETED
 }
 
 enum From {

@@ -19,6 +19,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import MessageIcon from '@mui/icons-material/Message';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import SportsScoreIcon from '@mui/icons-material/SportsScore';
 import Edit from './Edit';
 import SendIcon from '@mui/icons-material/Send';
 import { Moment } from 'moment';
@@ -60,6 +61,8 @@ const OrderCard = ({
 		realizationDateStart: Moment | null;
 		realizationDateEnd: Moment | null;
 	}>({ realizationDateStart: null, realizationDateEnd: null });
+	const [completeView, setCompleteView] = useState(false);
+	const [completeDate, setCompleteDate] = useState<Moment | null>(null);
 	const open = Boolean(anchorEl);
 	const { data: session } = useSession();
 
@@ -190,7 +193,11 @@ const OrderCard = ({
 							? 'rgba(40, 255, 0, 0.3)'
 							: order.reviewed === 'NOTREVIEWED'
 							? 'rgba(0, 0, 0, 0.0)'
-							: 'rgba(255, 0, 0, 0.3)',
+							: order.reviewed === 'DECLINE'
+							? 'rgba(255, 0, 0, 0.3)'
+							: order.reviewed === 'COMPLETED'
+							? 'rgba(25, 118, 210, 0.3'
+							: '',
 					height: expanded ? 'fit-content' : '8rem',
 					marginTop: session.user?.admin ? '0' : '1rem',
 					marginBottom: session.user?.admin ? '1rem' : '0',
@@ -202,6 +209,18 @@ const OrderCard = ({
 						height: '100%',
 						overflow: 'hidden',
 					}}>
+					{order.reviewed === 'COMPLETED' && (
+						<div className={styles.orderTitle}>
+							completed at:
+							<div>
+								{new Date(
+									order?.completedAt
+										? order?.completedAt
+										: Date.now()
+								).toLocaleDateString('en-GB')}
+							</div>
+						</div>
+					)}
 					{order.reviewed === 'APPROVED' && (
 						<div className={styles.orderTitle}>
 							Approved, realization date:
@@ -533,6 +552,18 @@ const OrderCard = ({
 									style={{ maxHeight: '2rem' }}
 									onClick={async () => {
 										setLoading(true);
+										setCompleteView(true);
+										setLoading(false);
+										handleClose();
+										setEditView(true);
+									}}>
+									<SportsScoreIcon fontSize='large' />
+									Complete
+								</MenuItem>
+								<MenuItem
+									style={{ maxHeight: '2rem' }}
+									onClick={async () => {
+										setLoading(true);
 										setDate(true);
 										setLoading(false);
 										handleClose();
@@ -588,6 +619,8 @@ const OrderCard = ({
 					realizationDate={realizationDate}
 					date={date}
 					updateOrder={updateOrder}
+					setCompleteView={setCompleteView}
+					setCompleteDate={setCompleteDate}
 				/>
 			)}
 		</div>
