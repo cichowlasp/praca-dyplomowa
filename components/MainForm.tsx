@@ -143,7 +143,6 @@ const MainFrom = ({
 					if (!nextForm) return;
 				});
 			setDisabled(false);
-			console.log(nextForm);
 		} else {
 			setNextForm((pre) =>
 				pre.filter((_, localIndex) => localIndex !== index)

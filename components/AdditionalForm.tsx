@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Paper } from '@mui/material';
 import styles from '../styles/Edit.module.css';
-import { Select, MenuItem } from '@mui/material';
+import { Select, MenuItem, Button } from '@mui/material';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { useSession } from 'next-auth/react';
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import Loading from './Loading';
 import {
 	Form,
@@ -34,6 +33,7 @@ const AdditionalForm = ({
 		  })[]
 		| []
 	>();
+	const [formId, setFormId] = useState('');
 
 	useEffect(() => {
 		fetch('/api/admin/getforms')
@@ -53,9 +53,8 @@ const AdditionalForm = ({
 					display: 'flex',
 					flexDirection: 'column',
 					alignContent: 'center',
-					height: '90vh',
-					width: '90vw',
-					minWidth: '50%',
+
+					width: '25rem',
 					maxWidth: '90vw',
 					maxHeight: '90%',
 				}}
@@ -63,12 +62,17 @@ const AdditionalForm = ({
 				<h1 style={{ textAlign: 'center', marginTop: 0 }}>
 					Additional Form:
 				</h1>
-				{session?.user?.admin ? (
+				{session?.user?.admin && !loading ? (
 					<>
 						<div
 							style={{
+								display: 'flex',
+								flexDirection: 'column',
 								height: '100%',
 								maxHeight: '100%',
+								justifyContent: 'center',
+								alignItems: 'center',
+								gap: '10px',
 							}}>
 							<div
 								style={{
@@ -78,7 +82,6 @@ const AdditionalForm = ({
 									alignItems: 'center',
 									marginLeft: '0.5rem',
 								}}>
-								Form
 								<Select
 									size='small'
 									defaultValue={
@@ -86,7 +89,7 @@ const AdditionalForm = ({
 									}
 									onChange={async (event) => {
 										setLoading(true);
-
+										setFormId(event.target.value);
 										setLoading(false);
 									}}
 									sx={{ width: '200px' }}>
@@ -106,6 +109,23 @@ const AdditionalForm = ({
 										})}
 								</Select>
 							</div>
+							<Button
+								disabled={formId === ''}
+								onClick={async () => {
+									setLoading(true);
+									await fetch('/api/admin/additionalform', {
+										method: 'POST',
+										body: JSON.stringify({
+											orderId: order.id,
+											formId: formId,
+										}),
+									});
+									setLoading(false);
+									setAdditionalFormView(false);
+								}}
+								variant='contained'>
+								Add form
+							</Button>
 						</div>
 					</>
 				) : (

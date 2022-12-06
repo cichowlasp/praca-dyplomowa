@@ -27,6 +27,7 @@ import { Moment } from 'moment';
 import { Order, Info, Message, User, Company } from '@prisma/client';
 import Loading from './Loading';
 import AdditionalForm from './AdditionalForm';
+import AddFormView from './AddFormView';
 
 export enum Reviewed {
 	approved = 'APPROVED',
@@ -69,6 +70,7 @@ const OrderCard = ({
 	const [additionalFormView, setAdditionalFormView] = useState(false);
 	const open = Boolean(anchorEl);
 	const { data: session } = useSession();
+	const [formView, setFormView] = useState(false);
 
 	const messageField = useRef(null);
 	useEffect(() => {
@@ -155,6 +157,13 @@ const OrderCard = ({
 
 		setLoading(false);
 		handleClose();
+	};
+
+	const openForm = () => {
+		setFormView(true);
+	};
+	const closeForm = () => {
+		setFormView(false);
 	};
 
 	const StyledMenu = styled((props: MenuProps) => (
@@ -443,6 +452,13 @@ const OrderCard = ({
 							</Button>
 						</form>
 					</div>
+					{order.formId && session.user?.pin && (
+						<Button
+							sx={{ justifySelf: 'center' }}
+							onClick={openForm}>
+							Fill aditional info
+						</Button>
+					)}
 				</div>
 
 				<div
@@ -639,7 +655,17 @@ const OrderCard = ({
 				/>
 			)}
 			{additionalFormView && (
-				<AdditionalForm setAdditionalFormView={setAdditionalFormView} />
+				<AdditionalForm
+					setAdditionalFormView={setAdditionalFormView}
+					order={order}
+				/>
+			)}
+			{formView && (
+				<AddFormView
+					closeForm={closeForm}
+					order={order}
+					updateData={updateData}
+				/>
 			)}
 		</div>
 	);
