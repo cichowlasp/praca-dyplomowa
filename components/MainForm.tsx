@@ -395,7 +395,7 @@ const MainFrom = ({
 								setInitalIndex(formData.length);
 								setForm(nextForm[0]);
 								if (nextForm.length !== 0) {
-									setNextForm((pre) => pre.splice(0, 1));
+									setNextForm((pre) => pre.splice(1));
 								}
 							}}
 							style={{ order: 999999999, marginBottom: '10px' }}
