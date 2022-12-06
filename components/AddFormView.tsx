@@ -172,6 +172,7 @@ const AddFormView = ({
 					setFormData([]);
 				}
 			});
+			updateData();
 			closeForm();
 			return;
 		}
