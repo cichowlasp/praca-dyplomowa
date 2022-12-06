@@ -31,6 +31,8 @@ const Home = () => {
 		| null
 	>(null);
 
+	const router = useRouter();
+
 	useEffect(() => {
 		if (session?.user?.admin) {
 			fetch('/api/admin/getalldata')
@@ -123,9 +125,18 @@ const Home = () => {
 		<>
 			<div className={styles.container}>
 				<main className={styles.main}>
-					<h1 style={{ maxWidth: '80vw' }}>
+					<h1 style={{ maxWidth: '80vw', textAlign: 'center' }}>
 						This is admin page please SIGNIN to access
 					</h1>
+					<Button
+						onClick={() => {
+							router.push('/');
+						}}
+						sx={{ marginTop: '1rem' }}
+						size='large'
+						variant='contained'>
+						Home
+					</Button>
 				</main>
 				<footer className={styles.footer}>
 					<div>Politechnika Wrocławska</div>
