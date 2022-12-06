@@ -16,9 +16,9 @@ model Order {
   realizationDateEnd   DateTime?
   realizationDateStart DateTime?
   completedAt          DateTime?
-  user                 User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   informations         Info[]
   messages             Message[]
+  user                 User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
 }
 
 model Message {
@@ -64,8 +64,8 @@ model User {
   createdAt   DateTime @default(now())
   phoneNumber String
   companyId   String?
-  Company     Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
   orders      Order[]
+  Company     Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
 }
 
 model Form {
@@ -74,8 +74,8 @@ model Form {
   name       String
   checkboxes CheckBox[]
   inputs     Input[]
-  selects    Select[]
   Option     Option[]
+  selects    Select[]
 }
 
 model Input {
@@ -98,8 +98,8 @@ model Select {
   formId      String?
   label       String?
   order       Int      @default(0)
-  Form        Form?    @relation(fields: [formId], references: [id], onDelete: Cascade)
   options     Option[]
+  Form        Form?    @relation(fields: [formId], references: [id], onDelete: Cascade)
 }
 
 model CheckBox {
@@ -116,9 +116,9 @@ model Option {
   id       String  @id @default(cuid())
   value    String
   selectId String?
+  formId   String?
   form     Form?   @relation(fields: [formId], references: [id])
   Select   Select? @relation(fields: [selectId], references: [id], onDelete: Cascade)
-  formId   String?
 }
 
 enum Reviewed {

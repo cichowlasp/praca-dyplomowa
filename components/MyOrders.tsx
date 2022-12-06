@@ -143,6 +143,9 @@ const MyOrders = () => {
 						<MenuItem value={Reviewed.decline}>
 							Not Approved
 						</MenuItem>
+						<MenuItem value={Reviewed.completed}>
+							Completed
+						</MenuItem>
 					</Select>
 				</span>
 			</div>

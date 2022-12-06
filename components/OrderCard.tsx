@@ -30,6 +30,7 @@ export enum Reviewed {
 	approved = 'APPROVED',
 	decline = 'DECLINE',
 	notReviewed = 'NOTREVIEWED',
+	completed = 'COMPLETED',
 }
 
 const OrderCard = ({
@@ -119,13 +120,15 @@ const OrderCard = ({
 	};
 
 	const updateOrder = async (data: {
-		data: {
-			reviewed: Reviewed;
-			realizationDate?: {
-				realizationDateStart: Moment | null;
-				realizationDateEnd: Moment | null;
-			};
-		};
+		data:
+			| {
+					reviewed: Reviewed;
+					realizationDate?: {
+						realizationDateStart: Moment | null;
+						realizationDateEnd: Moment | null;
+					};
+			  }
+			| { reviewed: Reviewed; completedAt: Moment | null };
 		orderId: string;
 	}) => {
 		await fetch('/api/admin/orderupdate', {
@@ -621,6 +624,8 @@ const OrderCard = ({
 					updateOrder={updateOrder}
 					setCompleteView={setCompleteView}
 					setCompleteDate={setCompleteDate}
+					completeView={completeView}
+					completeDate={completeDate}
 				/>
 			)}
 		</div>

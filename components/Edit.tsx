@@ -27,17 +27,21 @@ type Props = {
 		}>
 	>;
 	updateOrder: (data: {
-		data: {
-			reviewed: Reviewed;
-			realizationDate?: {
-				realizationDateStart: Moment | null;
-				realizationDateEnd: Moment | null;
-			};
-		};
+		data:
+			| {
+					reviewed: Reviewed;
+					realizationDate?: {
+						realizationDateStart: Moment | null;
+						realizationDateEnd: Moment | null;
+					};
+			  }
+			| { reviewed: Reviewed; completedAt: Moment | null };
 		orderId: string;
 	}) => Promise<void>;
 	setCompleteView: React.Dispatch<React.SetStateAction<boolean>>;
 	setCompleteDate: React.Dispatch<React.SetStateAction<Moment | null>>;
+	completeView: boolean;
+	completeDate: Moment | null;
 };
 
 const Edit = ({
@@ -51,6 +55,8 @@ const Edit = ({
 	updateOrder,
 	setCompleteView,
 	setCompleteDate,
+	completeDate,
+	completeView,
 }: Props) => {
 	const [editedInfo, setEditedInfo] = useState<Info[]>(order.informations);
 	const [loading, setLoading] = useState<boolean>(false);
@@ -104,6 +110,82 @@ const Edit = ({
 			return formData;
 		});
 	};
+
+	if (completeView) {
+		return (
+			<div className={styles.dateContainer}>
+				<Paper
+					style={{
+						position: 'relative',
+						height: 'fit-content',
+						width: 'fit-content',
+						padding: '20px',
+						display: 'flex',
+						flexDirection: 'column',
+						alignContent: 'center',
+						overflowY: 'auto',
+					}}
+					elevation={3}>
+					<h3 style={{ textAlign: 'center' }}>
+						Choose completed date
+					</h3>
+					<div
+						style={{
+							display: 'flex',
+							maxWidth: '350px',
+							gap: '10px',
+						}}>
+						<span>
+							<MobileDatePicker
+								label='Date'
+								value={completeDate}
+								onChange={(newValue: Moment | null) =>
+									setCompleteDate(newValue)
+								}
+								renderInput={(params) => (
+									<TextField {...params} />
+								)}
+							/>
+						</span>
+					</div>
+
+					<div style={{ height: '20px' }} />
+					<Button
+						disabled={loading}
+						onClick={async () => {
+							setLoading(true);
+							await updateOrder({
+								data: {
+									reviewed: Reviewed.completed,
+									completedAt: completeDate,
+								},
+								orderId: order.id,
+							});
+
+							await fetch('/api/admin/getalldata')
+								.then((response) => response.json())
+								.then(() => updateData(setLoading));
+							setEditView(false);
+						}}
+						variant='contained'>
+						Set date
+					</Button>
+					<CancelIcon
+						style={{
+							position: 'absolute',
+							top: '10px',
+							right: '10px',
+							cursor: 'pointer',
+						}}
+						fontSize='medium'
+						onClick={async () => {
+							setEditView(false);
+						}}
+					/>
+				</Paper>
+			</div>
+		);
+	}
 
 	if (date) {
 		return (
