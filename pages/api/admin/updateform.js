@@ -6,6 +6,7 @@ const handler = async (req, res) => {
 	const { body } = req;
 	const { user } = await unstable_getServerSession(req, res, authOptions);
 	const { id, data } = JSON.parse(body);
+
 	if (user.id && user.admin === true) {
 		data.inputs.forEach(async (input) => {
 			await prisma.input.updateMany({
@@ -16,14 +17,6 @@ const handler = async (req, res) => {
 			});
 		});
 		data.selects.forEach(async (select) => {
-			select.options.forEach(async (option) => {
-				await prisma.option.update({
-					where: {
-						id: option.id,
-					},
-					data: option,
-				});
-			});
 			delete select.options;
 			await prisma.select.update({
 				where: {

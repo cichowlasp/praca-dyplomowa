@@ -135,7 +135,11 @@ const MainFrom = ({
 			})
 				.then((response) => response.json())
 				.then(({ form }) => {
-					setNextForm((pre) => [...pre, form]);
+					setNextForm((pre) => {
+						let tab = pre;
+						tab[index] = form;
+						return tab;
+					});
 					if (!nextForm) return;
 				});
 			setDisabled(false);
