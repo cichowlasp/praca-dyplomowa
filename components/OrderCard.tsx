@@ -160,6 +160,7 @@ const OrderCard = ({
 	};
 
 	const openForm = () => {
+		console.log(formView);
 		setFormView(true);
 	};
 	const closeForm = () => {
@@ -455,7 +456,7 @@ const OrderCard = ({
 					{order.formId && session.user?.pin && (
 						<Button
 							sx={{ justifySelf: 'center' }}
-							onClick={openForm}>
+							onClick={() => openForm()}>
 							Fill aditional info
 						</Button>
 					)}

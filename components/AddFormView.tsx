@@ -61,7 +61,7 @@ const AddFormView = ({
 	const [formData, setFormData] = useState<FormData[]>([]);
 
 	useEffect(() => {
-		if (form === null) {
+		if (form === null || form === undefined) {
 			fetch('/api/user/getform', { method: 'POST', body: order.formId })
 				.then((response) => response.json())
 				.then((data) => {
@@ -69,7 +69,7 @@ const AddFormView = ({
 				});
 		}
 	}, [order.formId, form]);
-	if (form === null || form === undefined || loading) return <></>;
+	if (form === null || form === undefined) return <></>;
 	const handleInputChange = (
 		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
 		index: number,
@@ -180,7 +180,10 @@ const AddFormView = ({
 
 	return (
 		<div
-			style={{ position: 'fixed', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+			style={{
+				position: 'absolute',
+				backgroundColor: 'rgba(0, 0, 0, 0.5)',
+			}}
 			className={styles.container}>
 			<Paper
 				style={{
@@ -190,7 +193,6 @@ const AddFormView = ({
 					display: 'flex',
 					flexDirection: 'column',
 					alignContent: 'center',
-
 					width: '25rem',
 					maxWidth: '90vw',
 					maxHeight: '90%',

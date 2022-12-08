@@ -116,12 +116,13 @@ model CheckBox {
 }
 
 model Option {
-  id       String  @id @default(cuid())
+  id       String    @id @default(cuid())
   value    String
   selectId String?
   formId   String?
-  form     Form?   @relation(fields: [formId], references: [id])
-  Select   Select? @relation(fields: [selectId], references: [id], onDelete: Cascade)
+  formType formType?
+  form     Form?     @relation(fields: [formId], references: [id])
+  Select   Select?   @relation(fields: [selectId], references: [id], onDelete: Cascade)
 }
 
 enum Reviewed {
@@ -134,4 +135,9 @@ enum Reviewed {
 enum From {
   USER
   ADMIN
+}
+
+enum formType {
+  NEXT
+  POPUP
 }
