@@ -29,6 +29,7 @@ const SelectView = ({
 	numberOfOptions,
 	loading,
 	setLoading,
+	updateForm,
 }: {
 	select: SelectTS & { options: Option[] };
 	selectIndex: number;
@@ -51,6 +52,7 @@ const SelectView = ({
 	numberOfOptions: number;
 	loading: boolean;
 	setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+	updateForm: (loading?: boolean) => Promise<void>;
 }) => {
 	const { palette } = useTheme();
 	const [open, setOpen] = useState<boolean>(false);
@@ -83,15 +85,16 @@ const SelectView = ({
 						<Select
 							value={forms[index].selects[selectIndex].order}
 							size='small'
-							onChange={(event) =>
+							onChange={async (event) => {
 								setForms((prev) => {
 									let updatedList = prev;
 									updatedList[index].selects[
 										selectIndex
 									].order = parseInt(`${event.target.value}`);
 									return [...updatedList];
-								})
-							}>
+								});
+								await updateForm(true);
+							}}>
 							{Array.from(Array(numberOfOptions).keys()).map(
 								(num: number, index: number) => (
 									<MenuItem key={index} value={num}>
@@ -137,7 +140,10 @@ const SelectView = ({
 					<span>
 						<Button
 							variant='contained'
-							onClick={() => setOpen(true)}>
+							onClick={async () => {
+								await updateForm(true);
+								setOpen(true);
+							}}>
 							Options
 						</Button>
 						{open && (

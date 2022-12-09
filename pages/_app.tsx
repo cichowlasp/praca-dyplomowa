@@ -5,7 +5,10 @@ import { AppProps } from 'next/app';
 import { Session } from 'next-auth';
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import { CacheProvider, EmotionCache } from '@emotion/react';
-import lightThemeOptions from '../styles/Themes/lightThemeOptions';
+import {
+	lightThemeOptions,
+	darkThemeOptions,
+} from '../styles/Themes/ThemeOptions';
 import createEmotionCache from '../utils/createEmotionCache';
 import Head from 'next/head';
 import Nav from '../components/Navbar';
@@ -17,7 +20,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 
 const clientSideEmotionCache = createEmotionCache();
-const lightTheme = createTheme(lightThemeOptions);
+const lightTheme = createTheme(darkThemeOptions);
 
 interface MyAppProps extends AppProps {
 	emotionCache?: EmotionCache;

@@ -68,12 +68,29 @@ const FormView = ({
 		useState<HTMLButtonElement | null>(null);
 	const { palette } = useTheme();
 
+	const updateForm = async (loading?: boolean) => {
+		if (loading) {
+			setLoading(true);
+			await fetch('/api/admin/updateform', {
+				method: 'POST',
+				body: JSON.stringify({ id: el.id, data: forms[index] }),
+			});
+			setLoading(false);
+			return;
+		}
+		await fetch('/api/admin/updateform', {
+			method: 'POST',
+			body: JSON.stringify({ id: el.id, data: forms[index] }),
+		});
+	};
+
 	const deleteFromForm = async (type: string, id: string) => {
 		setLoading(true);
 		await fetch('/api/admin/deletefromform', {
 			method: 'POST',
 			body: JSON.stringify({ type, id }),
 		});
+		await updateForm(false);
 		await fetch('/api/admin/getforms')
 			.then((response) => response.json())
 			.then((data) => setForms(data));
@@ -83,6 +100,7 @@ const FormView = ({
 	const createFormElement = async (type: string, formId: string) => {
 		setLoading(true);
 		handleFormClose();
+		await updateForm(false);
 		await fetch('/api/admin/createformelement', {
 			method: 'POST',
 			body: JSON.stringify({ formId, type }),
@@ -94,20 +112,13 @@ const FormView = ({
 		setLoading(false);
 	};
 
-	const handleFormClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+	const handleFormClick = async (
+		event: React.MouseEvent<HTMLButtonElement>
+	) => {
 		setAddToFormPopUp(event.currentTarget);
 	};
 	const handleFormClose = () => {
 		setAddToFormPopUp(null);
-	};
-
-	const updateForm = async (id: string, index: number) => {
-		setLoading(true);
-		await fetch('/api/admin/updateform', {
-			method: 'POST',
-			body: JSON.stringify({ id, data: forms[index] }),
-		});
-		setLoading(false);
 	};
 
 	const openForm = Boolean(addToFormPopUp);
@@ -263,13 +274,14 @@ const FormView = ({
 										</div>
 										<div>
 											<Select
+												defaultValue={inputIndex}
 												value={
 													forms[index].inputs[
 														inputIndex
 													].order
 												}
 												size='small'
-												onChange={(event) =>
+												onChange={async (event) => {
 													setForms((prev) => {
 														let updatedList = prev;
 														updatedList[
@@ -281,8 +293,9 @@ const FormView = ({
 															10
 														);
 														return [...updatedList];
-													})
-												}>
+													});
+													await updateForm(true);
+												}}>
 												{Array.from(
 													Array(
 														numberOfOptions
@@ -462,6 +475,7 @@ const FormView = ({
 									numberOfOptions={numberOfOptions}
 									loading={loading}
 									setLoading={setLoading}
+									updateForm={updateForm}
 								/>
 							);
 						}
@@ -503,7 +517,7 @@ const FormView = ({
 														].order
 													}
 													size='small'
-													onChange={(event) =>
+													onChange={async (event) => {
 														setForms((prev) => {
 															let updatedList =
 																prev;
@@ -518,8 +532,9 @@ const FormView = ({
 															return [
 																...updatedList,
 															];
-														})
-													}>
+														});
+														await updateForm(true);
+													}}>
 													{Array.from(
 														Array(
 															numberOfOptions
@@ -621,7 +636,7 @@ const FormView = ({
 					<Button
 						disabled={loading}
 						variant='contained'
-						onClick={() => updateForm(el.id, index)}>
+						onClick={() => updateForm(true)}>
 						Save Changes
 					</Button>
 					<Button

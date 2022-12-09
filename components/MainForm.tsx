@@ -1,5 +1,3 @@
-'use client';
-
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import {
 	Button,
@@ -12,10 +10,18 @@ import {
 } from '@mui/material';
 import Loading from './Loading';
 import styles from '../styles/MainForm.module.css';
-import { signIn, useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { validForm } from '../utils/validationSchema';
 import { PageOption } from '../pages/company';
-import { CheckBox, Input, Option, Select as SelectTS } from '@prisma/client';
+import {
+	CheckBox,
+	Form,
+	From,
+	Input,
+	Option,
+	Select as SelectTS,
+} from '@prisma/client';
+import PopUpForm from './PopUpForm';
 
 export interface FormData {
 	fill: string;
@@ -31,26 +37,27 @@ const MainFrom = ({
 	const [formData, setFormData] = useState<FormData[]>([]);
 	const { data: session } = useSession();
 	const { palette } = useTheme();
-	const [userData, setUserData] = useState<{
-		company: string;
-		email: string;
-	}>({ company: '', email: '' });
-	const [form, setForm] = useState<{
-		inputs: Input[];
-		selects: (SelectTS & { options: Option[] })[];
-		checkboxes: CheckBox[];
-	} | null>(null);
+	const [form, setForm] = useState<
+		| (Form & {
+				inputs: Input[];
+				selects: (SelectTS & { options: Option[] })[];
+				checkboxes: CheckBox[];
+		  })
+		| null
+	>(null);
 	const [error, setError] = useState<string>('');
 	const [loading, setLoading] = useState<boolean>(false);
 	const [nextForm, setNextForm] = useState<
-		{
+		(Form & {
 			inputs: Input[];
 			selects: (SelectTS & { options: Option[] })[];
 			checkboxes: CheckBox[];
-		}[]
+		})[]
 	>([]);
 	const [initalIndex, setInitalIndex] = useState(0);
 	const [disabled, setDisabled] = useState(false);
+	const [popForm, setPopForm] = useState(false);
+	const [popId, setPopId] = useState<string>();
 
 	useEffect(() => {
 		fetch('api/getform')
@@ -72,7 +79,7 @@ const MainFrom = ({
 						(el: SelectTS & { options: Option[] }) =>
 							arr.push({
 								name: el.label ? el.label : '',
-								fill: !el.required ? '' : el.options[0].value,
+								fill: '',
 								index: el.order,
 							})
 					);
@@ -127,7 +134,19 @@ const MainFrom = ({
 		const option = form.selects[index].options.find(
 			(option: Option) => option.value === event.target.value
 		);
-		if (option?.formId !== null) {
+
+		if (option?.formId !== null && option?.formType === 'POPUP') {
+			setPopId(option.formId);
+			setPopForm(true);
+		} else {
+			const start =
+				form.inputs.length +
+				form.selects.length +
+				form.checkboxes.length;
+			setFormData((pre) => pre.slice(start, -1));
+		}
+
+		if (option?.formId !== null && option?.formType === 'NEXT') {
 			setDisabled(true);
 			await fetch('api/nextform', {
 				method: 'POST',
@@ -175,30 +194,6 @@ const MainFrom = ({
 			return;
 		}
 		setLoading(true);
-		if (userData.company !== '' && userData.email !== '') {
-			await fetch('/api/user/createnewuser', {
-				method: 'POST',
-				body: JSON.stringify(userData),
-			})
-				.then((response) => response.json())
-				.then(async (data) => {
-					await signIn('credentials', {
-						redirect: false,
-						pin: data.pin,
-					});
-					await fetch('/api/user/neworder', {
-						method: 'POST',
-						body: JSON.stringify(formData),
-					}).then((response) => {
-						if (response.status === 200) {
-							setFormData([]);
-						}
-					});
-					setPageOption(PageOption.myOrders);
-					setLoading(false);
-					return;
-				});
-		}
 		if (session?.user?.pin) {
 			await fetch('/api/user/neworder', {
 				method: 'POST',
@@ -212,63 +207,13 @@ const MainFrom = ({
 			return;
 		}
 	};
-
 	return (
 		<>
 			<h1>Fill up to take order</h1>
+			<h2 style={{ margin: '0px' }}>{form.name}</h2>
 			<form
 				className={styles.form}
 				onSubmit={(event) => handleClick(event)}>
-				{session?.user?.pin ? (
-					<></>
-				) : (
-					<>
-						<div style={{ order: 1 }} className={styles.input}>
-							<div
-								style={{
-									fontWeight: 'bold',
-									textAlign: 'left',
-								}}>
-								Company
-							</div>
-							<TextField
-								placeholder={'Company'}
-								type={'text'}
-								required={true}
-								onChange={(event) => {
-									setUserData((prev) => {
-										return {
-											...prev,
-											company: event.target.value.trim(),
-										};
-									});
-								}}
-							/>
-						</div>
-						<div style={{ order: 1 }} className={styles.input}>
-							<div
-								style={{
-									fontWeight: 'bold',
-									textAlign: 'left',
-								}}>
-								Email
-							</div>
-							<TextField
-								placeholder={'Email'}
-								type={'email'}
-								required={true}
-								onChange={(event) => {
-									setUserData((prev) => {
-										return {
-											...prev,
-											email: event.target.value.trim(),
-										};
-									});
-								}}
-							/>
-						</div>
-					</>
-				)}
 				{form?.inputs.map((el: Input, index: number) => (
 					<div
 						className={styles.input}
@@ -303,53 +248,64 @@ const MainFrom = ({
 					</div>
 				))}
 				{form?.selects?.map(
-					(el: SelectTS & { options: Option[] }, index: number) => (
-						<div
-							className={styles.input}
-							style={{
-								display: 'flex',
-								alignItems: 'center',
-								justifyContent: 'center',
-								order: 1 + el.order,
-							}}
-							key={el.id}>
+					(el: SelectTS & { options: Option[] }, index: number) => {
+						return (
 							<div
-								className={styles.label}
+								className={styles.input}
 								style={{
-									fontWeight: 'bold',
-									textAlign: 'left',
-								}}>
-								{el.label}
+									display: 'flex',
+									alignItems: 'center',
+									justifyContent: 'center',
+									order: 1 + el.order,
+								}}
+								key={el.id}>
+								<div
+									className={styles.label}
+									style={{
+										fontWeight: 'bold',
+										textAlign: 'left',
+									}}>
+									{el.label}
+								</div>
+								<Select
+									placeholder={
+										el.placeholder
+											? el.placeholder
+											: undefined
+									}
+									fullWidth={true}
+									required={el.required}
+									size={'small'}
+									variant='outlined'
+									defaultValue={''}
+									onChange={(event) => {
+										handleSelectChange(
+											event,
+											index,
+											el.label ? el.label : el.id,
+											el.order
+										);
+									}}>
+									{el.options.map((option: Option) => {
+										return (
+											<MenuItem
+												key={option.id}
+												value={option.value}>
+												{option.value}
+											</MenuItem>
+										);
+									})}
+								</Select>
+								{popForm && (
+									<PopUpForm
+										popId={popId}
+										closeForm={() => setPopForm(false)}
+										setFormDataMain={setFormData}
+									/>
+								)}
 							</div>
-							<Select
-								placeholder={
-									el.placeholder ? el.placeholder : undefined
-								}
-								fullWidth={true}
-								required={el.required}
-								size={'small'}
-								variant='outlined'
-								defaultValue={''}
-								onChange={(event) => {
-									handleSelectChange(
-										event,
-										index,
-										el.label ? el.label : el.id,
-										el.order
-									);
-								}}>
-								{el.options.map((option: Option) => {
-									return (
-										<MenuItem
-											key={option.id}
-											value={option.value}>
-											{option.value}
-										</MenuItem>
-									);
-								})}
-							</Select>
-						</div>
-					)
+						);
+					}
 				)}
 				{form?.checkboxes.map((el, index: number) => (
 					<div

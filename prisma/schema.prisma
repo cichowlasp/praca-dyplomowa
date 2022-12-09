@@ -43,10 +43,11 @@ model Info {
 }
 
 model Company {
-  id             String @id @default(cuid())
+  id             String   @id @default(cuid())
   companyName    String
-  nip            String @unique
-  companyEmail   String @unique
+  nip            String   @unique
+  companyEmail   String   @unique
+  createdAt      DateTime @default(now())
   companyAddress String
   phoneNumber    String
   createUserPin  String
