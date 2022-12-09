@@ -16,11 +16,11 @@ model Order {
   realizationDateEnd   DateTime?
   realizationDateStart DateTime?
   completedAt          DateTime?
+  formId               String?
   informations         Info[]
   messages             Message[]
   user                 User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   form                 Form?     @relation(fields: [formId], references: [id])
-  formId               String?
 }
 
 model Message {
@@ -43,11 +43,10 @@ model Info {
 }
 
 model Company {
-  id             String   @id @default(cuid())
+  id             String @id @default(cuid())
   companyName    String
-  nip            String   @unique
-  companyEmail   String   @unique
-  createdAt      DateTime @default(now())
+  nip            String @unique
+  companyEmail   String @unique
   companyAddress String
   phoneNumber    String
   createUserPin  String
@@ -77,9 +76,9 @@ model Form {
   name       String
   checkboxes CheckBox[]
   inputs     Input[]
-  Option     Option[]
+  option     Option[]
+  order      Order[]
   selects    Select[]
-  Order      Order[]
 }
 
 model Input {
@@ -90,7 +89,7 @@ model Input {
   maxLength   Int?
   minLength   Int?
   formId      String?
-  label       String?
+  label       String
   order       Int     @default(0)
   Form        Form?   @relation(fields: [formId], references: [id], onDelete: Cascade)
 }
@@ -100,7 +99,7 @@ model Select {
   placeholder String?
   required    Boolean  @default(false)
   formId      String?
-  label       String?
+  label       String
   order       Int      @default(0)
   options     Option[]
   Form        Form?    @relation(fields: [formId], references: [id], onDelete: Cascade)
@@ -109,7 +108,7 @@ model Select {
 model CheckBox {
   id       String  @id @default(cuid())
   order    Int     @default(0)
-  label    String?
+  label    String
   required Boolean
   formId   String?
   value    Boolean @default(false)

@@ -20,7 +20,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 
 const clientSideEmotionCache = createEmotionCache();
-const lightTheme = createTheme(darkThemeOptions);
+const lightTheme = createTheme(lightThemeOptions);
 
 interface MyAppProps extends AppProps {
 	emotionCache?: EmotionCache;

@@ -22,6 +22,7 @@ const handler = async (req, res) => {
 				checkboxes: {
 					orderBy: { id: 'asc' },
 				},
+				option: true,
 			},
 		});
 		return res.status(200).json(forms);

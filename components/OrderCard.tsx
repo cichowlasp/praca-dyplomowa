@@ -24,7 +24,7 @@ import TextFieldsIcon from '@mui/icons-material/TextFields';
 import Edit from './Edit';
 import SendIcon from '@mui/icons-material/Send';
 import { Moment } from 'moment';
-import { Order, Info, Message, User, Company } from '@prisma/client';
+import { Order, Info, Message, User } from '@prisma/client';
 import Loading from './Loading';
 import AdditionalForm from './AdditionalForm';
 import AddFormView from './AddFormView';

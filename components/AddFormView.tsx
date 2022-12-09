@@ -59,6 +59,8 @@ const AddFormView = ({
 	const [initalIndex, setInitalIndex] = useState(0);
 	const [disabled, setDisabled] = useState(false);
 	const [formData, setFormData] = useState<FormData[]>([]);
+	const [localPopId, setLocalPopId] = useState<string>('');
+	const [localPopForm, setLocalPopForm] = useState(false);
 
 	useEffect(() => {
 		if (form === null || form === undefined) {
@@ -69,46 +71,53 @@ const AddFormView = ({
 				});
 		}
 	}, [order.formId, form]);
-	if (form === null || form === undefined) return <></>;
+
+	if (form === null || form === undefined) return <Loading />;
+
 	const handleInputChange = (
 		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-		index: number,
-		name: string,
-		order: number
+		id: string
 	) => {
 		setFormData((pre) => {
-			let modifyFormData: FormData[] = pre;
-			modifyFormData[initalIndex + index] = {
-				name,
-				fill: event.target.value,
-				index: initalIndex + order,
-			};
-			return modifyFormData;
+			const index = pre.findIndex((el) => el.id === id);
+			const previous = pre[index];
+			pre[index] = { ...previous, fill: event.target.value };
+			return pre;
 		});
 	};
 	const handleSelectChange = async (
 		event: SelectChangeEvent<unknown>,
 		index: number,
-		name: string,
-		order: number
+		id: string
 	) => {
 		setFormData((pre) => {
-			const indexAtArr = initalIndex + form.inputs.length + index;
-			let modifyFormData: FormData[] = pre;
-			modifyFormData[indexAtArr] = {
-				name,
+			const index = pre.findIndex((el) => el.id === id);
+			const previous = pre[index];
+			pre[index] = {
+				...previous,
 				fill: event.target.value
 					? JSON.stringify(event.target.value)
 					: '',
-				index: initalIndex + order,
 			};
-			return modifyFormData;
+			return pre;
 		});
 
-		const option = form.selects[index].options.find(
+		const option = form?.selects[index].options.find(
 			(option: Option) => option.value === event.target.value
 		);
-		if (option?.formId !== null) {
+
+		if (option?.formId !== null && option?.formType === 'POPUP') {
+			setLocalPopId(option.formId);
+			setLocalPopForm(true);
+		} else {
+			const start =
+				form.inputs.length +
+				form.selects.length +
+				form.checkboxes.length;
+			setFormData((pre) => pre.filter((_, index) => index < start));
+		}
+
+		if (option?.formId !== null && option?.formType === 'NEXT') {
 			setDisabled(true);
 			await fetch('api/nextform', {
 				method: 'POST',
@@ -131,21 +140,15 @@ const AddFormView = ({
 		}
 	};
 
-	const handleCheckboxChange = (
-		index: number,
-		name: string,
-		order: number
-	) => {
+	const handleCheckboxChange = (id: string) => {
 		setFormData((pre) => {
-			const indexAtArr =
-				initalIndex + form.inputs.length + form.selects.length + index;
-			let modifyFormData: FormData[] = pre;
-			modifyFormData[indexAtArr] = {
-				name,
-				fill: JSON.stringify(!JSON.parse(pre[indexAtArr].fill)),
-				index: initalIndex + order,
+			const index = pre.findIndex((el) => el.id === id);
+			const previous = pre[index];
+			pre[index] = {
+				...previous,
+				fill: JSON.stringify(!JSON.parse(previous.fill)),
 			};
-			return modifyFormData;
+			return pre;
 		});
 	};
 
@@ -249,12 +252,7 @@ const AddFormView = ({
 											required={el.required}
 											type={el.type}
 											onChange={(event) =>
-												handleInputChange(
-													event,
-													index,
-													el.label ? el.label : el.id,
-													el.order
-												)
+												handleInputChange(event, el.id)
 											}
 										/>
 									</div>
@@ -296,10 +294,7 @@ const AddFormView = ({
 													handleSelectChange(
 														event,
 														index,
-														el.label
-															? el.label
-															: el.id,
-														el.order
+														el.id
 													);
 												}}>
 												{el.options.map(
@@ -349,13 +344,7 @@ const AddFormView = ({
 													].fill
 												)}
 												onChange={() =>
-													handleCheckboxChange(
-														index,
-														el.label
-															? el.label
-															: el.id,
-														el.order
-													)
+													handleCheckboxChange(el.id)
 												}
 											/>
 										</div>

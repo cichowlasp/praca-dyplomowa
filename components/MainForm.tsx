@@ -1,8 +1,6 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import {
 	Button,
-	MenuItem,
-	Select,
 	SelectChangeEvent,
 	Switch,
 	TextField,
@@ -16,17 +14,18 @@ import { PageOption } from '../pages/company';
 import {
 	CheckBox,
 	Form,
-	From,
 	Input,
 	Option,
 	Select as SelectTS,
 } from '@prisma/client';
-import PopUpForm from './PopUpForm';
+import RenderSelect from './RenderSelect';
 
 export interface FormData {
 	fill: string;
 	name: string;
 	index: number;
+	id: string;
+	popup?: FormData[];
 }
 
 const MainFrom = ({
@@ -35,16 +34,16 @@ const MainFrom = ({
 	setPageOption: Dispatch<SetStateAction<PageOption>>;
 }) => {
 	const [formData, setFormData] = useState<FormData[]>([]);
+
 	const { data: session } = useSession();
 	const { palette } = useTheme();
 	const [form, setForm] = useState<
-		| (Form & {
+		| Form & {
 				inputs: Input[];
 				selects: (SelectTS & { options: Option[] })[];
 				checkboxes: CheckBox[];
-		  })
-		| null
-	>(null);
+		  }
+	>();
 	const [error, setError] = useState<string>('');
 	const [loading, setLoading] = useState<boolean>(false);
 	const [nextForm, setNextForm] = useState<
@@ -54,96 +53,140 @@ const MainFrom = ({
 			checkboxes: CheckBox[];
 		})[]
 	>([]);
-	const [initalIndex, setInitalIndex] = useState(0);
+	const [initIndex, setInitalIndex] = useState(0);
 	const [disabled, setDisabled] = useState(false);
-	const [popForm, setPopForm] = useState(false);
 	const [popId, setPopId] = useState<string>();
 
 	useEffect(() => {
-		fetch('api/getform')
-			.then((response) => response.json())
-			.then(({ form }) => {
-				setForm(form);
-				if (!form) return;
-				setFormData(() => {
-					const arr: FormData[] = [];
-					form.inputs.forEach((el: Input) =>
-						arr.push({
-							name: el.label ? el.label : '',
-							fill: '',
-							index: el.order,
-						})
-					);
-
-					form.selects.forEach(
-						(el: SelectTS & { options: Option[] }) =>
+		if (form === null || form === undefined) {
+			fetch('api/getform')
+				.then((response) => response.json())
+				.then(({ form }) => {
+					setForm(form);
+					if (!form) return;
+					setFormData(() => {
+						const arr: FormData[] = [];
+						form.inputs.forEach((el: Input, index: number) =>
 							arr.push({
-								name: el.label ? el.label : '',
+								name: el.label,
 								fill: '',
-								index: el.order,
+								index: initIndex + index,
+								id: el.id,
 							})
-					);
-					form.checkboxes.forEach((el: CheckBox) =>
-						arr.push({
-							name: el.label ? el.label : '',
-							fill: JSON.stringify(false),
-							index: el.order,
-						})
-					);
-					return arr;
-				});
-			});
-	}, []);
+						);
 
-	if (form === null || loading) return <Loading />;
+						form.selects.forEach(
+							(
+								el: SelectTS & { options: Option[] },
+								index: number
+							) =>
+								arr.push({
+									name: el.label,
+									fill: '',
+									index:
+										initIndex + form.inputs.length + index,
+									id: el.id,
+								})
+						);
+						form.checkboxes.forEach((el: CheckBox, index: number) =>
+							arr.push({
+								name: el.label,
+								fill: 'false',
+								index:
+									initIndex +
+									form.inputs.length +
+									form.selects.length +
+									index,
+								id: el.id,
+							})
+						);
+						return arr.sort((a, b) => a.index - b.index);
+					});
+				});
+		}
+		if (initIndex > 0) {
+			setFormData((pre) => {
+				if (initIndex - pre.length === 0) {
+					return pre;
+				}
+				return pre.slice(0, (initIndex - pre.length) / 2);
+			});
+		}
+	}, [initIndex, form]);
+
+	const handleClick = async (event: React.FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		console.log(formData);
+		let data: FormData[] = [];
+		let mainData = formData.map((el) => {
+			if (el.popup) {
+				data = [...data, ...el.popup];
+				delete el.popup;
+				return el;
+			}
+			return el;
+		});
+		setError(validForm(formData));
+		if (validForm(formData).length !== 0) {
+			return;
+		}
+		setLoading(true);
+		if (session?.user?.pin) {
+			await fetch('/api/user/neworder', {
+				method: 'POST',
+				body: JSON.stringify([...mainData, ...data]),
+			}).then((response) => {
+				if (response.status === 200) {
+					setFormData([]);
+				}
+			});
+			setPageOption(PageOption.myOrders);
+			return;
+		}
+	};
+
+	if (form === null || form === undefined) return <Loading />;
 
 	const handleInputChange = (
 		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-		index: number,
-		name: string,
-		order: number
+		id: string,
+		ind: number
 	) => {
 		setFormData((pre) => {
-			let modifyFormData: FormData[] = pre;
-			modifyFormData[initalIndex + index] = {
-				name,
-				fill: event.target.value,
-				index: initalIndex + order,
-			};
-			return modifyFormData;
+			const index = pre.findIndex(
+				(el) => el.id === id && ind === el.index
+			);
+			const previous = pre[index];
+			pre[index] = { ...previous, fill: event.target.value };
+			return pre;
 		});
+		console.log(formData);
 	};
 	const handleSelectChange = async (
 		event: SelectChangeEvent<unknown>,
 		index: number,
-		name: string,
-		order: number
+		id: string,
+		ind: number
 	) => {
 		setFormData((pre) => {
-			const indexAtArr = initalIndex + form.inputs.length + index;
-			let modifyFormData: FormData[] = pre;
-			modifyFormData[indexAtArr] = {
-				name,
-				fill: event.target.value
-					? JSON.stringify(event.target.value)
-					: '',
-				index: initalIndex + order,
+			const index = pre.findIndex(
+				(el) => el.id === id && ind === el.index
+			);
+			const previous = pre[index];
+
+			pre[index] = {
+				...previous,
+				fill: JSON.stringify(event.target.value),
 			};
-			return modifyFormData;
+			return pre;
 		});
-		const option = form.selects[index].options.find(
+
+		const option = form?.selects[index].options.find(
 			(option: Option) => option.value === event.target.value
 		);
-
 		if (option?.formId !== null && option?.formType === 'POPUP') {
 			setPopId(option.formId);
-			setPopForm(true);
-		} else {
-			const start =
-				form.inputs.length +
-				form.selects.length +
-				form.checkboxes.length;
-			setFormData((pre) => pre.slice(start, -1));
+			return;
 		}
 
 		if (option?.formId !== null && option?.formType === 'NEXT') {
@@ -155,11 +198,9 @@ const MainFrom = ({
 				.then((response) => response.json())
 				.then(({ form }) => {
 					setNextForm((pre) => {
-						let tab = pre;
-						tab[index] = form;
-						return tab;
+						pre.push(form);
+						return pre;
 					});
-					if (!nextForm) return;
 				});
 			setDisabled(false);
 		} else {
@@ -169,48 +210,24 @@ const MainFrom = ({
 		}
 	};
 
-	const handleCheckboxChange = (
-		index: number,
-		name: string,
-		order: number
-	) => {
+	const handleCheckboxChange = (id: string, ind: number) => {
 		setFormData((pre) => {
-			const indexAtArr =
-				initalIndex + form.inputs.length + form.selects.length + index;
-			let modifyFormData: FormData[] = pre;
-			modifyFormData[indexAtArr] = {
-				name,
-				fill: JSON.stringify(!JSON.parse(pre[indexAtArr].fill)),
-				index: initalIndex + order,
+			const index = pre.findIndex(
+				(el) => el.id === id && ind === el.index
+			);
+			const previous = pre[index];
+			pre[index] = {
+				...previous,
+				fill: JSON.stringify(!JSON.parse(previous.fill)),
 			};
-			return modifyFormData;
+			return pre;
 		});
 	};
 
-	const handleClick = async (event: React.FormEvent<HTMLFormElement>) => {
-		event.preventDefault();
-		setError(validForm(formData));
-		if (validForm(formData).length !== 0) {
-			return;
-		}
-		setLoading(true);
-		if (session?.user?.pin) {
-			await fetch('/api/user/neworder', {
-				method: 'POST',
-				body: JSON.stringify(formData),
-			}).then((response) => {
-				if (response.status === 200) {
-					setFormData([]);
-				}
-			});
-			setPageOption(PageOption.myOrders);
-			return;
-		}
-	};
 	return (
 		<>
 			<h1>Fill up to take order</h1>
-			<h2 style={{ margin: '0px' }}>{form.name}</h2>
+			<h2 style={{ margin: '0px' }}>{form?.name}</h2>
 			<form
 				className={styles.form}
 				onSubmit={(event) => handleClick(event)}>
@@ -239,9 +256,8 @@ const MainFrom = ({
 							onChange={(event) =>
 								handleInputChange(
 									event,
-									index,
-									el.label ? el.label : el.id,
-									el.order
+									el.id,
+									initIndex + index
 								)
 							}
 						/>
@@ -250,60 +266,16 @@ const MainFrom = ({
 				{form?.selects?.map(
 					(el: SelectTS & { options: Option[] }, index: number) => {
 						return (
-							<div
-								className={styles.input}
-								style={{
-									display: 'flex',
-									alignItems: 'center',
-									justifyContent: 'center',
-									order: 1 + el.order,
-								}}
-								key={el.id}>
-								<div
-									className={styles.label}
-									style={{
-										fontWeight: 'bold',
-										textAlign: 'left',
-									}}>
-									{el.label}
-								</div>
-								<Select
-									placeholder={
-										el.placeholder
-											? el.placeholder
-											: undefined
-									}
-									fullWidth={true}
-									required={el.required}
-									size={'small'}
-									variant='outlined'
-									defaultValue={''}
-									onChange={(event) => {
-										handleSelectChange(
-											event,
-											index,
-											el.label ? el.label : el.id,
-											el.order
-										);
-									}}>
-									{el.options.map((option: Option) => {
-										return (
-											<MenuItem
-												key={option.id}
-												value={option.value}>
-												{option.value}
-											</MenuItem>
-										);
-									})}
-								</Select>
-								{popForm && (
-									<PopUpForm
-										popId={popId}
-										closeForm={() => setPopForm(false)}
-										setFormDataMain={setFormData}
-									/>
-								)}
-							</div>
+							<RenderSelect
+								key={el.id}
+								el={el}
+								handleSelectChange={handleSelectChange}
+								formData={formData}
+								setFormData={setFormData}
+								index={index}
+								popId={popId}
+								ind={initIndex + form.inputs.length + index}
+							/>
 						);
 					}
 				)}
@@ -334,9 +306,11 @@ const MainFrom = ({
 								)}
 								onChange={() =>
 									handleCheckboxChange(
-										index,
-										el.label ? el.label : el.id,
-										el.order
+										el.id,
+										initIndex +
+											form.inputs.length +
+											form.selects.length +
+											index
 									)
 								}
 							/>
@@ -349,6 +323,7 @@ const MainFrom = ({
 				{nextForm.length !== 0 ? (
 					<>
 						<Button
+							type='button'
 							disabled={disabled}
 							onClick={() => {
 								setError(validForm(formData));
@@ -357,9 +332,55 @@ const MainFrom = ({
 								}
 								setInitalIndex(formData.length);
 								setForm(nextForm[0]);
-								if (nextForm.length !== 0) {
-									setNextForm((pre) => pre.splice(1));
-								}
+								setFormData((pre) => {
+									const arr: FormData[] = pre;
+									nextForm[0].inputs.forEach(
+										(el: Input, index: number) =>
+											arr.push({
+												name: el.label,
+												fill: '',
+												index: pre.length + index,
+												id: el.id,
+											})
+									);
+
+									nextForm[0].selects.forEach(
+										(
+											el: SelectTS & {
+												options: Option[];
+											},
+											index: number
+										) =>
+											arr.push({
+												name: el.label,
+												fill: '',
+												index:
+													pre.length +
+													nextForm[0].inputs.length -
+													1 +
+													index,
+												id: el.id,
+											})
+									);
+									nextForm[0].checkboxes.forEach(
+										(el: CheckBox, index: number) =>
+											arr.push({
+												name: el.label,
+												fill: 'false',
+												index:
+													pre.length +
+													nextForm[0].inputs.length -
+													2 +
+													nextForm[0].selects.length +
+													index,
+												id: el.id,
+											})
+									);
+									return arr.sort(
+										(a, b) => a.index - b.index
+									);
+								});
+								setNextForm((pre) => pre.splice(1));
 							}}
 							style={{ order: 999999999, marginBottom: '10px' }}
 							variant='contained'>
@@ -368,9 +389,9 @@ const MainFrom = ({
 					</>
 				) : (
 					<Button
+						type='submit'
 						disabled={disabled}
 						style={{ order: 999999999, marginBottom: '10px' }}
-						type='submit'
 						variant='contained'>
 						Submit Order
 					</Button>

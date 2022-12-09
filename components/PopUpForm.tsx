@@ -26,10 +26,14 @@ const PopUpForm = ({
 	popId,
 	closeForm,
 	setFormDataMain,
+	startIndex,
+	ind,
 }: {
 	closeForm: () => void;
 	popId: string | undefined;
 	setFormDataMain: React.Dispatch<React.SetStateAction<FormData[]>>;
+	startIndex: number;
+	ind: number;
 }) => {
 	const { palette } = useTheme();
 	const { data: session } = useSession();
@@ -50,62 +54,89 @@ const PopUpForm = ({
 			checkboxes: CheckBox[];
 		})[]
 	>([]);
-	const [initalIndex, setInitalIndex] = useState(0);
+	const [initalIndex, setInitalIndex] = useState(startIndex);
 	const [disabled, setDisabled] = useState(false);
 	const [formData, setFormData] = useState<FormData[]>([]);
+	const [localPopId, setLocalPopId] = useState<string | undefined>('');
+	const [localPopForm, setLocalPopForm] = useState(false);
 
 	useEffect(() => {
 		if (form === null || form === undefined) {
 			fetch('/api/user/getform', { method: 'POST', body: popId })
 				.then((response) => response.json())
 				.then((data) => {
-					setForm(data);
+					setForm(() => {
+						setFormData(() => {
+							const arr: FormData[] = [];
+							data.inputs.forEach((el: Input) =>
+								arr.push({
+									name: el.label ? el.label : '',
+									fill: '',
+									index: el.order,
+									id: el.id,
+								})
+							);
+
+							data.selects.forEach(
+								(el: SelectTS & { options: Option[] }) =>
+									arr.push({
+										name: el.label ? el.label : '',
+										fill: '',
+										index: el.order,
+										id: el.id,
+									})
+							);
+							data.checkboxes.forEach((el: CheckBox) =>
+								arr.push({
+									name: el.label ? el.label : '',
+									fill: JSON.stringify(false),
+									index: el.order,
+									id: el.id,
+								})
+							);
+
+							return arr;
+						});
+						return data;
+					});
 				});
 		}
-	}, [popId, form]);
+	}, [popId, form, formData, setFormDataMain]);
 
 	const handleInputChange = (
 		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-		index: number,
-		name: string,
-		order: number
+		id: string
 	) => {
 		setFormData((pre) => {
-			let modifyFormData: FormData[] = pre;
-			modifyFormData[initalIndex + index] = {
-				name,
-				fill: event.target.value,
-				index: initalIndex + order,
-			};
-			return modifyFormData;
+			const index = pre.findIndex((el) => el.id === id);
+			const previous = pre[index];
+			pre[index] = { ...previous, fill: event.target.value };
+			return pre;
 		});
 	};
 	const handleSelectChange = async (
 		event: SelectChangeEvent<unknown>,
 		index: number,
-		name: string,
-		order: number
+		id: string
 	) => {
-		if (!form) {
-			return;
-		}
 		setFormData((pre) => {
-			const indexAtArr = initalIndex + form.inputs.length + index;
-			let modifyFormData: FormData[] = pre;
-			modifyFormData[indexAtArr] = {
-				name,
-				fill: event.target.value
-					? JSON.stringify(event.target.value)
-					: '',
-				index: initalIndex + order,
+			const index = pre.findIndex((el) => el.id === id);
+			const previous = pre[index];
+
+			pre[index] = {
+				...previous,
+				fill: JSON.stringify(event.target.value),
 			};
-			return modifyFormData;
+			return pre;
 		});
+
+		if (form === undefined || form === null) return;
 
 		const option = form.selects[index].options.find(
 			(option: Option) => option.value === event.target.value
 		);
-		if (option?.formId !== null) {
+
+		if (option?.formId !== null && option?.formType === 'NEXT') {
 			setDisabled(true);
 			await fetch('api/nextform', {
 				method: 'POST',
@@ -121,31 +152,35 @@ const PopUpForm = ({
 					if (!nextForm) return;
 				});
 			setDisabled(false);
+			return;
 		} else {
 			setNextForm((pre) =>
 				pre.filter((_, localIndex) => localIndex !== index)
 			);
 		}
-	};
 
-	const handleCheckboxChange = (
-		index: number,
-		name: string,
-		order: number
-	) => {
-		if (!form) {
+		if (option?.formId !== null && option?.formType === 'POPUP') {
+			setLocalPopId(option.formId);
+			setLocalPopForm(true);
 			return;
+		} else {
+			setLocalPopId(undefined);
+			const start =
+				form.inputs.length +
+				form.selects.length +
+				form.checkboxes.length;
+			setFormData((pre) => pre.filter((_, index) => index < start));
 		}
+	};
+	const handleCheckboxChange = (id: string) => {
 		setFormData((pre) => {
-			const indexAtArr =
-				initalIndex + form.inputs.length + form.selects.length + index;
-			let modifyFormData: FormData[] = pre;
-			modifyFormData[indexAtArr] = {
-				name,
-				fill: JSON.stringify(!JSON.parse(pre[indexAtArr].fill)),
-				index: initalIndex + order,
+			const index = pre.findIndex((el) => el.id === id);
+			const previous = pre[index];
+			pre[index] = {
+				...previous,
+				fill: JSON.stringify(!JSON.parse(previous.fill)),
 			};
-			return modifyFormData;
+			return pre;
 		});
 	};
 
@@ -154,7 +189,11 @@ const PopUpForm = ({
 		if (validForm(formData).length !== 0) {
 			return;
 		}
-		setFormDataMain((pre) => [...pre, ...formData]);
+		console.log(ind);
+		setFormDataMain((pre) => {
+			pre[ind].popup = formData;
+			return pre;
+		});
 		closeForm();
 	};
 
@@ -184,7 +223,7 @@ const PopUpForm = ({
 					) : (
 						<>
 							<h1 style={{ textAlign: 'center', marginTop: 0 }}>
-								{form.name} informations
+								{form.name} {ind}
 							</h1>
 
 							<>
@@ -233,11 +272,7 @@ const PopUpForm = ({
 														onChange={(event) =>
 															handleInputChange(
 																event,
-																index,
-																el.label
-																	? el.label
-																	: el.id,
-																el.order
+																el.id
 															)
 														}
 													/>
@@ -282,10 +317,7 @@ const PopUpForm = ({
 															handleSelectChange(
 																event,
 																index,
-																el.label
-																	? el.label
-																	: el.id,
-																el.order
+																el.id
 															);
 														}}>
 														{el.options.map(
@@ -352,11 +384,7 @@ const PopUpForm = ({
 															)}
 															onChange={() =>
 																handleCheckboxChange(
-																	index,
-																	el.label
-																		? el.label
-																		: el.id,
-																	el.order
+																	el.id
 																)
 															}
 														/>
@@ -372,51 +400,139 @@ const PopUpForm = ({
 											{error}
 										</div>
 									</div>
-									{nextForm.length !== 0 ? (
-										<>
+									<div
+										style={{
+											placeSelf: 'center',
+										}}>
+										<span style={{ width: '20px' }}>
 											<Button
-												disabled={disabled}
 												onClick={() => {
-													setError(
-														validForm(formData)
-													);
-													if (
-														validForm(formData)
-															.length !== 0
-													) {
-														return;
-													}
-													setInitalIndex(
-														formData.length
-													);
-													setForm(nextForm[0]);
-													if (nextForm.length !== 0) {
-														setNextForm((pre) =>
-															pre.splice(1)
-														);
-													}
+													closeForm();
 												}}
+												variant='outlined'
 												style={{
 													order: 999999999,
-													marginBottom: '10px',
-												}}
-												variant='contained'>
-												Next
+												}}>
+												Cancel
 											</Button>
-										</>
-									) : (
-										<Button
-											onClick={handleClick}
-											disabled={disabled}
-											style={{
-												order: 999999999,
-												marginBottom: '10px',
-											}}
-											type='button'
-											variant='contained'>
-											Add
-										</Button>
-									)}
+										</span>
+										<span style={{ width: '20px' }}>
+											{' '}
+											{nextForm.length !== 0 ? (
+												<>
+													<Button
+														disabled={disabled}
+														onClick={() => {
+															setError(
+																validForm(
+																	formData
+																)
+															);
+															if (
+																validForm(
+																	formData
+																).length !== 0
+															) {
+																return;
+															}
+															setInitalIndex(
+																formData.length
+															);
+															setForm(() => {
+																setFormData(
+																	(pre) => {
+																		const arr: FormData[] =
+																			formData;
+																		nextForm[0].inputs.forEach(
+																			(
+																				el: Input
+																			) =>
+																				arr.push(
+																					{
+																						name: el.label
+																							? el.label
+																							: '',
+																						fill: '',
+																						index: el.order,
+																						id: el.id,
+																					}
+																				)
+																		);
+
+																		nextForm[0].selects.forEach(
+																			(
+																				el: SelectTS & {
+																					options: Option[];
+																				}
+																			) =>
+																				arr.push(
+																					{
+																						name: el.label
+																							? el.label
+																							: '',
+																						fill: '',
+																						index: el.order,
+																						id: el.id,
+																					}
+																				)
+																		);
+																		nextForm[0].checkboxes.forEach(
+																			(
+																				el: CheckBox
+																			) =>
+																				arr.push(
+																					{
+																						name: el.label
+																							? el.label
+																							: '',
+																						fill: JSON.stringify(
+																							false
+																						),
+																						index: el.order,
+																						id: el.id,
+																					}
+																				)
+																		);
+																		return arr;
+																	}
+																);
+
+																return nextForm[0];
+															});
+
+															if (
+																nextForm.length !==
+																0
+															) {
+																setNextForm(
+																	(pre) =>
+																		pre.splice(
+																			1
+																		)
+																);
+															}
+														}}
+														style={{
+															order: 999999999,
+														}}
+														variant='contained'>
+														Next
+													</Button>
+												</>
+											) : (
+												<Button
+													onClick={handleClick}
+													disabled={disabled}
+													style={{
+														order: 999999999,
+													}}
+													type='button'
+													variant='contained'>
+													Add
+												</Button>
+											)}
+										</span>
+									</div>
 								</div>
 							</>
 						</>

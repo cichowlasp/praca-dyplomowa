@@ -31,6 +31,7 @@ const Option = ({
 		inputs: Input[];
 		selects: (SelectTS & { options: Option[] })[];
 		checkboxes: CheckBox[];
+		option: Option[];
 	})[];
 	index: number;
 	selectIndex: number;
@@ -220,7 +221,10 @@ const Option = ({
 						}}
 						sx={{ width: '200px' }}>
 						{forms
-							.filter((form: Form) => form.active === false)
+							.filter(
+								(form: Form & { option: Option[] }) =>
+									form.active === false
+							)
 							.map((form: Form) => {
 								return (
 									<MenuItem key={form.id} value={form.id}>

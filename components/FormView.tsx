@@ -43,6 +43,7 @@ const FormView = ({
 		selects: (SelectTS & { options: Option[] })[];
 		inputs: Input[];
 		checkboxes: CheckBox[];
+		option: Option[];
 	})[];
 	numberOfOptions: number;
 	index: number;

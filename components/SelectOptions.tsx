@@ -32,6 +32,7 @@ const SelectOptions = ({
 		inputs: Input[];
 		selects: (SelectTS & { options: OptionTS[] })[];
 		checkboxes: CheckBox[];
+		option: Option[];
 	})[];
 	loading: boolean;
 	index: number;

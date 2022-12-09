@@ -11,6 +11,22 @@ const handler = async (req, res) => {
 				id,
 			},
 		});
+		const options = await prisma.option.findMany({
+			where: {
+				formId: id,
+			},
+		});
+		options.forEach(async (option) => {
+			await prisma.option.update({
+				where: {
+					id: option.id,
+				},
+				data: {
+					formId: null,
+					formType: null,
+				},
+			});
+		});
 		return res.status(200).json('success');
 	}
 	return res.status(404).json('error');
