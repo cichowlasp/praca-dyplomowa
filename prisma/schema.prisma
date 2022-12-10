@@ -16,6 +16,8 @@ model Order {
   realizationDateEnd   DateTime?
   realizationDateStart DateTime?
   completedAt          DateTime?
+  editedAt             DateTime?
+  approvedBy           String?
   formId               String?
   informations         Info[]
   messages             Message[]

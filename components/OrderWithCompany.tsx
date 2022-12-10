@@ -32,11 +32,33 @@ const OrderWithCompany = ({
 			<h1 style={{ margin: 0, display: showTitle ? 'block' : 'none' }}>
 				{company.companyName}
 			</h1>
+			{company.users.length === 0 ? (
+				<div
+					style={{
+						width: '20rem',
+						opacity: '0.7',
+						fontWeight: 'bold',
+					}}>
+					No matching results :c
+				</div>
+			) : null}
+
 			{company.users?.map((user) => {
 				if (
 					user.orders?.filter(filters.search)?.filter(filters.option)
 						.length === 0
 				)
+					return (
+						<div
+							style={{
+								width: '20rem',
+								opacity: '0.7',
+								fontWeight: 'bold',
+							}}>
+							No matching results :c
+						</div>
+					);
+				if (user?.orders?.length === 0)
 					return (
 						<div
 							style={{

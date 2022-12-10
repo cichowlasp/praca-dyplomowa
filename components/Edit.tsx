@@ -7,6 +7,7 @@ import { MobileDatePicker } from '@mui/x-date-pickers';
 import moment, { Moment } from 'moment';
 import { Reviewed } from './OrderCard';
 import { Info, Order, User, Message } from '@prisma/client';
+import { useSession } from 'next-auth/react';
 
 type Props = {
 	order: Order & { informations: Info[] };
@@ -34,8 +35,13 @@ type Props = {
 						realizationDateStart: Moment | null;
 						realizationDateEnd: Moment | null;
 					};
+					approvedBy: string;
 			  }
-			| { reviewed: Reviewed; completedAt: Moment | null };
+			| {
+					reviewed: Reviewed;
+					completedAt: Moment | null;
+					approvedBy: string;
+			  };
 		orderId: string;
 	}) => Promise<void>;
 	setCompleteView: React.Dispatch<React.SetStateAction<boolean>>;
@@ -61,6 +67,7 @@ const Edit = ({
 	const [editedInfo, setEditedInfo] = useState<Info[]>(order.informations);
 	const [loading, setLoading] = useState<boolean>(false);
 	const [errorMessage, setError] = useState<string>('');
+	const { data: session } = useSession();
 
 	const handleSubmit = async (event: React.SyntheticEvent) => {
 		event.preventDefault();
@@ -158,6 +165,7 @@ const Edit = ({
 								data: {
 									reviewed: Reviewed.completed,
 									completedAt: completeDate,
+									approvedBy: `${session?.user?.name} ${session?.user?.surname}`,
 								},
 								orderId: order.id,
 							});
@@ -265,6 +273,7 @@ const Edit = ({
 								data: {
 									reviewed: Reviewed.approved,
 									realizationDate,
+									approvedBy: `${session?.user?.name} ${session?.user?.surname}`,
 								},
 								orderId: order.id,
 							});

@@ -21,6 +21,7 @@ const handler = async (req, res) => {
 			where: { id: data[0].orderId },
 			data: {
 				edited: true,
+				editedAt: new Date(),
 			},
 		});
 		return res.status(200).json('success');

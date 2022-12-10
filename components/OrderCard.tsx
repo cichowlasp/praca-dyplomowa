@@ -21,6 +21,7 @@ import MessageIcon from '@mui/icons-material/Message';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SportsScoreIcon from '@mui/icons-material/SportsScore';
 import TextFieldsIcon from '@mui/icons-material/TextFields';
+import AssessmentIcon from '@mui/icons-material/Assessment';
 import Edit from './Edit';
 import SendIcon from '@mui/icons-material/Send';
 import { Moment } from 'moment';
@@ -74,8 +75,10 @@ const OrderCard = ({
 
 	const messageField = useRef(null);
 	useEffect(() => {
-		setMessages(order.messages);
-	}, [order.messages, setMessages]);
+		if (messages.length === 0) {
+			setMessages(order.messages);
+		}
+	}, [order.messages, setMessages, messages.length]);
 
 	const bottomRef = useRef<null | HTMLDivElement>(null);
 
@@ -83,7 +86,33 @@ const OrderCard = ({
 		return <Loading />;
 	}
 	const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
-		setAnchorEl(event.currentTarget);
+		setAnchorEl(event?.currentTarget);
+	};
+
+	const exportToCsv = (data: object[]) => {
+		// convert the object to a string in CSV format
+		const csvString =
+			Object.keys(data[0]).join(',') +
+			'\n' +
+			data
+				.map((row) => {
+					return Object.values(row).join(',');
+				})
+				.join('\n');
+
+		// create a Blob from the CSV string
+		const csvBlob = new Blob([csvString], { type: 'text/csv' });
+
+		// create a URL for the Blob
+		const csvUrl = URL.createObjectURL(csvBlob);
+
+		// create a <a> element to download the CSV file
+		const downloadLink = document.createElement('a');
+		downloadLink.setAttribute('href', csvUrl);
+		downloadLink.setAttribute('download', 'order.csv');
+
+		// trigger the download by simulating a click on the <a> element
+		downloadLink.click();
 	};
 
 	const handleSubmit = async (
@@ -106,9 +135,7 @@ const OrderCard = ({
 						id,
 						date: new Date(),
 						message,
-						name: `${
-							session.user?.name
-						} ${session.user?.surname?.substring(0, 1)}`,
+						name: `${session.user?.name} ${session.user?.surname}`,
 						orderId: id,
 						from: session.user?.admin ? 'ADMIN' : 'USER',
 					},
@@ -132,8 +159,13 @@ const OrderCard = ({
 						realizationDateStart: Moment | null;
 						realizationDateEnd: Moment | null;
 					};
+					approvedBy: string;
 			  }
-			| { reviewed: Reviewed; completedAt: Moment | null };
+			| {
+					reviewed: Reviewed;
+					completedAt: Moment | null;
+					approvedBy: string;
+			  };
 		orderId: string;
 	}) => {
 		await fetch('/api/admin/orderupdate', {
@@ -232,6 +264,7 @@ const OrderCard = ({
 									? order?.completedAt
 									: Date.now()
 							).toLocaleDateString('en-GB')}
+							<div>{order?.approvedBy}</div>
 						</div>
 					)}
 					{order.reviewed === 'APPROVED' && (
@@ -250,6 +283,7 @@ const OrderCard = ({
 										: Date.now()
 								).toLocaleDateString('en-GB')}
 							</div>
+							<div>{order?.approvedBy}</div>
 						</div>
 					)}
 					{order.reviewed === 'NOTREVIEWED' && (
@@ -258,6 +292,7 @@ const OrderCard = ({
 					{order.reviewed === 'DECLINE' && (
 						<div className={styles.orderTitle}>
 							Not approved {':('}
+							<div>{order?.approvedBy}</div>
 						</div>
 					)}
 
@@ -325,7 +360,17 @@ const OrderCard = ({
 								style={{
 									paddingLeft: '3px',
 								}}>
-								{order.edited ? 'Yes' : 'No'}
+								{order.edited
+									? `Yes, at ${new Date(
+											order?.editedAt
+												? order.editedAt
+												: new Date()
+									  ).toLocaleString('en-GB', {
+											dateStyle: 'short',
+											hour12: false,
+											timeStyle: 'short',
+									  })}`
+									: 'No'}
 							</span>
 						</div>
 						{order.informations.map((el: Info) => {
@@ -380,7 +425,7 @@ const OrderCard = ({
 										className={styles.container}>
 										<div className={styles.date}>
 											{new Date(el.date).toLocaleString(
-												'en-US',
+												'en-GB',
 												{
 													dateStyle: 'short',
 													hour12: false,
@@ -470,7 +515,9 @@ const OrderCard = ({
 					<ExpandMoreIcon fontSize='large' />
 				</div>
 
-				<div onClick={handleClick} className={styles.moreicon}>
+				<div
+					onClick={(event) => handleClick(event)}
+					className={styles.moreicon}>
 					<svg
 						xmlns='http://www.w3.org/2000/svg'
 						viewBox='0 0 128 512'>
@@ -608,6 +655,7 @@ const OrderCard = ({
 										await updateOrder({
 											data: {
 												reviewed: Reviewed.decline,
+												approvedBy: `${session.user?.name} ${session.user?.surname}`,
 											},
 											orderId: order.id,
 										});
@@ -632,6 +680,38 @@ const OrderCard = ({
 									onClick={() => deleteOrder(order.id)}>
 									<DeleteForeverIcon fontSize='large' />
 									Delete
+								</MenuItem>
+								<MenuItem
+									style={{ maxHeight: '2rem' }}
+									onClick={async () => {
+										exportToCsv([
+											{
+												fullName: `${user?.name} ${user?.surname}`,
+												email: user?.email,
+												phoneNumber: user?.phoneNumber,
+												orderId: order.id,
+												admin: order?.approvedBy,
+												exportedAt:
+													new Date().toLocaleString(
+														'en-GB',
+														{
+															dateStyle: 'short',
+															hour12: false,
+															timeStyle: 'short',
+														}
+													),
+											},
+											...order.informations.map((el) => {
+												return {
+													name: el.name,
+													fill: el.fill,
+												};
+											}),
+										]);
+										handleClose();
+									}}>
+									<AssessmentIcon fontSize='large' />
+									Export to CSV
 								</MenuItem>
 							</div>
 						)}
