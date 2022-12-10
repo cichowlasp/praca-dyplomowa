@@ -131,6 +131,14 @@ const MainFrom = ({
 				}
 			});
 			setPageOption(PageOption.myOrders);
+			await fetch('/api/email/new-order', {
+				method: 'POST',
+				body: JSON.stringify({
+					to: session.user.email,
+					subject: 'You ordered test in pwr lab :)',
+					orderInfo: [...mainData, ...data],
+				}),
+			});
 			return;
 		}
 	};

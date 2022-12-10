@@ -3,6 +3,7 @@ import styles from '../styles/MainForm.module.css';
 import { TextField, Button } from '@mui/material';
 import { signIn } from 'next-auth/react';
 import Loading from './Loading';
+import { User } from '@prisma/client';
 
 const UserForm = () => {
 	const [loading, setLoading] = useState(false);
@@ -24,15 +25,23 @@ const UserForm = () => {
 			body: JSON.stringify(formData),
 		})
 			.then((data) => data.json())
-			.then(
-				async (user) =>
-					await signIn('credentials', {
-						redirect: false,
-						companyEmail: user.companyEmail,
-						secretPhrase: formData.secretPhrase,
+			.then(async (user: User) => {
+				await signIn('credentials', {
+					redirect: false,
+					companyEmail: formData.companyEmail,
+					secretPhrase: formData.secretPhrase,
+					pin: user.pin,
+				});
+				await fetch('/api/email/new-user', {
+					method: 'POST',
+					body: JSON.stringify({
+						to: user.email,
+						subject: 'Welcome: ' + `${user.name} ${user.surname}`,
 						pin: user.pin,
-					})
-			);
+						company: user.company,
+					}),
+				});
+			});
 		setLoading(false);
 	};
 

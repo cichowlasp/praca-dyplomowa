@@ -172,6 +172,14 @@ const OrderCard = ({
 			method: 'POST',
 			body: JSON.stringify(data),
 		});
+		await fetch('/api/email/order-status', {
+			method: 'POST',
+			body: JSON.stringify({
+				to: user?.email,
+				subject: 'Your order status changed to: ' + data.data.reviewed,
+				orderInfo: order.informations,
+			}),
+		});
 	};
 
 	const handleClose = async () => {

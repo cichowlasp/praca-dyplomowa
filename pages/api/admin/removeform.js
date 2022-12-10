@@ -17,15 +17,17 @@ const handler = async (req, res) => {
 			},
 		});
 		options.forEach(async (option) => {
-			await prisma.option.update({
-				where: {
-					id: option.id,
-				},
-				data: {
-					formId: null,
-					formType: null,
-				},
-			});
+			if (option.formId) {
+				await prisma.option.update({
+					where: {
+						id: option.id,
+					},
+					data: {
+						formId: null,
+						formType: null,
+					},
+				});
+			}
 		});
 		return res.status(200).json('success');
 	}
