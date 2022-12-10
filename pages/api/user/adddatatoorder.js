@@ -6,9 +6,11 @@ import { validForm } from '../../../utils/validationSchema';
 const handler = async (req, res) => {
 	const { body } = req;
 	const data = JSON.parse(body);
+	console.log(data);
 	const fixedData = data.map((el) => {
 		if (typeof el.fill === 'boolean')
 			return { ...el, fill: JSON.stringify(el.fill) };
+		delete el.id;
 		return el;
 	});
 	if (validForm(data).length !== 0)
