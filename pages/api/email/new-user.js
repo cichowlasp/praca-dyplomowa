@@ -20,7 +20,7 @@ const handler = async (req, res) => {
 		from: process.env.EMAIL,
 		to: emailData.to,
 		subject: emailData.subject,
-		html: `<h3>Your login pin: ${emailData.pin}</h3><div>To login you need pin and also your ${emailData.company} secretphrase (ask admin for this :))`,
+		html: `<h3>Your login pin: ${emailData.pin}</h3><div>To login you need pin and also your ${emailData.company} secretphrase (ask admin for this :))</div>`,
 	};
 	if (user.id) {
 		transporter.sendMail(mailData, (err, info) => {

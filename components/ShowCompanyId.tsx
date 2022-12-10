@@ -14,7 +14,7 @@ const ShowCompanyId = ({ close }: { close: () => void }) => {
 				style={{
 					position: 'relative',
 					height: 'fit-content',
-					width: '90%',
+
 					padding: '20px',
 					paddingBottom: '40px',
 					display: 'flex',

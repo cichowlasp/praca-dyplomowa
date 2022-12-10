@@ -104,10 +104,10 @@ const MyCompany = () => {
 									fontWeight: 'bold',
 									textAlign: 'left',
 								}}>
-								Company Identificator
+								Company ID
 							</div>
 							<TextField
-								placeholder={'Company Identificator'}
+								placeholder={'Company ID'}
 								fullWidth={true}
 								required={true}
 								type={'password'}

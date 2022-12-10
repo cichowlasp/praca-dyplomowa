@@ -3,6 +3,7 @@ import { Button, TextField, useTheme } from '@mui/material';
 import Loading from './Loading';
 import styles from '../styles/MainForm.module.css';
 import { signIn } from 'next-auth/react';
+import { Company } from '@prisma/client';
 
 const CreateCompanyAcc = ({}) => {
 	const [error, setError] = useState<string>('');
@@ -19,6 +20,7 @@ const CreateCompanyAcc = ({}) => {
 
 	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
+
 		setLoading(true);
 		await fetch('/api/company/createcompany', {
 			method: 'POST',
@@ -32,6 +34,14 @@ const CreateCompanyAcc = ({}) => {
 					setError(`Error try different ${company.meta?.target}`);
 					return;
 				}
+				await fetch('/api/email/new-company', {
+					method: 'POST',
+					body: JSON.stringify({
+						to: company.companyEmail,
+						subject: 'Welcome ' + company.companyName,
+						id: company.id,
+					}),
+				});
 				await signIn('credentials', {
 					companyEmail: company.companyEmail,
 					id: company.id,
