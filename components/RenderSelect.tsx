@@ -37,7 +37,9 @@ const RenderSelect = ({
 				display: 'flex',
 				alignItems: 'center',
 				justifyContent: 'center',
+				flexDirection: 'column',
 				order: 1 + el.order,
+				width: '100%',
 			}}
 			key={el.id}>
 			<div

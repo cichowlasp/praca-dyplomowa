@@ -160,7 +160,6 @@ const OrderCard = ({
 	};
 
 	const openForm = () => {
-		console.log(formView);
 		setFormView(true);
 	};
 	const closeForm = () => {

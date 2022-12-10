@@ -34,7 +34,6 @@ const MainFrom = ({
 	setPageOption: Dispatch<SetStateAction<PageOption>>;
 }) => {
 	const [formData, setFormData] = useState<FormData[]>([]);
-
 	const { data: session } = useSession();
 	const { palette } = useTheme();
 	const [form, setForm] = useState<
@@ -108,7 +107,6 @@ const MainFrom = ({
 
 	const handleClick = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
-		console.log(formData);
 		let data: FormData[] = [];
 		let mainData = formData.map((el) => {
 			if (el.popup) {
@@ -154,6 +152,7 @@ const MainFrom = ({
 		});
 		console.log(formData);
 	};
+
 	const handleSelectChange = async (
 		event: SelectChangeEvent<unknown>,
 		index: number,
