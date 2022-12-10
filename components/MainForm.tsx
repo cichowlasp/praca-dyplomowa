@@ -104,14 +104,6 @@ const MainFrom = ({
 					});
 				});
 		}
-		if (initIndex > 0) {
-			setFormData((pre) => {
-				if (initIndex - pre.length === 0) {
-					return pre;
-				}
-				return pre.slice(0, (initIndex - pre.length) / 2);
-			});
-		}
 	}, [initIndex, form]);
 
 	const handleClick = async (event: React.FormEvent<HTMLFormElement>) => {
