@@ -26,15 +26,20 @@ const OrderWithCompany = ({
 	updateData: () => {};
 }) => {
 	const [showTitle, setShowTitle] = useState<boolean>(true);
-	const [haveOrders, setHaveOrders] = useState<boolean>(false);
-	console.log(haveOrders);
 
+	let orders: (Order & {
+		informations: Info[];
+		messages: Message[];
+	})[] = [];
+	company.users.forEach((user) => {
+		orders = [...orders, ...user.orders];
+	});
 	return (
 		<div key={company.id} style={{ width: '20rem' }}>
 			<h1 style={{ margin: 0, display: showTitle ? 'block' : 'none' }}>
 				{company.companyName}
 			</h1>
-			{company.users.length === 0 || !haveOrders ? (
+			{company.users.length === 0 || orders.length === 0 ? (
 				<div
 					style={{
 						width: '20rem',
@@ -45,9 +50,6 @@ const OrderWithCompany = ({
 				</div>
 			) : null}
 			{company.users?.map((user) => {
-				if (user.orders.length !== 0) {
-					setHaveOrders(true);
-				}
 				return (
 					<div key={user.id}>
 						{user.orders
