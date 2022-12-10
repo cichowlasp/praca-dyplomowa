@@ -164,7 +164,6 @@ const MainFrom = ({
 				(el) => el.id === id && ind === el.index
 			);
 			const previous = pre[index];
-
 			pre[index] = {
 				...previous,
 				fill: JSON.stringify(event.target.value),
@@ -194,10 +193,6 @@ const MainFrom = ({
 					});
 				});
 			setDisabled(false);
-		} else {
-			setNextForm((pre) =>
-				pre.filter((_, localIndex) => localIndex !== index)
-			);
 		}
 	};
 
@@ -323,16 +318,19 @@ const MainFrom = ({
 								}
 								setInitalIndex(formData.length);
 								setForm(nextForm[0]);
+								const start = formData.length;
 								setFormData((pre) => {
-									const arr: FormData[] = pre;
+									const arr: FormData[] = formData;
 									nextForm[0].inputs.forEach(
-										(el: Input, index: number) =>
+										(el: Input, index: number) => {
+											console.log(start);
 											arr.push({
 												name: el.label,
 												fill: '',
-												index: pre.length + index,
+												index: start + index,
 												id: el.id,
-											})
+											});
+										}
 									);
 
 									nextForm[0].selects.forEach(
@@ -346,9 +344,8 @@ const MainFrom = ({
 												name: el.label,
 												fill: '',
 												index:
-													pre.length +
-													nextForm[0].inputs.length -
-													1 +
+													start +
+													nextForm[0].inputs.length +
 													index,
 												id: el.id,
 											})
@@ -359,9 +356,8 @@ const MainFrom = ({
 												name: el.label,
 												fill: 'false',
 												index:
-													pre.length +
-													nextForm[0].inputs.length -
-													2 +
+													start +
+													nextForm[0].inputs.length +
 													nextForm[0].selects.length +
 													index,
 												id: el.id,
