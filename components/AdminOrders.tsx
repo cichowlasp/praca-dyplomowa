@@ -101,9 +101,43 @@ const AdminOrders = () => {
 			localLoading(true);
 			await fetch('/api/admin/getalldata')
 				.then((response) => response.json())
-				.then((data) => {
-					setCompanies(data);
-				});
+				.then(
+					(
+						data: (Company & {
+							users: (User & {
+								orders: (Order & {
+									informations: Info[];
+									messages: Message[];
+								})[];
+							})[];
+						})[]
+					) => {
+						setCompanies(data);
+						let orders: (Order & {
+							informations: Info[];
+							messages: Message[];
+							user: User;
+						})[] = [];
+						data.forEach((el) => {
+							el.users.forEach((el) => {
+								const fixedOrders = el.orders.map((order) => {
+									return { ...order, user: el };
+								});
+								orders = [...orders, ...fixedOrders];
+							});
+						});
+						orders.sort((a, b) => {
+							if (a.creationData > b.creationData) {
+								return -1;
+							}
+							if (a.creationData < b.creationData) {
+								return 1;
+							}
+							return 0;
+						});
+						setOrders(orders);
+					}
+				);
 			localLoading(false);
 			return;
 		}
