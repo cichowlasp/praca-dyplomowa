@@ -291,19 +291,33 @@ const AdminOrders = () => {
 					<div className={styles.orders}>
 						{orderView ? (
 							<>
-								{orders
-									?.filter(filters.search)
-									?.filter(filters.option)
-									?.map((order, index) => (
-										<OrderCard
-											key={order.id}
-											order={order}
-											updateData={updateData}
-											user={order.user}
-											admin={true}
-											index={index}
-										/>
-									))}
+								{orders?.length === 0 ? (
+									<div
+										style={{
+											width: '20rem',
+											opacity: '0.7',
+											fontWeight: 'bold',
+											textAlign: 'center',
+										}}>
+										No matching results :c
+									</div>
+								) : (
+									<>
+										{orders
+											?.filter(filters.search)
+											?.filter(filters.option)
+											?.map((order, index) => (
+												<OrderCard
+													key={order.id}
+													order={order}
+													updateData={updateData}
+													user={order.user}
+													admin={true}
+													index={index}
+												/>
+											))}
+									</>
+								)}
 							</>
 						) : (
 							<>

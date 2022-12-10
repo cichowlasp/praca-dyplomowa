@@ -12,7 +12,7 @@ const handler = async (req, res) => {
 
 	const mailData = {
 		from: process.env.EMAIL,
-		to: 'cichowlas.p@gmail.com',
+		to: emailData.to,
 		subject: emailData.subject,
 		html: `<h3>Your Company ID: ${emailData.id}</h3><div>This ID is needed to access your company account</div>`,
 	};
