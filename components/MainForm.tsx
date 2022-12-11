@@ -57,6 +57,7 @@ const MainFrom = ({
 	const [popId, setPopId] = useState<string>();
 
 	useEffect(() => {
+		setLoading(false);
 		if (form === null || form === undefined) {
 			fetch('api/getform')
 				.then((response) => response.json())
@@ -222,176 +223,202 @@ const MainFrom = ({
 		<>
 			<h1>Fill up to take order</h1>
 			<h2 style={{ margin: '0px' }}>{form?.name}</h2>
-			<form
-				className={styles.form}
-				onSubmit={(event) => handleClick(event)}>
-				{form?.inputs.map((el: Input, index: number) => (
-					<div
-						className={styles.input}
-						style={{
-							display: 'flex',
-							alignItems: 'center',
-							justifyContent: 'center',
-							order: 1 + el.order,
-						}}
-						key={el.id}>
+			{loading ? (
+				<Loading />
+			) : (
+				<form
+					className={styles.form}
+					onSubmit={(event) => handleClick(event)}>
+					{form?.inputs.map((el: Input, index: number) => (
 						<div
-							className={styles.label}
-							style={{ fontWeight: 'bold', textAlign: 'left' }}>
-							{el.label}
-						</div>
-						<TextField
-							placeholder={
-								el.placeholder ? el.placeholder : undefined
-							}
-							fullWidth={true}
-							required={el.required}
-							type={el.type}
-							onChange={(event) =>
-								handleInputChange(
-									event,
-									el.id,
-									initIndex + index
-								)
-							}
-						/>
-					</div>
-				))}
-				{form?.selects?.map(
-					(el: SelectTS & { options: Option[] }, index: number) => {
-						return (
-							<RenderSelect
-								key={el.id}
-								el={el}
-								handleSelectChange={handleSelectChange}
-								formData={formData}
-								setFormData={setFormData}
-								index={index}
-								popId={popId}
-								ind={initIndex + form.inputs.length + index}
-							/>
-						);
-					}
-				)}
-				{form?.checkboxes.map((el, index: number) => (
-					<div
-						className={styles.input}
-						style={{
-							display: 'flex',
-							alignItems: 'center',
-							justifyContent: 'center',
-							order: 1 + el.order,
-						}}
-						key={el.id}>
-						<div
-							className={styles.label}
-							style={{ fontWeight: 'bold', textAlign: 'left' }}>
-							{el.label}
-						</div>
-						<div className={styles.checkbox}>
-							<Switch
-								style={{ alignSelf: 'left' }}
-								defaultChecked={JSON.parse(
-									formData[
-										form.inputs.length +
-											form.selects.length +
-											index
-									].fill
-								)}
-								onChange={() =>
-									handleCheckboxChange(
+							className={styles.input}
+							style={{
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: 'center',
+								order: 1 + el.order,
+							}}
+							key={el.id}>
+							<div
+								className={styles.label}
+								style={{
+									fontWeight: 'bold',
+									textAlign: 'left',
+								}}>
+								{el.label}
+							</div>
+							<TextField
+								placeholder={
+									el.placeholder ? el.placeholder : undefined
+								}
+								fullWidth={true}
+								required={el.required}
+								defaultValue={''}
+								type={el.type}
+								onChange={(event) =>
+									handleInputChange(
+										event,
 										el.id,
-										initIndex +
-											form.inputs.length +
-											form.selects.length +
-											index
+										initIndex + index
 									)
 								}
 							/>
 						</div>
-					</div>
-				))}
-				<div style={{ color: palette.warning.main, fontWeight: '600' }}>
-					{error}
-				</div>
-				{nextForm.length !== 0 ? (
-					<>
-						<Button
-							type='button'
-							disabled={disabled}
-							onClick={() => {
-								setError(validForm(formData));
-								if (validForm(formData).length !== 0) {
-									return;
-								}
-								setInitalIndex(formData.length);
-								setForm(nextForm[0]);
-								const start = formData.length;
-								setFormData((pre) => {
-									const arr: FormData[] = formData;
-									nextForm[0].inputs.forEach(
-										(el: Input, index: number) => {
-											console.log(start);
-											arr.push({
-												name: el.label,
-												fill: '',
-												index: start + index,
-												id: el.id,
-											});
-										}
-									);
-
-									nextForm[0].selects.forEach(
-										(
-											el: SelectTS & {
-												options: Option[];
-											},
-											index: number
-										) =>
-											arr.push({
-												name: el.label,
-												fill: '',
-												index:
-													start +
-													nextForm[0].inputs.length +
-													index,
-												id: el.id,
-											})
-									);
-									nextForm[0].checkboxes.forEach(
-										(el: CheckBox, index: number) =>
-											arr.push({
-												name: el.label,
-												fill: 'false',
-												index:
-													start +
-													nextForm[0].inputs.length +
-													nextForm[0].selects.length +
-													index,
-												id: el.id,
-											})
-									);
-									return arr.sort(
-										(a, b) => a.index - b.index
-									);
-								});
-								setNextForm((pre) => pre.splice(1));
+					))}
+					{form?.selects?.map(
+						(
+							el: SelectTS & { options: Option[] },
+							index: number
+						) => {
+							return (
+								<RenderSelect
+									key={el.id}
+									el={el}
+									handleSelectChange={handleSelectChange}
+									formData={formData}
+									setFormData={setFormData}
+									index={index}
+									popId={popId}
+									ind={initIndex + form.inputs.length + index}
+								/>
+							);
+						}
+					)}
+					{form?.checkboxes.map((el, index: number) => (
+						<div
+							className={styles.input}
+							style={{
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: 'center',
+								order: 1 + el.order,
 							}}
+							key={el.id}>
+							<div
+								className={styles.label}
+								style={{
+									fontWeight: 'bold',
+									textAlign: 'left',
+								}}>
+								{el.label}
+							</div>
+							<div className={styles.checkbox}>
+								<Switch
+									style={{ alignSelf: 'left' }}
+									defaultChecked={JSON.parse(
+										formData[
+											initIndex +
+												form.inputs.length +
+												form.selects.length +
+												index
+										].fill
+									)}
+									onChange={() =>
+										handleCheckboxChange(
+											el.id,
+											initIndex +
+												form.inputs.length +
+												form.selects.length +
+												index
+										)
+									}
+								/>
+							</div>
+						</div>
+					))}
+					<div
+						style={{
+							color: palette.warning.main,
+							fontWeight: '600',
+						}}>
+						{error}
+					</div>
+					{nextForm.length !== 0 ? (
+						<>
+							<Button
+								type='button'
+								disabled={disabled}
+								onClick={() => {
+									setError(validForm(formData));
+									if (validForm(formData).length !== 0) {
+										return;
+									}
+									setLoading(true);
+									setInitalIndex(formData.length);
+									setForm(nextForm[0]);
+									const start = formData.length;
+									setFormData(() => {
+										const arr: FormData[] = formData;
+										nextForm[0].inputs.forEach(
+											(el: Input, index: number) => {
+												console.log(start);
+												arr.push({
+													name: el.label,
+													fill: '',
+													index: start + index,
+													id: el.id,
+												});
+											}
+										);
+
+										nextForm[0].selects.forEach(
+											(
+												el: SelectTS & {
+													options: Option[];
+												},
+												index: number
+											) =>
+												arr.push({
+													name: el.label,
+													fill: '',
+													index:
+														start +
+														nextForm[0].inputs
+															.length +
+														index,
+													id: el.id,
+												})
+										);
+										nextForm[0].checkboxes.forEach(
+											(el: CheckBox, index: number) =>
+												arr.push({
+													name: el.label,
+													fill: 'false',
+													index:
+														start +
+														nextForm[0].inputs
+															.length +
+														nextForm[0].selects
+															.length +
+														index,
+													id: el.id,
+												})
+										);
+										return arr.sort(
+											(a, b) => a.index - b.index
+										);
+									});
+									setNextForm((pre) => pre.splice(1));
+								}}
+								style={{
+									order: 999999999,
+									marginBottom: '10px',
+								}}
+								variant='contained'>
+								Next
+							</Button>
+						</>
+					) : (
+						<Button
+							type='submit'
+							disabled={disabled}
 							style={{ order: 999999999, marginBottom: '10px' }}
 							variant='contained'>
-							Next
+							Submit Order
 						</Button>
-					</>
-				) : (
-					<Button
-						type='submit'
-						disabled={disabled}
-						style={{ order: 999999999, marginBottom: '10px' }}
-						variant='contained'>
-						Submit Order
-					</Button>
-				)}
-			</form>
+					)}
+				</form>
+			)}
 		</>
 	);
 };

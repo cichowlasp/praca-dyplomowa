@@ -63,6 +63,7 @@ const AddFormView = ({
 	const [localPopId, setLocalPopId] = useState<string>('');
 
 	useEffect(() => {
+		setLoading(false);
 		if (form === null || form === undefined) {
 			fetch('/api/user/getform', { method: 'POST', body: order.formId })
 				.then((response) => response.json())
@@ -389,6 +390,7 @@ const AddFormView = ({
 											) {
 												return;
 											}
+											setLoading(true);
 											setInitalIndex(formData.length);
 											setForm(nextForm[0]);
 											setFormData((pre) => {

@@ -62,6 +62,7 @@ const PopUpForm = ({
 	const [localPopId, setLocalPopId] = useState<string | undefined>(popId);
 
 	useEffect(() => {
+		setLoading(false);
 		if (form === null || form === undefined) {
 			fetch('/api/user/getform', { method: 'POST', body: localPopId })
 				.then((response) => response.json())
@@ -232,11 +233,10 @@ const PopUpForm = ({
 						overflowY: 'auto',
 					}}
 					elevation={3}>
-					{form === null || form === undefined ? (
+					{form === null || form === undefined || loading ? (
 						<Loading />
 					) : (
 						<>
-							<h1>Fill up to take order</h1>
 							<h2 style={{ margin: '0px' }}>{form?.name}</h2>
 							<div className={styles.form}>
 								{form?.inputs.map(
@@ -336,7 +336,8 @@ const PopUpForm = ({
 												style={{ alignSelf: 'left' }}
 												defaultChecked={JSON.parse(
 													formData[
-														form.inputs.length +
+														initIndex +
+															form.inputs.length +
 															form.selects
 																.length +
 															index
@@ -376,6 +377,7 @@ const PopUpForm = ({
 												) {
 													return;
 												}
+												setLoading(true);
 												setInitalIndex(formData.length);
 												setForm(nextForm[0]);
 												setFormData((pre) => {
