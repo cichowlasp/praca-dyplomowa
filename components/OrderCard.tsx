@@ -571,16 +571,18 @@ const OrderCard = ({
 									<DeleteForeverIcon fontSize='large' />
 									Delete
 								</MenuItem>
-								<MenuItem
-									style={{ maxHeight: '2rem' }}
-									onClick={() => {
-										setReorderView(false);
-										setEditView(true);
-										handleClose();
-									}}>
-									<EditIcon fontSize='large' />
-									Edit
-								</MenuItem>
+								{order.reviewed === Reviewed.notReviewed ? (
+									<MenuItem
+										style={{ maxHeight: '2rem' }}
+										onClick={() => {
+											setReorderView(false);
+											setEditView(true);
+											handleClose();
+										}}>
+										<EditIcon fontSize='large' />
+										Edit
+									</MenuItem>
+								) : null}
 								<MenuItem
 									style={{ maxHeight: '2rem' }}
 									onClick={() => {

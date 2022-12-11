@@ -1,6 +1,7 @@
 .orders {
 	width: 100%;
 	height: 100%;
+	padding-top: 10px;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -8,7 +9,7 @@
 }
 
 .ordersContainer {
-	min-height: calc(100% - 95px);
+	min-height: calc(100% - 120px);
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
