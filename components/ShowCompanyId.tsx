@@ -22,7 +22,7 @@ const ShowCompanyId = ({ close }: { close: () => void }) => {
 					alignContent: 'center',
 				}}
 				elevation={3}>
-				<h1 style={{ textAlign: 'center' }}>Identificator</h1>
+				<h1 style={{ textAlign: 'center' }}>ID</h1>
 				{session?.company?.id ? (
 					<TextField
 						focused={true}

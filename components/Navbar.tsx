@@ -156,7 +156,7 @@ const Navbar = () => {
 											handleClose();
 										}}>
 										<LockIcon />
-										{`Company Identyficator`}
+										{`Company ID`}
 									</MenuItem>
 								</>
 							)}
