@@ -22,7 +22,8 @@
 		"**/*.ts",
 		"**/*.tsx",
 		"pages/api/auth/[...nextauth].js",
-		"pages/api/auth/signin.jsx"
+		"pages/api/auth/signin.jsx",
+		"pages/api/admin/update-homepage.js"
 	],
 	"exclude": ["node_modules"]
 }

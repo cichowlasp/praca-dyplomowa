@@ -2,14 +2,15 @@ generator client {
   provider = "prisma-client-js"
 }
 
-generator erd {
-  provider = "prisma-erd-generator"
-  output   = "../ERD.svg"
-}
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model Welcome {
+  id   String @id @default(cuid())
+  text String
+  link String
 }
 
 model Order {
@@ -21,9 +22,9 @@ model Order {
   realizationDateEnd   DateTime?
   realizationDateStart DateTime?
   completedAt          DateTime?
-  editedAt             DateTime?
-  approvedBy           String?
   formId               String?
+  approvedBy           String?
+  editedAt             DateTime?
   informations         Info[]
   messages             Message[]
   user                 User      @relation(fields: [authorId], references: [id], onDelete: Cascade)

@@ -9,6 +9,8 @@ import Loading from './Loading';
 import { AppBar, Toolbar, Typography, MenuItem, Menu } from '@mui/material';
 import ShowCompanyId from './ShowCompanyId';
 import LockIcon from '@mui/icons-material/Lock';
+import HomePageTitle from './HomePageTitle';
+import WysiwygIcon from '@mui/icons-material/Wysiwyg';
 
 const Navbar = () => {
 	const { data: session } = useSession();
@@ -16,6 +18,7 @@ const Navbar = () => {
 	const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 	const [loading, setLoading] = useState(false);
 	const [show, setShow] = useState(false);
+	const [showHome, setShowHome] = useState(false);
 
 	const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
 		setAnchorEl(event.currentTarget);
@@ -88,13 +91,50 @@ const Navbar = () => {
 							aria-label='account of current user'
 							aria-controls='menu-appbar'
 							aria-haspopup='true'
-							onClick={async () =>
-								await signOut({ redirect: false })
-							}
+							onClick={handleMenu}
 							variant='outlined'
 							color='inherit'>
-							SignOUT
+							Options
 						</Button>
+						<Menu
+							sx={{ minWidth: '5rem' }}
+							id='menu-appbar'
+							anchorEl={anchorEl}
+							anchorOrigin={{
+								vertical: 'bottom',
+								horizontal: 'center',
+							}}
+							keepMounted
+							transformOrigin={{
+								vertical: 'top',
+								horizontal: 'center',
+							}}
+							open={Boolean(anchorEl)}
+							onClose={handleClose}>
+							{loading ? (
+								<div style={{}}>
+									<Loading />
+								</div>
+							) : (
+								<>
+									<MenuItem
+										onClick={async () => {
+											setLoading(true);
+											await signOut({ redirect: false });
+											handleClose();
+											setLoading(false);
+										}}>
+										<ExitToAppIcon /> {` SIGNOUT`}
+									</MenuItem>
+									<MenuItem
+										onClick={async () => {
+											setShowHome(true);
+										}}>
+										<WysiwygIcon /> {` HOME PAGE TITLE`}
+									</MenuItem>
+								</>
+							)}
+						</Menu>
 					</div>
 				)}
 				{session?.company && (
@@ -165,6 +205,9 @@ const Navbar = () => {
 				)}
 			</Toolbar>
 			{show ? <ShowCompanyId close={close} /> : null}
+			{showHome ? (
+				<HomePageTitle close={() => setShowHome(false)} />
+			) : null}
 		</AppBar>
 	);
 };
