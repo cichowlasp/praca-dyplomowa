@@ -51,6 +51,8 @@ const MyCompany = () => {
 		setLoading(false);
 	};
 
+	if (loading) return <Loading />;
+
 	return (
 		<>
 			{status === 'unauthenticated' || !session?.company?.id ? (
